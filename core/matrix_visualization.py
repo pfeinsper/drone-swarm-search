@@ -1,36 +1,76 @@
-import pygame
+from turtle import Turtle, Screen
+import time
 
-gridDisplay = pygame.display.set_mode((200, 200))
-pygame.display.get_surface().fill((200, 200, 200))  # background
-
-matrix = [[1 ,1 ,0 ,1],
-          [1 ,0 ,0 ,1],
-          [1 ,1 ,0 ,1],
-          [1 ,1 ,1 ,1]]
-# we use the sizes to draw as well as to do our "steps" in the loops. 
-grid_node_width = 10  
-grid_node_height = 10
-
-def createSquare(x, y, color):
-    pygame.draw.rect(gridDisplay, color, [x, y, grid_node_width, grid_node_height ])
+MATRIX_LENGTH = 5
+MATRIX_WIDTH = 2
 
 
+def config_screen() -> Screen:
+    """Set screen size based on matrix size"""
+    screen = Screen()
+    screen.setup(
+        width=50 * MATRIX_LENGTH + 100,
+        height=50 * MATRIX_WIDTH + 100,
+        startx=0,
+        starty=0,
+    )
 
-def visualizeGrid():
-    y = 0  # we start at the top of the screen
+    screen.title("Drone Path")
+    screen.bgcolor("blue")
+    screen.tracer(False)
+    return screen
+
+
+def config_turtle_environment() -> Turtle:
+    """Set turtle environment"""
+    turtle = Turtle()
+    turtle.speed(0)
+    turtle.shape("circle")
+    turtle.pensize(3)
+    turtle.penup()
+    turtle.goto(-50 * MATRIX_LENGTH / 2, 50 * MATRIX_WIDTH / 2)
+    return turtle
+
+
+screen = config_screen()
+
+turtle = config_turtle_environment()
+
+
+# Function to draw a matrix
+def draw_matrix(matrix: list[list]):
+    # Draw the matrix
     for row in matrix:
-        x = 0 # for every row we start at the left of the screen again
-        for item in row:
-            if item == 0:
-                createSquare(x, y, (255, 255, 255))
-            else:
-                createSquare(x, y, (0, 0, 0))
+        for value in row:
+            turtle.color("black") if value == "X" else turtle.color("white")
+            turtle.write(value, font=("Arial", 20, "normal"))
+            turtle.forward(50)
 
-            x += grid_node_width # for ever item/number in that row we move one "step" to the right
-        y += grid_node_height   # for every new row we move one "step" downwards
-    pygame.display.update()
+        turtle.backward(50 * len(row))
+        turtle.right(90)
+        turtle.forward(50)
+        turtle.left(90)
+
+    """ time.sleep(0.5)
+    turtle.clear() """
+    screen.exitonclick()
 
 
-visualizeGrid()  # call the function    
-while True:
-    pass  # keeps the window open so you can see the result.
+def draw_drone_path(path: list[list]) -> None:
+    for matrix in path:
+        draw_matrix(matrix)
+
+
+matrixs = [
+    [
+        ["X", "", "", "", ""],
+        ["", "", "D", "", ""],
+    ],  # 0
+    [
+        ["", "X", "", "", ""],
+        ["", "", "D", "", ""],
+    ],  # 1
+]
+
+#  draw_drone_path(matrixs)
+draw_matrix(matrixs[0])
