@@ -1,6 +1,7 @@
 import pytest
 import random_matrix
 
+
 def test_matrix_sum():
     assert round(random_matrix.create_random_matrix(10, 2).sum()) == 100
     assert round(random_matrix.create_random_matrix(10, 10).sum()) == 100
@@ -12,6 +13,7 @@ def test_matrix_sum():
     assert round(random_matrix.create_random_matrix(1, 2).sum()) == 100
     assert round(random_matrix.create_random_matrix(2, 4).sum()) == 100
 
+
 def test_matrix_size():
     assert random_matrix.create_random_matrix(10, 2).size == 20
     assert random_matrix.create_random_matrix(10, 10).size == 100
@@ -22,6 +24,7 @@ def test_matrix_size():
     assert random_matrix.create_random_matrix(32, 2346).size == 75072
     assert random_matrix.create_random_matrix(1, 2).size == 2
     assert random_matrix.create_random_matrix(2, 4).size == 8
+
 
 def test_matrix_dimensions():
     matrix_0 = random_matrix.create_random_matrix(10, 2)
@@ -51,4 +54,3 @@ def test_matrix_dimensions():
     assert matrix_7[0].size == 2
     assert len(matrix_8) == 2
     assert matrix_8[0].size == 4
-    
