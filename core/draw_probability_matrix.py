@@ -17,5 +17,3 @@ def draw_matrix(matrix: np.matrix):
     ax.matshow(matrix)
     plt.show()
 
-
-draw_matrix(create_random_matrix(10, 10))
