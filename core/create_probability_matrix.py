@@ -25,7 +25,7 @@ def divide_number(number: int, parts_number: int) -> list:
     return parts
 
 
-def create_random_matrix(size_x: int, size_y: int) -> np.matrix:
+def create_probability_matrix(size_x: int, size_y: int) -> np.array:
     temporary_matrix = []
     probability_list = divide_number(size_x * size_y * 10, size_x * size_y)
     counter = 0
@@ -39,5 +39,5 @@ def create_random_matrix(size_x: int, size_y: int) -> np.matrix:
 
         temporary_matrix.append(temporary_list)
 
-    final_matrix = np.matrix(temporary_matrix)
+    final_matrix = np.array(temporary_matrix)
     return final_matrix
