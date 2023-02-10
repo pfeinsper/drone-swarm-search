@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from create_random_matrix import create_random_matrix
 
 
 def draw_matrix(matrix: np.matrix):
