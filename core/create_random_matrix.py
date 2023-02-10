@@ -2,12 +2,14 @@ import numpy as np
 from random import randint, shuffle
 
 
-def divide_number(number: int, parts_number: int) -> list:
+def divide_number(size: int) -> list:
     parts = []
-    number_rest = number
+    number_rest = size * 10
+    parts_number = size
 
-    if number > 100:
-        divisor = number // 100
+    # Definindo o divisor que deve ser usado para fazer as probabilidades.
+    if number_rest > 100:
+        divisor = number_rest // 100
     else:
         divisor = parts_number / 10
 
@@ -25,9 +27,9 @@ def divide_number(number: int, parts_number: int) -> list:
     return parts
 
 
-def create_random_matrix(size_x: int, size_y: int) -> np.matrix:
+def create_random_matrix(size_x: int, size_y: int) -> np.array:
     temporary_matrix = []
-    probability_list = divide_number(size_x * size_y * 10, size_x * size_y)
+    probability_list = divide_number(size_x * size_y)
     counter = 0
 
     for _ in range(size_x):
@@ -39,5 +41,5 @@ def create_random_matrix(size_x: int, size_y: int) -> np.matrix:
 
         temporary_matrix.append(temporary_list)
 
-    final_matrix = np.matrix(temporary_matrix)
+    final_matrix = np.array(temporary_matrix)
     return final_matrix
