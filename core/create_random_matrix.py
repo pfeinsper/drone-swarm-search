@@ -28,7 +28,6 @@ def divide_number(number: int, parts_number: int) -> list:
 def create_random_matrix(size_x: int, size_y: int) -> np.matrix:
     temporary_matrix = []
     probability_list = divide_number(size_x * size_y * 10, size_x * size_y)
-    # Pq mult por 10?
     counter = 0
 
     for _ in range(size_x):
