@@ -1,76 +1,31 @@
-from turtle import Turtle, Screen
-import time
-
-MATRIX_LENGTH = 5
-MATRIX_WIDTH = 2
+from numpy import matrix
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
 
 
-def config_screen() -> Screen:
-    """Set screen size based on matrix size"""
-    screen = Screen()
-    screen.setup(
-        width=50 * MATRIX_LENGTH + 100,
-        height=50 * MATRIX_WIDTH + 100,
-        startx=0,
-        starty=0,
-    )
-
-    screen.title("Drone Path")
-    screen.bgcolor("blue")
-    screen.tracer(False)
-    return screen
+drone_example_matrix_1 = matrix([[1, 0, 0], [0, 0, 0], [0, 0, 2]])
+drone_example_matrix_2 = matrix([[0, 1, 0], [0, 0, 0], [0, 0, 2]])
+animation: list[matrix] = [drone_example_matrix_1, drone_example_matrix_2]
 
 
-def config_turtle_environment() -> Turtle:
-    """Set turtle environment"""
-    turtle = Turtle()
-    turtle.speed(0)
-    turtle.shape("circle")
-    turtle.pensize(3)
-    turtle.penup()
-    turtle.goto(-50 * MATRIX_LENGTH / 2, 50 * MATRIX_WIDTH / 2)
-    return turtle
+fig, ax = plt.subplots()
+fig.subplots_adjust(bottom=0.25, left=0.25)
 
 
-screen = config_screen()
-
-turtle = config_turtle_environment()
-
-
-# Function to draw a matrix
-def draw_matrix(matrix: list[list]):
-    # Draw the matrix
-    for row in matrix:
-        for value in row:
-            turtle.color("black") if value == "X" else turtle.color("white")
-            turtle.write(value, font=("Arial", 20, "normal"))
-            turtle.forward(50)
-
-        turtle.backward(50 * len(row))
-        turtle.right(90)
-        turtle.forward(50)
-        turtle.left(90)
-
-    """ time.sleep(0.5)
-    turtle.clear() """
-    screen.exitonclick()
+ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03])
+slider = Slider(
+    ax_slider, label="Frame", valmin=0, valmax=len(animation) - 1, valinit=0, valstep=1
+)
 
 
-def draw_drone_path(path: list[list]) -> None:
-    for matrix in path:
-        draw_matrix(matrix)
+matshow = ax.matshow(animation)
 
 
-matrixs = [
-    [
-        ["X", "", "", "", ""],
-        ["", "", "D", "", ""],
-    ],  # 0
-    [
-        ["", "X", "", "", ""],
-        ["", "", "D", "", ""],
-    ],  # 1
-]
+def update(val):
+    matshow.set_data(animation[int(slider.val)])
+    fig.canvas.draw_idle()
 
-#  draw_drone_path(matrixs)
-draw_matrix(matrixs[0])
+
+slider.on_changed(update)
+
+plt.show()
