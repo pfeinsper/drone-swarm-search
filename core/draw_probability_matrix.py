@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
-import numpy as np
+from numpy import array
 
-
-def draw_matrix(matrix: np.matrix):
+def draw_matrix(matrix: array):
     length = len(matrix)
     _, ax = plt.subplots()
 
@@ -15,4 +14,3 @@ def draw_matrix(matrix: np.matrix):
 
     ax.matshow(matrix)
     plt.show()
-
