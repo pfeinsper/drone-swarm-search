@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
-from numpy import matrix
+from numpy import array
 from matplotlib.widgets import Slider
 
 
-def animate_with_slider(animation_matrix: list[matrix]):
+def animate_with_slider(animation_matrix: list[array]):
     fig, ax = plt.subplots()
     fig.subplots_adjust(bottom=0.25, left=0.25)
 
@@ -19,15 +19,16 @@ def animate_with_slider(animation_matrix: list[matrix]):
     matshow = ax.matshow(animation_matrix)
 
     def update(_):
-        matshow.set_data(animation[slider.val])
+        matshow.set_data(animation_matrix[slider.val])
         fig.canvas.draw_idle()
 
     slider.on_changed(update)
-    matshow.set_data(animation[0])
+    matshow.set_data(animation_matrix[0])
     plt.show()
 
 
-drone_example_matrix_1 = matrix([[1, 0, 0], [0, 0, 0], [0, 0, 2]])
-drone_example_matrix_2 = matrix([[0, 1, 0], [0, 0, 0], [0, 0, 2]])
-animation: list[matrix] = [drone_example_matrix_1, drone_example_matrix_2]
-animate_with_slider(animation)
+# Example usage:
+# drone_example_matrix_1 = array([[1, 0, 0], [0, 0, 0], [0, 0, 2]])
+# drone_example_matrix_2 = array([[0, 1, 0], [0, 0, 0], [0, 0, 2]])
+# animation: list[array] = [drone_example_matrix_1, drone_example_matrix_2]
+# animate_with_slider(animation)
