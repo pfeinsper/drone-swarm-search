@@ -1,4 +1,3 @@
-import pytest
 from core.create_probability_matrix import create_probability_matrix
 
 
