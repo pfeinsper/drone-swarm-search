@@ -8,10 +8,7 @@ def divide_number(size: int) -> list:
     parts_number = size
 
     # Defining the divisor which will be used to calculate probabilities
-    if number_rest > 100:
-        divisor = number_rest // 100
-    else:
-        divisor = parts_number / 10
+    divisor = number_rest // 100 if number_rest > 100 else parts_number / 10
 
     for i in range(1, parts_number + 1):
         if i == parts_number:
