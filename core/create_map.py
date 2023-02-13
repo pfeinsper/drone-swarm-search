@@ -1,8 +1,8 @@
-import numpy as np
+from numpy import array
 from random import randint
 
 
-def create_map(matrix: np.array) -> np.array:
+def create_map(matrix: array) -> array:
 
     probabilities: list = [
         probability for line in matrix for probability in line
@@ -15,7 +15,7 @@ def create_map(matrix: np.array) -> np.array:
         max(probabilities_times_random_factor)
     )
 
-    position_matrix: np.array = [
+    position_matrix: array = [
         [0 for _ in range(0, matrix[0].size)] for _ in matrix
     ]
 

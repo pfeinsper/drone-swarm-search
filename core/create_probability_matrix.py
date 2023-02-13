@@ -1,4 +1,4 @@
-import numpy as np
+from numpy import array
 from random import randint, shuffle
 
 
@@ -27,7 +27,7 @@ def divide_number(size: int) -> list:
     return parts
 
 
-def create_probability_matrix(size_x: int, size_y: int) -> np.array:
+def create_probability_matrix(size_x: int, size_y: int) -> array:
     temporary_matrix = []
     probability_list = divide_number(size_x * size_y)
     counter = 0
@@ -41,5 +41,5 @@ def create_probability_matrix(size_x: int, size_y: int) -> np.array:
 
         temporary_matrix.append(temporary_list)
 
-    final_matrix = np.array(temporary_matrix)
+    final_matrix = array(temporary_matrix)
     return final_matrix
