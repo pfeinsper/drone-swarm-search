@@ -3,7 +3,7 @@ from numpy import array
 from matplotlib.widgets import Slider
 
 
-def animate_with_slider(animation_matrix: list[array]):
+def animate_with_slider(animation_matrix: list[array[array]]):
     fig, ax = plt.subplots()
     fig.subplots_adjust(bottom=0.25, left=0.25)
 
