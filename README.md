@@ -12,14 +12,14 @@ poetry run python <python_file.py>
 poetry run  <script_name>
 ```
 
-Para configurar um novo script, basta editar o arquivo `pyproject.toml` e adicionar o script no seguinte formato:
+To configure a new script, just edit the `pyproject.toml` file and add the script in the following format:
 
 ```toml
 [tool.poetry.scripts]
 <name> = "<module>:<function>"
 ```
 
-Como no exemplo abaixo:
+As the example below:
 
 ```toml
 [tool.poetry.scripts]
