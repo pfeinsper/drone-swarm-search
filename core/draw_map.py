@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-from numpy import array
 from matplotlib.widgets import Slider
+from numpy import array
 
 
 def animate_with_slider(animation_matrix: list[array[array]]):
