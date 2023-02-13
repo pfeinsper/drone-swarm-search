@@ -1,13 +1,16 @@
 import matplotlib.pyplot as plt
-import numpy as np
+from numpy import array
 
-
-def draw_matrix(matrix):
+def draw_matrix(matrix: array):
     length = len(matrix)
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
+
     for i in range(length):
+        
         for j in range(length):
-            text = ax.text(j, i, matrix[i, j], ha="center", va="center", color="w")
-    # ax.matshow(matrix, cmap=plt.cm.Spectral)
+            _ = ax.text(
+                j, i, matrix[i, j], ha="center", va="center", color="w"
+            )
+
     ax.matshow(matrix)
     plt.show()
