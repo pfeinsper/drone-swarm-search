@@ -2,6 +2,7 @@ import pytest
 
 from core.calculate_array_movements import (
     calculate_movements,
+    calculate_path,
     calculate_diagonal_movements,
     Movements,
 )
@@ -37,6 +38,64 @@ def test_calculate_diagonal_movements(
     movements, position = calculate_diagonal_movements(current_point, next_point)
     assert movements == expected_movements
     assert position == expected_position
+
+
+@pytest.mark.parametrize(
+    "current_point, next_point, expected_movements",
+    [
+        (
+            (4, 4),
+            (4, 5),
+            [
+                Movements.RIGHT,
+            ],
+        ),
+        (
+            (4, 4),
+            (4, 3),
+            [
+                Movements.LEFT,
+            ],
+        ),
+        (
+            (4, 4),
+            (5, 4),
+            [
+                Movements.DOWN,
+            ],
+        ),
+        (
+            (4, 4),
+            (3, 4),
+            [
+                Movements.UP,
+            ],
+        ),
+        (
+            (4, 4),
+            (0, 1),
+            [
+                Movements.DIOGONAL_UP_LEFT,
+                Movements.DIOGONAL_UP_LEFT,
+                Movements.DIOGONAL_UP_LEFT,
+                Movements.UP,
+            ],
+        ),
+        (
+            (4, 4),
+            (0, 5),
+            [
+                Movements.DIOGONAL_UP_RIGHT,
+                Movements.UP,
+                Movements.UP,
+                Movements.UP,
+            ],
+        ),
+    ],
+)
+def test_calculate_path(current_point, next_point, expected_movements):
+    """Test the calculate_path function."""
+    assert calculate_path(current_point, next_point) == expected_movements
 
 
 # Mock the movements sequence entries

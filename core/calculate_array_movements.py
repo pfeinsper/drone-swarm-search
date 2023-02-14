@@ -24,6 +24,14 @@ diagonal_translator = {
 }
 
 
+parallel_translator = {
+    Movements.UP: (Movements.UP, (-1, 0)),
+    Movements.DOWN: (Movements.DOWN, (1, 0)),
+    Movements.LEFT: (Movements.LEFT, (0, -1)),
+    Movements.RIGHT: (Movements.RIGHT, (0, 1)),
+}
+
+
 def calculate_diagonal_movements(
     current_point: POINT_TYPE, next_point: POINT_TYPE
 ) -> Tuple[List[Movements], POINT_TYPE]:
@@ -53,7 +61,25 @@ def calculate_path(
 ) -> List[Movements]:
     """Calculate the path between two points."""
     path: List[Movements] = []
-    calculate_diagonal_movements(current_point, next_point)
+    diagonal_movements, point_after_diagonal = calculate_diagonal_movements(
+        current_point, next_point
+    )
+    path.extend(diagonal_movements)
+
+    if point_after_diagonal == next_point:
+        return path
+
+    distance_line = next_point[0] - point_after_diagonal[0]
+    distance_column = next_point[1] - point_after_diagonal[1]
+
+    if distance_line != 0:
+        movement_line = Movements.DOWN if distance_line > 0 else Movements.UP
+        number_of_movements = abs(distance_line)
+        path.extend([movement_line] * number_of_movements)
+    else:
+        movement_column = Movements.RIGHT if distance_column > 0 else Movements.LEFT
+        number_of_movements = abs(distance_column)
+        path.extend([movement_column] * number_of_movements)
 
     return path
 
