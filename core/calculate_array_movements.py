@@ -89,6 +89,10 @@ def calculate_movements(movements_sequence: List[POINT_TYPE]) -> List[Movements]
     movements: List[Movements] = []
 
     for current_point, next_point in zip(movements_sequence, movements_sequence[1:]):
+        movements.append(Movements.SEARCH)
         path_to_next_point = calculate_path(current_point, next_point)
+        movements.extend(path_to_next_point)
+
+    movements.append(Movements.SEARCH)
 
     return movements

@@ -103,7 +103,7 @@ def test_calculate_path(current_point, next_point, expected_movements):
     "movements_sequence, expected_movements",
     [
         (
-            [(0, 0), (3, 1), (2, 2), (3, 3)],
+            [(0, 0), (3, 1), (2, 2), (0, 3)],
             [
                 Movements.SEARCH,
                 Movements.DIOGONAL_DOWN_RIGHT,
@@ -113,6 +113,7 @@ def test_calculate_path(current_point, next_point, expected_movements):
                 Movements.DIOGONAL_UP_RIGHT,
                 Movements.SEARCH,
                 Movements.DIOGONAL_UP_RIGHT,
+                Movements.UP,
                 Movements.SEARCH,
             ],
         ),
