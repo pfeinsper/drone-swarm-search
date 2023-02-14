@@ -1,4 +1,5 @@
-from typing import Tuple, List, Enum
+from typing import Tuple, List
+from enum import Enum
 
 
 class Movements(Enum):
