@@ -1,5 +1,7 @@
 # Drone Swarm Search
 
+## Poetry
+
 ### Run Python Script with poetry
 
 ```bash
@@ -43,3 +45,27 @@ poetry config virtualenvs.in-project true
 ```
 
 After that, reload the VSCode window and you should be able to select the poetry environment as the default interpreter.
+
+### Add new dependency
+
+```bash
+poetry add <package_name>
+```
+
+If you want to add a dependency only for development, you can use the following command:
+
+```bash
+poetry add --dev <package_name>
+```
+
+If the dependency is only used for testing, you can use the following command:
+
+```bash
+poetry add pytest --group test
+```
+
+### Remove dependency
+
+```bash
+poetry remove <package_name>
+```
