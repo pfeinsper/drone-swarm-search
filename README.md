@@ -1,12 +1,12 @@
 # Drone Swarm Search
 
-### Run Python code with poetry
+### Run Python Script with poetry
 
 ```bash
 poetry run python <python_file.py>
 ```
 
-### Run Script
+### Run Single Script
 
 ```bash
 poetry run  <script_name>
@@ -25,3 +25,21 @@ As the example below:
 [tool.poetry.scripts]
 test = 'scripts:poetry_test'
 ```
+
+### Poetry Environment
+
+```bash
+poetry shell
+```
+
+Essentially, this command will create a virtual environment and install all the dependencies in it. You can then run your scripts from the virtual environment.
+
+### Poetry Environment in VSCode
+
+If you are using VSCode, you can the following command to be able to select poetry environment as the default interpreter.
+
+```bash
+poetry config virtualenvs.in-project true
+```
+
+After that, reload the VSCode window and you should be able to select the poetry environment as the default interpreter.
