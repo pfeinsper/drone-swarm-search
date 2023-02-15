@@ -26,30 +26,13 @@ def test_matrix_size():
 
 
 def test_matrix_dimensions():
-    matrix_0 = create_probability_matrix(10, 2)
-    matrix_1 = create_probability_matrix(10, 10)
-    matrix_2 = create_probability_matrix(30, 100)
-    matrix_3 = create_probability_matrix(35, 20)
-    matrix_4 = create_probability_matrix(53, 61)
-    matrix_5 = create_probability_matrix(13, 77)
-    matrix_6 = create_probability_matrix(32, 2346)
-    matrix_7 = create_probability_matrix(1, 2)
-    matrix_8 = create_probability_matrix(2, 4)
-    assert len(matrix_0) == 10
-    assert matrix_0[0].size == 2
-    assert len(matrix_1) == 10
-    assert matrix_1[0].size == 10
-    assert len(matrix_2) == 30
-    assert matrix_2[0].size == 100
-    assert len(matrix_3) == 35
-    assert matrix_3[0].size == 20
-    assert len(matrix_4) == 53
-    assert matrix_4[0].size == 61
-    assert len(matrix_5) == 13
-    assert matrix_5[0].size == 77
-    assert len(matrix_6) == 32
-    assert matrix_6[0].size == 2346
-    assert len(matrix_7) == 1
-    assert matrix_7[0].size == 2
-    assert len(matrix_8) == 2
-    assert matrix_8[0].size == 4
+    assert create_probability_matrix(10, 2).shape == (10, 2)
+    assert create_probability_matrix(10, 10).shape == (10, 10)
+    assert create_probability_matrix(30, 100).shape == (30, 100)
+    assert create_probability_matrix(35, 20).shape == (35, 20)
+    assert create_probability_matrix(53, 61).shape == (53, 61)
+    assert create_probability_matrix(13, 77).shape == (13, 77)
+    assert create_probability_matrix(32, 2346).shape == (32, 2346)
+    assert create_probability_matrix(1, 2).shape == (1, 2)
+    assert create_probability_matrix(2, 4).shape == (2, 4)
+
