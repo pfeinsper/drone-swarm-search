@@ -23,6 +23,6 @@ def create_map(matrix: array) -> array:
         (person_position % len(matrix))
     ] = "P"
 
-    position_matrix[0][0] = "X"
+    position_matrix[0][0] = "X" if  position_matrix[0][0] != "P" else "PX"
 
     return position_matrix
