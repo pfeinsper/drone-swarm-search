@@ -2,7 +2,7 @@ from numpy import array
 from random import randint
 
 
-def create_map(matrix: array) -> array:
+def generate_map(matrix: array) -> array:
 
     probabilities: list = [
         probability for line in matrix for probability in line
@@ -23,6 +23,6 @@ def create_map(matrix: array) -> array:
         (person_position % len(matrix))
     ] = "P"
 
-    position_matrix[0][0] = "X" if  position_matrix[0][0] != "P" else "PX"
+    position_matrix[0][0] = "X" if position_matrix[0][0] != "P" else "PX"
 
     return position_matrix

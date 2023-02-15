@@ -24,7 +24,7 @@ def divide_number(size: int) -> list:
     return parts
 
 
-def create_probability_matrix(size_x: int, size_y: int) -> array:
+def generate_probability_matrix(size_x: int, size_y: int) -> array:
     temporary_matrix = []
     probability_list = divide_number(size_x * size_y)
     counter = 0
