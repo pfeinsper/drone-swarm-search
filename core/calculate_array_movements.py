@@ -9,18 +9,18 @@ class Movements(Enum):
     DOWN = "DOWN"
     LEFT = "LEFT"
     RIGHT = "RIGHT"
-    DIOGONAL_UP_LEFT = "DIOGONAL UP LEFT"
-    DIOGONAL_UP_RIGHT = "DIOGONAL UP RIGHT"
-    DIOGONAL_DOWN_LEFT = "DIOGONAL DOWN LEFT"
-    DIOGONAL_DOWN_RIGHT = "DIOGONAL DOWN RIGHT"
+    DIAGONAL_UP_LEFT = "DIAGONAL UP LEFT"
+    DIAGONAL_UP_RIGHT = "DIAGONAL UP RIGHT"
+    DIAGONAL_DOWN_LEFT = "DIAGONAL DOWN LEFT"
+    DIAGONAL_DOWN_RIGHT = "DIAGONAL DOWN RIGHT"
     SEARCH = "SEARCH"
 
 
 diagonal_translator = {
-    (Movements.UP, Movements.LEFT): (Movements.DIOGONAL_UP_LEFT, (-1, -1)),
-    (Movements.UP, Movements.RIGHT): (Movements.DIOGONAL_UP_RIGHT, (-1, 1)),
-    (Movements.DOWN, Movements.LEFT): (Movements.DIOGONAL_DOWN_LEFT, (1, -1)),
-    (Movements.DOWN, Movements.RIGHT): (Movements.DIOGONAL_DOWN_RIGHT, (1, 1)),
+    (Movements.UP, Movements.LEFT): (Movements.DIAGONAL_UP_LEFT, (-1, -1)),
+    (Movements.UP, Movements.RIGHT): (Movements.DIAGONAL_UP_RIGHT, (-1, 1)),
+    (Movements.DOWN, Movements.LEFT): (Movements.DIAGONAL_DOWN_LEFT, (1, -1)),
+    (Movements.DOWN, Movements.RIGHT): (Movements.DIAGONAL_DOWN_RIGHT, (1, 1)),
 }
 
 
@@ -35,7 +35,7 @@ parallel_translator = {
 def calculate_diagonal_movements(
     current_point: POINT_TYPE, next_point: POINT_TYPE
 ) -> Tuple[List[Movements], POINT_TYPE]:
-    """Calculate and return the diogonal movements and current position."""
+    """Calculate and return the DIAGONAL movements and current position."""
 
     distance_line = next_point[0] - current_point[0]
     distance_column = next_point[1] - current_point[1]
