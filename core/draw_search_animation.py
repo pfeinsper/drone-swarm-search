@@ -91,7 +91,6 @@ def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
                         turt.pendown()
                         turt.circle(10)
                         turt.color("red")
-                        pass
                     currX = x
                     currY = y
 
