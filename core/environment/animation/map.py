@@ -3,7 +3,7 @@ from matplotlib.widgets import Slider
 from numpy import array
 
 
-def animate_with_slider(animation_matrix: list[array[array]]):
+def animate_map(animation_matrix: list[array[array]]):
     fig, ax = plt.subplots()
     fig.subplots_adjust(bottom=0.25, left=0.25)
 
@@ -25,10 +25,3 @@ def animate_with_slider(animation_matrix: list[array[array]]):
     slider.on_changed(update)
     matshow.set_data(animation_matrix[0])
     plt.show()
-
-
-# Example usage:
-# drone_example_matrix_1 = array([[1, 0, 0], [0, 0, 0], [0, 0, 2]])
-# drone_example_matrix_2 = array([[0, 1, 0], [0, 0, 0], [0, 0, 2]])
-# animation: list[array] = [drone_example_matrix_1, drone_example_matrix_2]
-# animate_with_slider(animation)
