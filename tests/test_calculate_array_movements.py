@@ -105,7 +105,6 @@ def test_calculate_path(current_point, next_point, expected_movements):
         (
             [(0, 0), (3, 1), (2, 2), (0, 3)],
             [
-                Movements.SEARCH,
                 Movements.DIAGONAL_DOWN_RIGHT,
                 Movements.DOWN,
                 Movements.DOWN,
