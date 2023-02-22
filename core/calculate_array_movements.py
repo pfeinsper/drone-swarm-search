@@ -61,16 +61,21 @@ def calculate_path(
 ) -> List[Movements]:
     """Calculate the path between two points."""
     path: List[Movements] = []
-    diagonal_movements, point_after_diagonal = calculate_diagonal_movements(
-        current_point, next_point
-    )
-    path.extend(diagonal_movements)
+    distance_line = next_point[0] - current_point[0]
+    distance_column = next_point[1] - current_point[1]
 
-    if point_after_diagonal == next_point:
-        return path
+    # Check if the points are not in the same line or column before calculating the diagonal movements
+    if current_point[0] != next_point[0] and current_point[1] != next_point[1]:
+        diagonal_movements, point_after_diagonal = calculate_diagonal_movements(
+            current_point, next_point
+        )
+        path.extend(diagonal_movements)
 
-    distance_line = next_point[0] - point_after_diagonal[0]
-    distance_column = next_point[1] - point_after_diagonal[1]
+        if point_after_diagonal == next_point:
+            return path
+
+        distance_line = next_point[0] - point_after_diagonal[0]
+        distance_column = next_point[1] - point_after_diagonal[1]
 
     if distance_line != 0:
         movement_line = Movements.DOWN if distance_line > 0 else Movements.UP
