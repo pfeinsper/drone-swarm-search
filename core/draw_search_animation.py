@@ -33,6 +33,19 @@ def create_grid(cell_size, grid_size, sub_divisions, goal, turt):
     turt.pendown()
     turt.circle(10)
 
+def cell_search_anim(turt, cell_size):
+    turt.color("yellow")
+    turt.pensize(cell_size/50)
+    turt.pendown()
+    turt.forward(cell_size/2)
+    turt.backward(cell_size)
+    turt.forward(cell_size/2)
+    turt.right(90)
+    turt.forward(cell_size/2)
+    turt.backward(cell_size)
+    turt.forward(cell_size/2)
+    turt.right(-90)
+    turt.color("red")
 
 def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
     movements = len(matrix)
@@ -41,9 +54,9 @@ def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
     turt.goto(-grid_size / 2 + (cell_size / 2), (grid_size / 2) - (cell_size / 2))
     turt.color("red")
     turt.fillcolor("black")
-    turt.pensize(20)
+    turt.pensize(cell_size/50)
     turt.pendown()
-    turt.speed(1)
+    turt.speed(50)
     turt.setheading(0)
 
     currX = 0
@@ -53,7 +66,7 @@ def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
     for m in range(0, movements):
         for y, i in enumerate(matrix[m]):
             for x, e in enumerate(i):
-                if e == 1:
+                if e == 'X':
                     dX = x - currX
                     dY = y - currY
 
@@ -86,14 +99,9 @@ def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
                         turt.forward(cell_size * (2 ** (1 / 2)))
                         turt.right(45)
                     else:
-                        turt.color("blue")
-                        turt.pensize(20)
-                        turt.pendown()
-                        turt.circle(10)
-                        turt.color("red")
+                        cell_search_anim(turt, cell_size)
                     currX = x
                     currY = y
-
 
 def create_search_animation(matrix):
     GRID_SIZE = 600
@@ -107,7 +115,7 @@ def create_search_animation(matrix):
     goal = [0, 0]
     for y, e in enumerate(matrix[0]):
         for x, j in enumerate(e):
-            if j == 2:
+            if j == 'P':
                 goal = [x, y]
 
     create_grid(cell_size, GRID_SIZE, sub_divisions, goal, turt)
@@ -117,26 +125,20 @@ def create_search_animation(matrix):
     screen.exitonclick()
 
 
-##### Example and Tests
-# matrix1 = [
-#     [[1, 0, 0], [0, 0, 0], [0, 0, 2]],
-#     [[0, 1, 0], [0, 0, 0], [0, 0, 2]],
-#     [[0, 0, 0], [0, 1, 0], [0, 0, 2]],
-#     [[0, 0, 0], [0, 0, 0], [0, 1, 2]],
-#     [[0, 0, 0], [0, 0, 0], [0, 0, 1]],
-# ]
 
-# matrix2 = [
-#     [[1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 2]],
-#     [[0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 2]],
-#     [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 2]],
-#     [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]],
-# ]
+
+matrix2 = [
+    [['X', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
+    [['0', 'X', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['X', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', 'X', '0', '0'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', 'X', '0'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'X'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['0', '0', 'X', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['0', '0', 'X', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', 'X'], ['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['0', '0', '0', 'X'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'X'], ['0', '0', '0', 'P']],
+    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'X']],
+]
+create_search_animation(matrix2)
