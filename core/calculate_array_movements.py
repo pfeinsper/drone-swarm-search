@@ -65,7 +65,7 @@ def calculate_path(
     distance_column = next_point[1] - current_point[1]
 
     # Check if the points are not in the same line or column before calculating the diagonal movements
-    if current_point[0] != next_point[0] and current_point[1] != next_point[1]:
+    if current_point[0] != next_point[0] or current_point[1] != next_point[1]:
         diagonal_movements, point_after_diagonal = calculate_diagonal_movements(
             current_point, next_point
         )
