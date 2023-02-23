@@ -41,7 +41,9 @@ def calculate_diagonal_movements(
     distance_column = next_point[1] - current_point[1]
 
     movement_line = Movements.DOWN if distance_line > 0 else Movements.UP
-    movement_column = Movements.RIGHT if distance_column > 0 else Movements.LEFT
+    movement_column = (
+        Movements.RIGHT if distance_column > 0 else Movements.LEFT
+    )
     diagonal_movement, points_to_move = diagonal_translator[
         (movement_line, movement_column)
     ]
@@ -66,9 +68,10 @@ def calculate_path(
 
     # Check if the points are not in the same line or column before calculating the diagonal movements
     if current_point[0] != next_point[0] or current_point[1] != next_point[1]:
-        diagonal_movements, point_after_diagonal = calculate_diagonal_movements(
-            current_point, next_point
-        )
+        (
+            diagonal_movements,
+            point_after_diagonal,
+        ) = calculate_diagonal_movements(current_point, next_point)
         path.extend(diagonal_movements)
 
         if point_after_diagonal == next_point:
@@ -82,18 +85,24 @@ def calculate_path(
         number_of_movements = abs(distance_line)
         path.extend([movement_line] * number_of_movements)
     else:
-        movement_column = Movements.RIGHT if distance_column > 0 else Movements.LEFT
+        movement_column = (
+            Movements.RIGHT if distance_column > 0 else Movements.LEFT
+        )
         number_of_movements = abs(distance_column)
         path.extend([movement_column] * number_of_movements)
 
     return path
 
 
-def calculate_movements(movements_sequence: List[POINT_TYPE]) -> List[Movements]:
+def calculate_movements(
+    movements_sequence: List[POINT_TYPE],
+) -> List[Movements]:
     """Calculate movements from a sequence of coordinates."""
     movements: List[Movements] = []
 
-    for current_point, next_point in zip(movements_sequence, movements_sequence[1:]):
+    for current_point, next_point in zip(
+        movements_sequence, movements_sequence[1:]
+    ):
         path_to_next_point = calculate_path(current_point, next_point)
         movements.extend(path_to_next_point)
         movements.append(Movements.SEARCH)

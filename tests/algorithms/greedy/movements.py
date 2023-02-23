@@ -1,6 +1,6 @@
 import pytest
 
-from core.calculate_array_movements import (
+from core.algorithms.greedy.movements import (
     calculate_movements,
     calculate_path,
     calculate_diagonal_movements,
@@ -35,7 +35,9 @@ def test_calculate_diagonal_movements(
     current_point, next_point, expected_movements, expected_position
 ):
     """Test the calculate_diagonal_movements function."""
-    movements, position = calculate_diagonal_movements(current_point, next_point)
+    movements, position = calculate_diagonal_movements(
+        current_point, next_point
+    )
     assert movements == expected_movements
     assert position == expected_position
 
