@@ -1,11 +1,17 @@
 from numpy import array
-from enum import Enum
+from typing import List, Tuple
 import sys
-sys.path.append("..")
-from core.calculate_array_movements import Movements
 
-def create_movement_matrix(matrix: array, instructions: list) -> "tuple[array, int]":
-    time = 0
+sys.path.append("../../..")
+from core.algorithms.greedy.movements import Movements
+
+
+def create_movement_matrix(
+    matrix: array, instructions: List[Movements]
+) -> Tuple[array, int]:
+    total_cost = 0
+    movement_cost = 5
+    search_cost = 4 * movement_cost
     current_position = [0, 0]
     all_moviments = [array(matrix.copy())]
     for instruction in instructions:
@@ -14,35 +20,35 @@ def create_movement_matrix(matrix: array, instructions: list) -> "tuple[array, i
             "0" if current_value == "X" else "P"
         )
         if instruction == Movements.DOWN:
-            time += 5
+            total_cost += movement_cost
             current_position[0] += 1
         elif instruction == Movements.UP:
-            time += 5
+            total_cost += movement_cost
             current_position[0] -= 1
         elif instruction == Movements.RIGHT:
-            time += 5
+            total_cost += movement_cost
             current_position[1] += 1
         elif instruction == Movements.LEFT:
-            time += 5
+            total_cost += movement_cost
             current_position[1] -= 1
         elif instruction == Movements.DIAGONAL_DOWN_RIGHT:
-            time += 5
+            total_cost += movement_cost
             current_position[0] += 1
             current_position[1] += 1
         elif instruction == Movements.DIAGONAL_DOWN_LEFT:
-            time += 5
+            total_cost += movement_cost
             current_position[0] += 1
             current_position[1] -= 1
         elif instruction == Movements.DIAGONAL_UP_RIGHT:
-            time += 5
+            total_cost += movement_cost
             current_position[0] -= 1
             current_position[1] += 1
         elif instruction == Movements.DIAGONAL_UP_LEFT:
-            time += 5
+            total_cost += movement_cost
             current_position[0] -= 1
             current_position[1] -= 1
         elif instruction == Movements.SEARCH:
-            time += 20
+            total_cost += search_cost
             if matrix[current_position[0]][current_position[1]] == "P":
                 matrix[current_position[0]][current_position[1]] = "F"
                 all_moviments.append(array(matrix.copy()))
@@ -50,8 +56,8 @@ def create_movement_matrix(matrix: array, instructions: list) -> "tuple[array, i
 
         updated_value = matrix[current_position[0]][current_position[1]]
         matrix[current_position[0]][current_position[1]] = (
-            'X' if updated_value == '0' else 'PX'
+            "X" if updated_value == "0" else "PX"
         )
         all_moviments.append(array(matrix.copy()))
     array(all_moviments)
-    return all_moviments, time
+    return all_moviments, total_cost
