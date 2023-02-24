@@ -65,7 +65,9 @@ def order_same_probabilities(i_j_probalities: list[tuple]) -> list[tuple]:
             probabilities_dict[probability_triple[2]] = [new_dict_value]
 
     repeated_probability_index_i_j: list = [
-        value for value in probabilities_dict.values() if len(value) > 1
+        value
+        for key, value in probabilities_dict.items()
+        if (len(value) > 1 and key > 1)
     ]
 
     initial_indexes: list = []

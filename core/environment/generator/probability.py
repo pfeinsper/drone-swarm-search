@@ -15,7 +15,7 @@ def divide_number(size: int) -> list:
             parts.append(number_rest / divisor)
             break
         else:
-            new_number = randint(1, (number_rest - (parts_number - i)) // 2)
+            new_number = randint(1, (number_rest - (parts_number * 5 - i)) // 2)
 
         number_rest -= new_number
         parts.append(new_number / divisor)

@@ -8,7 +8,7 @@ def create_grid(cell_size, grid_size, sub_divisions, goal, turt):
     turt.penup()
     turt.goto(-grid_size / 2, grid_size / 2)
     turt.pendown()
-    turt.speed(1000)
+    turt.speed(100000)
     angle = 90
     for _ in range(4):
         turt.forward(grid_size)
@@ -31,7 +31,7 @@ def create_grid(cell_size, grid_size, sub_divisions, goal, turt):
     turt.color("black")
     turt.pensize(20)
     turt.pendown()
-    turt.circle(10)
+    turt.circle(cell_size / 10)
 
 
 def cell_search_anim(turt, cell_size):
