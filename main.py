@@ -1,3 +1,4 @@
+import threading
 import sys
 
 from core.environment.generator.probability import generate_probability_matrix
@@ -22,10 +23,10 @@ def greedy_search(MATRIX_SIZE: int):
     movements = calculate_movements(path)
 
     movement_matrix, total_cost = create_movement_matrix(environment_map, movements)
-
-    animate_probability(probability_matrix)
-    create_search_animation(movement_matrix)
     print(f"Total cost: {total_cost}")
+
+    threading.Thread(target=animate_probability, args=(probability_matrix,)).start()
+    threading.Thread(target=create_search_animation, args=(movement_matrix,)).start()
 
 
 if __name__ == "__main__":
