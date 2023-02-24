@@ -17,6 +17,7 @@ def greedy_search(MATRIX_SIZE: int):
     environment_map = generate_map(probability_matrix)
 
     path = generate_path(probability_matrix)
+    path = [(0, 0)] + path
 
     movements = calculate_movements(path)
 
