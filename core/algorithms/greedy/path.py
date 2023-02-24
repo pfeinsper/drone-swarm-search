@@ -3,9 +3,9 @@ from operator import itemgetter
 
 
 def calculate_distance(point_a: tuple, point_b: tuple) -> float:
-    return (
-        ((point_a[0] - point_b[0]) ** 2) + ((point_a[1] - point_b[1]) ** 2)
-    ) ** (1 / 2)
+    return (((point_a[0] - point_b[0]) ** 2) + ((point_a[1] - point_b[1]) ** 2)) ** (
+        1 / 2
+    )
 
 
 def calculate_distances(
@@ -15,7 +15,6 @@ def calculate_distances(
     order: list,
     final_point: tuple,
 ) -> tuple[float, list]:
-
     if len(order) != 0:
         total_distance += calculate_distance(point, order[-1])
 
@@ -31,7 +30,6 @@ def calculate_distances(
     results: list = []
 
     for possible_point in possible_points:
-
         new_possible_points: list = possible_points.copy()
         new_possible_points.remove(possible_point)
 
@@ -49,11 +47,9 @@ def calculate_distances(
 
 
 def order_same_probabilities(i_j_probalities: list[tuple]) -> list[tuple]:
-
     probabilities_dict: dict = {}
 
     for index, probability_triple in enumerate(i_j_probalities):
-
         new_dict_value: tuple = (
             index,
             probability_triple[0],
@@ -74,10 +70,7 @@ def order_same_probabilities(i_j_probalities: list[tuple]) -> list[tuple]:
 
     initial_indexes: list = []
 
-    for index, list_triple_index_i_j in enumerate(
-        repeated_probability_index_i_j
-    ):
-
+    for index, list_triple_index_i_j in enumerate(repeated_probability_index_i_j):
         initial_index: int = (
             list_triple_index_i_j[0][0] - 1
             if list_triple_index_i_j[0][0] - 1 >= 0
@@ -133,17 +126,11 @@ def order_same_probabilities(i_j_probalities: list[tuple]) -> list[tuple]:
             i_j_probalities[base_index + iterator] = element[iterator + 1]
             iterator += 1
 
-    return [
-        (i_j_probality[0], i_j_probality[1])
-        for i_j_probality in i_j_probalities
-    ]
+    return [(i_j_probality[0], i_j_probality[1]) for i_j_probality in i_j_probalities]
 
 
 def generate_path(matrix: array) -> list[tuple]:
-
-    probabilities: list = [
-        probability for line in matrix for probability in line
-    ]
+    probabilities: list = [probability for line in matrix for probability in line]
     index_probabilities: list = [
         (index, probability) for index, probability in enumerate(probabilities)
     ]
@@ -159,9 +146,6 @@ def generate_path(matrix: array) -> list[tuple]:
         for element in almost_sorted_index_probabilities
     ]
 
-    print(almost_sorted_i_j_probabilities)
-    sorted_i_j: list = order_same_probabilities(
-        almost_sorted_i_j_probabilities
-    )
+    sorted_i_j: list = order_same_probabilities(almost_sorted_i_j_probabilities)
 
     return sorted_i_j
