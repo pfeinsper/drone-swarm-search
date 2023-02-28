@@ -25,8 +25,11 @@ def greedy_search(MATRIX_SIZE: int):
     movement_matrix, total_cost = create_movement_matrix(environment_map, movements)
     print(f"Total cost: {total_cost}")
 
-    threading.Thread(target=animate_probability, args=(probability_matrix,)).start()
-    threading.Thread(target=create_search_animation, args=(movement_matrix,)).start()
+    thread_1 = threading.Thread(target=animate_probability, args=(probability_matrix,))
+    thread_2 = threading.Thread(target=create_search_animation, args=(movement_matrix,))
+
+    thread_1.start()
+    thread_2.start()
 
 
 if __name__ == "__main__":
@@ -35,6 +38,6 @@ if __name__ == "__main__":
     try:
         matrix_size = int(sys.argv[1])
     except IndexError:
-        matrix_size = 4
+        matrix_size = 50
 
     greedy_search(matrix_size)

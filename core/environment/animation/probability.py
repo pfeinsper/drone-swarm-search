@@ -11,5 +11,6 @@ def animate_probability(matrix: array):
     #         _ = ax.text(
     #             j, i, matrix[i, j], ha="center", va="center", color="w"
     #         )
-    ax.matshow(matrix)
+    mat = ax.matshow(matrix, vmin=0, vmax=0.3)
+    fig.colorbar(mat)
     plt.show()
