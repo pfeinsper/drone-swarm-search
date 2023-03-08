@@ -1,8 +1,6 @@
 from numpy import array
 from typing import List, Tuple
-import sys
 
-sys.path.append("../../..")
 from core.algorithms.greedy.movements import Movements
 
 
@@ -14,6 +12,7 @@ def create_movement_matrix(
     search_cost = 4 * movement_cost
     current_position = [0, 0]
     all_moviments = [array(matrix.copy())]
+
     for instruction in instructions:
         current_value = matrix[current_position[0]][current_position[1]]
         matrix[current_position[0]][current_position[1]] = (
@@ -59,5 +58,7 @@ def create_movement_matrix(
             "X" if updated_value == "0" else "PX"
         )
         all_moviments.append(array(matrix.copy()))
+
     array(all_moviments)
+
     return all_moviments, total_cost

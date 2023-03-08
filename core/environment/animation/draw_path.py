@@ -8,7 +8,7 @@ def create_grid(cell_size, grid_size, sub_divisions, goal, turt):
     turt.penup()
     turt.goto(-grid_size / 2, grid_size / 2)
     turt.pendown()
-    turt.speed(1000)
+    turt.speed(100000)
     angle = 90
     for _ in range(4):
         turt.forward(grid_size)
@@ -31,21 +31,23 @@ def create_grid(cell_size, grid_size, sub_divisions, goal, turt):
     turt.color("black")
     turt.pensize(20)
     turt.pendown()
-    turt.circle(10)
+    turt.circle(cell_size / 10)
+
 
 def cell_search_anim(turt, cell_size):
     turt.color("yellow")
-    turt.pensize(cell_size/50)
+    turt.pensize(cell_size / 50)
     turt.pendown()
-    turt.forward(cell_size/2)
+    turt.forward(cell_size / 2)
     turt.backward(cell_size)
-    turt.forward(cell_size/2)
+    turt.forward(cell_size / 2)
     turt.right(90)
-    turt.forward(cell_size/2)
+    turt.forward(cell_size / 2)
     turt.backward(cell_size)
-    turt.forward(cell_size/2)
+    turt.forward(cell_size / 2)
     turt.right(-90)
     turt.color("red")
+
 
 def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
     movements = len(matrix)
@@ -54,7 +56,7 @@ def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
     turt.goto(-grid_size / 2 + (cell_size / 2), (grid_size / 2) - (cell_size / 2))
     turt.color("red")
     turt.fillcolor("black")
-    turt.pensize(cell_size/50)
+    turt.pensize(cell_size / 50)
     turt.pendown()
     turt.speed(50)
     turt.setheading(0)
@@ -66,7 +68,7 @@ def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
     for m in range(0, movements):
         for y, i in enumerate(matrix[m]):
             for x, e in enumerate(i):
-                if e == 'X':
+                if e == "X" or e == "PX" or e == "F":
                     dX = x - currX
                     dY = y - currY
 
@@ -103,6 +105,7 @@ def draw_path(cell_size, grid_size, sub_divisions, matrix, turt):
                     currX = x
                     currY = y
 
+
 def create_search_animation(matrix):
     GRID_SIZE = 600
     sub_divisions = len(matrix[0])
@@ -115,7 +118,7 @@ def create_search_animation(matrix):
     goal = [0, 0]
     for y, e in enumerate(matrix[0]):
         for x, j in enumerate(e):
-            if j == 'P':
+            if j == "P":
                 goal = [x, y]
 
     create_grid(cell_size, GRID_SIZE, sub_divisions, goal, turt)
@@ -125,20 +128,78 @@ def create_search_animation(matrix):
     screen.exitonclick()
 
 
-
-
-matrix2 = [
-    [['X', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
-    [['0', 'X', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['X', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', 'X', '0', '0'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', 'X', '0'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'X'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['0', '0', 'X', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['0', '0', 'X', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', 'X'], ['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['0', '0', '0', 'X'], ['0', '0', '0', '0'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'X'], ['0', '0', '0', 'P']],
-    [['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', '0'], ['0', '0', '0', 'X']],
-]
-create_search_animation(matrix2)
+# matrix2 = [
+#     [
+#         ["X", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "X", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["X", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "X", "0", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "X", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "X"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "X", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "X", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "X"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "X"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "X"],
+#         ["0", "0", "0", "P"],
+#     ],
+#     [
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "0"],
+#         ["0", "0", "0", "X"],
+#     ],
+# ]
+# create_search_animation(matrix2)
