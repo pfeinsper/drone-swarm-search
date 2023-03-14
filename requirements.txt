@@ -6,3 +6,6 @@ pettingzoo
 pygame
 numpy
 matplotlib
+ray
+torch
+supersuit

@@ -5,7 +5,15 @@ import matplotlib.pyplot as plt
 
 class QLearningBox:
     def __init__(
-        self, env, agent, alpha, gamma, epsilon, epsilon_min, epsilon_dec, episodes
+        self,
+        env,
+        agent,
+        alpha,
+        gamma,
+        epsilon,
+        epsilon_min,
+        epsilon_dec,
+        episodes,
     ):
         self.env = env
         self.agent = agent

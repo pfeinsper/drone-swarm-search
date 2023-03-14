@@ -1,10 +1,8 @@
 from pettingzoo.mpe import simple_v2
-from core.algorithms.qleaning.qLearning_box import QLearningBox
+from qlearning_box import QLearningBox
 
 from test import test_n_times
 
-# env = simple_v2.env(max_cycles=10, continuous_actions=False)
-# env.reset()
 
 parallel_env = simple_v2.parallel_env(max_cycles=30, continuous_actions=False)
 observations = parallel_env.reset()
@@ -29,6 +27,3 @@ for agent in parallel_env.agents:
 
     mean_reward = test_n_times(1, q_table, agent)
     print(f"Final reward:{mean_reward}")
-
-
-# use
