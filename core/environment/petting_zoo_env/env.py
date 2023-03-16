@@ -52,16 +52,42 @@ class CustomEnvironment(ParallelEnv):
         # Execute actions
         drone_action = actions["drone"]
 
+        # Check termination conditions
+        terminations = {a: False for a in self.agents}
+        rewards = {a: -1 for a in self.agents}
+        truncations = {"drone": False}
+
         isSearching = False
 
-        if drone_action == 0 and self.drone_x > 0:
-            self.drone_x -= 1
-        elif drone_action == 1 and self.drone_x < self.grid_size -1:
-            self.drone_x += 1
-        elif drone_action == 2 and self.drone_y > 0:
-            self.drone_y -= 1
-        elif drone_action == 3 and self.drone_y < self.grid_size -1:
-            self.drone_y += 1
+        if drone_action == 0:
+            if self.drone_x > 0:
+                self.drone_x -= 1
+            else:
+                rewards = {"drone": -1000}
+                truncations = {"drone": True}
+                terminations = {"drone": True}
+        elif drone_action == 1:
+            if self.drone_x < self.grid_size -1:
+                self.drone_x += 1
+            else:
+                rewards = {"drone": -1000}
+                truncations = {"drone": True}
+                terminations = {"drone": True}
+        elif drone_action == 2:
+            if self.drone_y > 0:
+                self.drone_y -= 1
+            else:
+                rewards = {"drone": -1000}
+                truncations = {"drone": True}
+                terminations = {"drone": True}
+        elif drone_action == 3:
+            if self.drone_y < self.grid_size - 1:
+                self.drone_y += 1
+            else:
+                rewards = {"drone": -1000}
+                truncations = {"drone": True}
+                terminations = {"drone": True}
+
         elif drone_action == 4:
             isSearching = True
 
@@ -76,10 +102,6 @@ class CustomEnvironment(ParallelEnv):
         elif self.drone_y == self.grid_size -1:
             drone_action_mask[3] = 0  # Block up movement
 
-        # Check termination conditions
-        terminations = {a: False for a in self.agents}
-        rewards = {a: -1 for a in self.agents}
-        truncations = {"drone": False}
         
         if self.drone_x == self.person_x and self.drone_y == self.person_y and isSearching:
             rewards = {"drone": 0}
