@@ -23,20 +23,20 @@ class CustomEnvironment(ParallelEnv):
         self.agents = copy(self.possible_agents)
         self.timestep = 0
 
-        self.drone_x = 2
-        self.drone_y = 1
+        self.drone_x = 0
+        self.drone_y = 0
 
         self.person_x = random.randint(2, 5)
         self.person_y = random.randint(2, 5)
 
         self.probability_matrix = [
-            [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-            [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-            [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-            [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-            [0.1, 0.1, 0.1, 0.1, 0.2, 0.1, 0.1],
-            [0.1, 0.1, 0.1, 0.1, 0.3, 0.5, 0.1],
-            [0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.3],
+            [10, 10, 10, 10, 10, 10, 10],
+            [10, 10, 10, 10, 10, 10, 10],
+            [10, 10, 10, 10, 10, 10, 10],
+            [10, 10, 10, 10, 10, 10, 10],
+            [10, 10, 10, 10, 20, 10, 10],
+            [10, 10, 10, 10, 30, 50, 10],
+            [10, 10, 10, 10, 10, 30, 30],
         ]
 
         observation = (
@@ -79,21 +79,23 @@ class CustomEnvironment(ParallelEnv):
         # Check termination conditions
         terminations = {a: False for a in self.agents}
         rewards = {a: -1 for a in self.agents}
-        if self.drone_x == self.person_x and self.drone_y == self.person_y and isSearching:
-            rewards = {"drone": 1}
-            terminations = {a: True for a in self.agents}
-            self.agents = []
-
-        elif isSearching and self.probability_matrix[self.drone_y][self.drone_x] < 0.2:
-            rewards = {"drone": -1}
-            terminations = {a: True for a in self.agents}
-            self.agents = []
-
-        # Check truncation conditions (overwrites termination conditions)
         truncations = {"drone": False}
-        if self.timestep > 100:
-            rewards = {"drone": -1}
+        
+        if self.drone_x == self.person_x and self.drone_y == self.person_y and isSearching:
+            rewards = {"drone": 0}
+            terminations = {a: True for a in self.agents}
+            truncations = {a: True for a in self.agents}
+            self.agents = []
+
+        elif isSearching:
+            rewards = {"drone": self.probability_matrix[self.drone_y][self.drone_x]-100}
+
+        
+        # Check truncation conditions (overwrites termination conditions)
+        if self.timestep > 500:
+            rewards = {"drone": -1000}
             truncations = {"drone": True}
+            terminations = {"drone": True}
             self.agents = []
         self.timestep += 1
 
@@ -108,7 +110,6 @@ class CustomEnvironment(ParallelEnv):
                 "action_mask": drone_action_mask,
             },
         }
-
         # Get dummy infos (not used in this example)
         infos = {"drone": {}}
 
@@ -132,14 +133,14 @@ class CustomEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
-                return MultiDiscrete([self.grid_size * self.grid_size - 1] * 2)
+        return MultiDiscrete([self.grid_size * self.grid_size - 1] * 2)
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return Discrete(5)
+        return [0, 1, 2, 3, 4]
 
 
 from pettingzoo.test import parallel_api_test  # noqa: E402
 
 if __name__ == "__main__":
-    parallel_api_test(CustomEnvironment(10), num_cycles=1000)
+    parallel_api_test(CustomEnvironment(7), num_cycles=1000)
