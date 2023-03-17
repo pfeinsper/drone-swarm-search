@@ -1,5 +1,5 @@
 from core.algorithms.qlearning_single.qlearning_box import QLearningBox
-from core.environment.petting_zoo_env.env import CustomEnvironment
+from core.environment.env import CustomEnvironment
 from config import Config
 
 

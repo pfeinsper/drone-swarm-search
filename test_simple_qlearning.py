@@ -1,7 +1,7 @@
 from pickle import load
 import numpy as np
 
-from core.environment.petting_zoo_env.env import CustomEnvironment
+from core.environment.env import CustomEnvironment
 from config import Config
 
 env = CustomEnvironment(7)
