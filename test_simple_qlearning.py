@@ -4,7 +4,7 @@ import numpy as np
 from core.environment.env import CustomEnvironment
 from config import Config
 
-env = CustomEnvironment(7)
+env = CustomEnvironment(14)
 
 try:
     qtable = load(open(Config.qtable_path, "rb"))

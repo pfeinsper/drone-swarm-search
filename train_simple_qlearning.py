@@ -3,7 +3,7 @@ from core.environment.env import CustomEnvironment
 from config import Config
 
 
-env = CustomEnvironment(grid_size=7, render_mode="ansi")
+env = CustomEnvironment(grid_size=14, render_mode="ansi")
 
 observations = env.reset()
 env.reset()
