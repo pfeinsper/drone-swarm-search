@@ -38,9 +38,6 @@ class CustomEnvironment(ParallelEnv):
         self.drone_x = 0
         self.drone_y = 0
 
-        # self.person_x = random.randint(2, 5)
-        # self.person_y = random.randint(2, 5)
-
         observation = (
             (self.drone_x, self.drone_y),
             self.probability_matrix,
