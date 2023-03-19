@@ -3,18 +3,18 @@ import random
 from copy import copy
 
 import numpy as np
-from gymnasium.spaces import Discrete, MultiDiscrete
+from gymnasium.spaces import MultiDiscrete
 
 from pettingzoo.utils.env import ParallelEnv
 import sys
 
 sys.path.append("../")
-from generator.probability import generate_probability_matrix
-from generator.map import generate_map
+from .generator.probability import generate_probability_matrix
+from .generator.map import generate_map
 
 
 class CustomEnvironment(ParallelEnv):
-    def __init__(self, grid_size=7):
+    def __init__(self, grid_size=7, render_mode="ansi"):
         self.grid_size = grid_size
         self.person_y = None
         self.person_x = None
@@ -24,6 +24,13 @@ class CustomEnvironment(ParallelEnv):
         self.possible_agents = ["drone"]
         self.probability_matrix = None
 
+        self.render_mode = render_mode
+        self.probability_matrix = generate_probability_matrix(
+            self.grid_size, self.grid_size
+        )
+        _, self.person_x, self.person_y = generate_map(self.probability_matrix)
+        self.probability_matrix = self.probability_matrix.tolist()
+
     def reset(self, seed=None, return_info=False, options=None):
         self.agents = copy(self.possible_agents)
         self.timestep = 0
@@ -31,21 +38,18 @@ class CustomEnvironment(ParallelEnv):
         self.drone_x = 0
         self.drone_y = 0
 
-        self.probability_matrix = generate_probability_matrix(
-            self.grid_size, self.grid_size
-        )
-
-        _, self.person_x, self.person_y = generate_map(self.probability_matrix)
+        # self.person_x = random.randint(2, 5)
+        # self.person_y = random.randint(2, 5)
 
         observation = (
-            self.drone_x + self.grid_size * self.drone_y,
+            (self.drone_x, self.drone_y),
             self.probability_matrix,
         )
         observations = {
             "drone": {"observation": observation, "action_mask": [0, 1, 1, 0, 1]},
         }
 
-        self.render_probability_matrix()
+        # self.render_probability_matrix()
         return observations
 
     def step(self, actions):
@@ -59,13 +63,14 @@ class CustomEnvironment(ParallelEnv):
 
         isSearching = False
 
-        if drone_action == 0:
+        if drone_action == 0:  # left
             if self.drone_x > 0:
                 self.drone_x -= 1
             else:
                 rewards = {"drone": -1000}
                 truncations = {"drone": True}
                 terminations = {"drone": True}
+
         elif drone_action == 1:
             if self.drone_x < self.grid_size - 1:
                 self.drone_x += 1
@@ -73,14 +78,14 @@ class CustomEnvironment(ParallelEnv):
                 rewards = {"drone": -1000}
                 truncations = {"drone": True}
                 terminations = {"drone": True}
-        elif drone_action == 2:
+        elif drone_action == 2:  # down
             if self.drone_y > 0:
                 self.drone_y -= 1
             else:
                 rewards = {"drone": -1000}
                 truncations = {"drone": True}
                 terminations = {"drone": True}
-        elif drone_action == 3:
+        elif drone_action == 3:  # up
             if self.drone_y < self.grid_size - 1:
                 self.drone_y += 1
             else:
@@ -88,7 +93,7 @@ class CustomEnvironment(ParallelEnv):
                 truncations = {"drone": True}
                 terminations = {"drone": True}
 
-        elif drone_action == 4:
+        elif drone_action == 4:  # search
             isSearching = True
 
         # Generate action masks
@@ -127,7 +132,7 @@ class CustomEnvironment(ParallelEnv):
 
         # Get observations
         observation = (
-            self.drone_x + self.grid_size * self.drone_y,
+            (self.drone_x, self.drone_y),
             self.probability_matrix,
         )
         observations = {
@@ -139,7 +144,8 @@ class CustomEnvironment(ParallelEnv):
         # Get dummy infos (not used in this example)
         infos = {"drone": {}}
 
-        self.render()
+        if self.render_mode == "human":
+            self.render()
 
         return observations, rewards, terminations, truncations, infos
 
@@ -174,7 +180,8 @@ class CustomEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
-        return MultiDiscrete([self.grid_size * self.grid_size - 1] * 2)
+        # TODO: If x and y are the observation, then this should the observation space
+        return MultiDiscrete([self.grid_size] * 2)
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
