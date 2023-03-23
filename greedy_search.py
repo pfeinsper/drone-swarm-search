@@ -38,6 +38,6 @@ if __name__ == "__main__":
     try:
         matrix_size = int(sys.argv[1])
     except IndexError:
-        matrix_size = 50
+        matrix_size = 100
 
     greedy_search(matrix_size)

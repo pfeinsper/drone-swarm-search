@@ -53,3 +53,15 @@ def test_matrix_dimensions():
     assert matrix_7[0].size == 2
     assert len(matrix_8) == 2
     assert matrix_8[0].size == 4
+
+
+def test_matrix_equal():
+    assert (
+        generate_probability_matrix(10, 2).all()
+        == generate_probability_matrix(10, 2).all()
+    )
+
+    assert (
+        generate_probability_matrix(10, 10).all()
+        == generate_probability_matrix(10, 10).all()
+    )

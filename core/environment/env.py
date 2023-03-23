@@ -1,11 +1,11 @@
 import functools
-import random
 from copy import copy
 
 import numpy as np
 from gymnasium.spaces import MultiDiscrete
-
 from pettingzoo.utils.env import ParallelEnv
+
+from core.environment.generator.probability import generate_probability_matrix
 
 
 class CustomEnvironment(ParallelEnv):
@@ -28,28 +28,12 @@ class CustomEnvironment(ParallelEnv):
         self.drone_x = 0
         self.drone_y = 0
 
-        # self.person_x = random.randint(2, 5)
-        # self.person_y = random.randint(2, 5)
+        self.person_x = self.grid_size // 2
+        self.person_y = self.grid_size // 2
 
-        self.person_x = 11
-        self.person_y = 12
-
-        self.probability_matrix = [
-            [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 30, 50, 10, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 10, 80, 30, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 10, 10, 30, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 10, 10, 20, 10, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 10, 10, 10, 30, 10, 10, 10, 10, 10, 10],
-            [10, 10, 10, 10, 10, 10, 10, 10, 40, 50, 50, 10, 10, 10],
-            [10, 10, 10, 10, 10, 10, 10, 10, 10, 60, 60, 50, 10, 10],
-            [10, 10, 10, 10, 10, 10, 10, 10, 10, 70, 70, 90, 10, 10],
-            [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-        ]
+        self.probability_matrix = generate_probability_matrix(
+            self.grid_size, self.grid_size
+        )
 
         observation = (
             (self.drone_x, self.drone_y),

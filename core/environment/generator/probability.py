@@ -1,8 +1,11 @@
 from numpy import array
-from random import randint, shuffle
+from random import randint, shuffle, seed
 
 
 def divide_number(size: int) -> list:
+    # Set random seed
+    seed(1)
+
     parts = []
     number_rest = size * 10
     parts_number = size
