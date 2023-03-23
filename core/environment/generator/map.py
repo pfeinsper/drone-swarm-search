@@ -1,8 +1,9 @@
 from numpy import array
 from random import randint
+from typing import Tuple
 
 
-def generate_map(matrix: array) -> array:
+def generate_map(matrix: array) -> Tuple[array, int, int]:
     probabilities: list = [probability for line in matrix for probability in line]
     probabilities_times_random_factor: list = [
         (randint(1, 100) * probability) / 100 for probability in probabilities
@@ -21,4 +22,4 @@ def generate_map(matrix: array) -> array:
 
     position_matrix[0][0] = "X" if position_matrix[0][0] != "P" else "PX"
 
-    return array(position_matrix)
+    return array(position_matrix), column, line

@@ -4,6 +4,11 @@ from copy import copy
 import numpy as np
 from gymnasium.spaces import MultiDiscrete
 from pettingzoo.utils.env import ParallelEnv
+import sys
+
+sys.path.append("../")
+from .generator.probability import generate_probability_matrix
+from .generator.map import generate_map
 
 from core.environment.generator.probability import generate_probability_matrix
 
@@ -20,6 +25,11 @@ class CustomEnvironment(ParallelEnv):
         self.probability_matrix = None
 
         self.render_mode = render_mode
+        self.probability_matrix = generate_probability_matrix(
+            self.grid_size, self.grid_size
+        )
+        _, self.person_x, self.person_y = generate_map(self.probability_matrix)
+        self.probability_matrix = self.probability_matrix.tolist()
 
     def reset(self, seed=None, return_info=False, options=None):
         self.agents = copy(self.possible_agents)
@@ -28,13 +38,6 @@ class CustomEnvironment(ParallelEnv):
         self.drone_x = 0
         self.drone_y = 0
 
-        self.person_x = self.grid_size // 2
-        self.person_y = self.grid_size // 2
-
-        self.probability_matrix = generate_probability_matrix(
-            self.grid_size, self.grid_size
-        )
-
         observation = (
             (self.drone_x, self.drone_y),
             self.probability_matrix,
@@ -42,6 +45,8 @@ class CustomEnvironment(ParallelEnv):
         observations = {
             "drone": {"observation": observation, "action_mask": [0, 1, 1, 0, 1]},
         }
+
+        # self.render_probability_matrix()
         return observations
 
     def step(self, actions):
@@ -62,7 +67,8 @@ class CustomEnvironment(ParallelEnv):
                 rewards = {"drone": -1000}
                 truncations = {"drone": True}
                 terminations = {"drone": True}
-        elif drone_action == 1:  # right
+
+        elif drone_action == 1:
             if self.drone_x < self.grid_size - 1:
                 self.drone_x += 1
             else:
@@ -142,7 +148,7 @@ class CustomEnvironment(ParallelEnv):
 
     def render(self):
         grid = np.zeros((self.grid_size, self.grid_size), dtype=object)
-        print("drone_position: ({0}, {1})".format(self.drone_y, self.drone_x))
+        print("drone_position: ({0}, {1})".format(self.drone_x, self.drone_y))
         grid[self.drone_y][self.drone_x] = "D"
         grid[self.person_y][self.person_x] = "X"
 
@@ -151,6 +157,21 @@ class CustomEnvironment(ParallelEnv):
             string = "| "
             for e in i:
                 string += "{0} | ".format(e)
+            print(string)
+        print("----" * self.grid_size)
+
+    def render_probability_matrix(self):
+        grid = self.probability_matrix
+        print("PROBABILITY MATRIX:")
+
+        print("----" * self.grid_size)
+        for i in grid:
+            string = "| "
+            for e in i:
+                if e >= 10:
+                    string += "{0} | ".format(e)
+                else:
+                    string += "{0}  | ".format(e)
             print(string)
         print("----" * self.grid_size)
 
