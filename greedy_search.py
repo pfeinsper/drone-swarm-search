@@ -1,12 +1,11 @@
 import threading
 import sys
 
+from config import Config
 from core.environment.generator.probability import generate_probability_matrix
 from core.environment.generator.map import generate_map
-
 from core.environment.animation.probability import animate_probability
 from core.environment.animation.draw_path import create_search_animation
-
 from core.algorithms.greedy.path import generate_path
 from core.algorithms.greedy.movements import calculate_movements
 from core.algorithms.greedy.positions import create_movement_matrix
@@ -15,7 +14,7 @@ from core.algorithms.greedy.positions import create_movement_matrix
 def greedy_search(MATRIX_SIZE: int):
     probability_matrix = generate_probability_matrix(MATRIX_SIZE, MATRIX_SIZE)
 
-    environment_map = generate_map(probability_matrix)
+    environment_map, _, _ = generate_map(probability_matrix)
 
     path = generate_path(probability_matrix)
     path = [(0, 0)] + path
@@ -25,9 +24,12 @@ def greedy_search(MATRIX_SIZE: int):
     movement_matrix, total_cost = create_movement_matrix(environment_map, movements)
     print(f"Total cost: {total_cost}")
 
+    return probability_matrix, movement_matrix
+
+
+def animate_greedy_search(probability_matrix: list, movement_matrix: list):
     thread_1 = threading.Thread(target=animate_probability, args=(probability_matrix,))
     thread_2 = threading.Thread(target=create_search_animation, args=(movement_matrix,))
-
     thread_1.start()
     thread_2.start()
 
@@ -38,6 +40,7 @@ if __name__ == "__main__":
     try:
         matrix_size = int(sys.argv[1])
     except IndexError:
-        matrix_size = 100
+        matrix_size = Config.grid_size
 
-    greedy_search(matrix_size)
+    probability_matrix, movement_matrix = greedy_search(matrix_size)
+    animate_greedy_search(probability_matrix, movement_matrix)

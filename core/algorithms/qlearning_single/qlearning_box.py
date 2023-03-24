@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pickle import dump
+import os
 
 
 class QLearningBox:
@@ -115,4 +116,10 @@ class QLearningBox:
         plt.close()
 
     def save_q_table(self, filename):
+        # Delete the file if it already exists
+        try:
+            os.remove(filename)
+        except OSError:
+            pass
+
         dump(self.Q, open(filename, "wb"))

@@ -76,14 +76,14 @@ def order_same_probabilities(i_j_probalities: list[tuple]) -> list[tuple]:
         initial_index: int = (
             list_triple_index_i_j[0][0] - 1
             if list_triple_index_i_j[0][0] - 1 >= 0
-            else None
+            else 0
         )
 
         final_index: int = (
             list_triple_index_i_j[len(list_triple_index_i_j) - 1][0] + 1
             if list_triple_index_i_j[len(list_triple_index_i_j) - 1][0] + 1
             < len(i_j_probalities)
-            else None
+            else 0
         )
 
         first_element: list[tuple] = [(0, 0)]
