@@ -8,9 +8,11 @@ from gymnasium.spaces import MultiDiscrete, Discrete
 from pettingzoo.utils.env import ParallelEnv
 import sys
 
-from generator.probability import generate_probability_matrix
-from generator.map import generate_map
+# from generator.probability import generate_probability_matrix
+# from generator.map import generate_map
 
+from core.environment.generator.probability import generate_probability_matrix
+from core.environment.generator.map import generate_map
 
 class CustomEnvironment(ParallelEnv):
     def __init__(self, grid_size=7, render_mode="ansi", n_drones=1):
@@ -44,7 +46,7 @@ class CustomEnvironment(ParallelEnv):
             self.agents_positions[i] = [counter_x, counter_y]
             counter_y += 1
             counter_x += 1
-        self.agents_positions["drone3"] = [2,2]
+        
         observations = {}
         for i in self.agents:
             
@@ -76,7 +78,7 @@ class CustomEnvironment(ParallelEnv):
 
             if drone_action == 0:  # left
                 if drone_x > 0:
-                    drone_x -= 1
+                    self.agents_positions[i][0] -= 1
                 else:
                     rewards[i] = -1000
                     truncations[i] = True
@@ -84,21 +86,21 @@ class CustomEnvironment(ParallelEnv):
 
             elif drone_action == 1:
                 if drone_x < self.grid_size - 1:
-                    drone_x += 1
+                    self.agents_positions[i][0] += 1
                 else:
                     rewards[i] = -1000
                     truncations[i] = True
                     terminations[i] = True
-            elif drone_action == 2:  # down
+            elif drone_action == 2:  # UP
                 if drone_y > 0:
-                    drone_y -= 1
+                    self.agents_positions[i][1] -= 1
                 else:
                     rewards[i] = -1000
                     truncations[i] = True
                     terminations[i] = True
-            elif drone_action == 3:  # up
+            elif drone_action == 3:  # DOWN
                 if drone_y < self.grid_size - 1:
-                    drone_y += 1
+                    self.agents_positions[i][1] += 1
                 else:
                     rewards[i] = -1000
                     truncations[i] = True
@@ -164,15 +166,18 @@ class CustomEnvironment(ParallelEnv):
 
     def render(self):
         grid = np.zeros((self.grid_size, self.grid_size), dtype=object)
-        print("drone_position: ({0}, {1})".format(self.drone_x, self.drone_y))
-        grid[self.drone_y][self.drone_x] = "D"
+        
         grid[self.person_y][self.person_x] = "X"
-
+        for ki, i in self.agents_positions.items():
+            grid[i[1], i[0]] = "D"+ ki[-1]
         print("----" * self.grid_size)
         for i in grid:
             string = "| "
             for e in i:
-                string += "{0} | ".format(e)
+                if len(str(e)) <= 1: 
+                    string += "{0} | ".format(e) 
+                else: 
+                    string += "{0}| ".format(e) 
             print(string)
         print("----" * self.grid_size)
 
@@ -205,4 +210,4 @@ class CustomEnvironment(ParallelEnv):
 from pettingzoo.test import parallel_api_test  # noqa: E402
 
 if __name__ == "__main__":
-    parallel_api_test(CustomEnvironment(7, n_drones = 5), num_cycles=1000,)
+    parallel_api_test(CustomEnvironment(7, "human",n_drones = 5), num_cycles=1000,)
