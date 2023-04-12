@@ -13,7 +13,6 @@ except FileNotFoundError:
     exit()
 
 observations = env.reset()
-env.reset()
 agent = env.agents[0]
 
 done = False

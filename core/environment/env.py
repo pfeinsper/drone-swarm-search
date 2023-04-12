@@ -16,19 +16,16 @@ from .generator.map import generate_map
 class CustomEnvironment(ParallelEnv):
     def __init__(self, grid_size=7, render_mode="ansi"):
         self.grid_size = grid_size
-        self.person_y = None
-        self.person_x = None
         self.drone_y = None
         self.drone_x = None
         self.timestep = None
         self.possible_agents = ["drone"]
-        self.probability_matrix = None
 
         self.render_mode = render_mode
         self.probability_matrix = generate_probability_matrix(
             self.grid_size, self.grid_size
         )
-        _, self.person_x, self.person_y = generate_map(self.probability_matrix)
+        self.map, self.person_x, self.person_y = generate_map(self.probability_matrix)
         self.probability_matrix = self.probability_matrix.tolist()
 
     def reset(self, seed=None, return_info=False, options=None):
