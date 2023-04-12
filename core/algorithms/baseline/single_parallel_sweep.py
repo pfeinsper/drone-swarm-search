@@ -9,7 +9,7 @@ class possible_actions(Enum):
     search = 4
 
 
-class ParallelSweepSingle:
+class SingleParallelSweep:
     def __init__(self, grid_size):
         """
         Parallel Sweep algorithm.
@@ -91,6 +91,6 @@ class ParallelSweepSingle:
 
 if __name__ == "__main__":
     matrix_size = 5
-    parallel_sweep = ParallelSweepSingle(matrix_size)
+    parallel_sweep = SingleParallelSweep(matrix_size)
     for action in parallel_sweep.genarate_next_action():
         print(action)

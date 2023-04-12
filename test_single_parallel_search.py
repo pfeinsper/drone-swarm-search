@@ -1,10 +1,10 @@
-from core.algorithms.baseline.parallel_sweep_single import ParallelSweepSingle
+from core.algorithms.baseline.single_parallel_sweep import SingleParallelSweep
 from core.environment.env import CustomEnvironment
 
 
 def parallel_sweep_single():
     matrix_size = 5
-    parallel_sweep = ParallelSweepSingle(matrix_size)
+    parallel_sweep = SingleParallelSweep(matrix_size)
     env = CustomEnvironment(matrix_size, render_mode="human")
 
     env.reset()
