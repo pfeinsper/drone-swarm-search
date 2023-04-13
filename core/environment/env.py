@@ -36,10 +36,7 @@ class CustomEnvironment(ParallelEnv):
         self.map, self.person_x, self.person_y = generate_map(self.probability_matrix)
         self.probability_matrix = self.probability_matrix.tolist()
 
-    def reset(self, seed=None, return_info=False, options=None):
-        self.agents = copy(self.possible_agents)
-
-        self.timestep = 0
+    def default_drones_positions(self):
         counter_x = 0
         counter_y = 0
         for i in self.agents:
@@ -47,6 +44,23 @@ class CustomEnvironment(ParallelEnv):
             counter_y += 1
             counter_x += 1
 
+    def required_drone_positions(self, drones_positions: list):
+        for i in range(len(drones_positions)):
+            x, y = drones_positions[i]
+            self.agents_positions[self.possible_agents[i]] = [x, y]
+
+    def reset(self, seed=None, return_info=False, options=None, drones_positions=None):
+        self.agents = copy(self.possible_agents)
+        self.timestep = 0
+
+        self.default_drones_positions() if drones_positions is None else self.required_drone_positions(
+            drones_positions
+        )
+
+        observations = self.create_observations()
+        return observations
+
+    def create_observations(self):
         observations = {}
         for i in self.agents:
             observation = (

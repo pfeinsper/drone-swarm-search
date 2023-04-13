@@ -14,7 +14,6 @@ class PossibleActions(Enum):
 
 @dataclass
 class DroneInfo:
-    drone_id: int
     grid_size: int
     initial_position: Tuple[int, int]
     last_vertice: Tuple[int, int]
@@ -31,7 +30,6 @@ class SingleParallelSweep:
 
         :param grid_size: The size of the grid
         """
-        self.drone_id = drone_info.drone_id
         self.grid_size = drone_info.grid_size
         self.drone_x = drone_info.initial_position[0]
         self.drone_y = drone_info.initial_position[1]
@@ -107,51 +105,56 @@ class SingleParallelSweep:
         :yield: The next action of the drone
         """
         for action in self.generate_next_movement():
-            yield {f"drone{self.drone_id}": action.value}
+            yield action.value
 
 
 class MultipleParallelSweep:
     def __init__(self, env) -> None:
+        self.env = env
         self.grid_size = env.grid_size
         self.n_drones = len(env.possible_agents)
+        self.grid_size_each_drone = self.get_each_drone_grid_size()
 
-    def get_all_drone_informations(self):
+    def get_each_drone_grid_size(self):
+        """
+        Get the size of the grid that each drone will search.
+
+        :return: The size of the grid that each drone will search
+        """
+        if self.n_drones not in {1, 2} and self.n_drones % 4 != 0:
+            raise ValueError("The number of agents must be 1 or 2 or a multiple of 4")
+
+        grid_size_each_drone = self.grid_size / math.sqrt(self.n_drones)
+
+        if grid_size_each_drone % 1 != 0:
+            raise ValueError("The grid size must be a multiple of the number of agents")
+
+        return int(grid_size_each_drone)
+
+    def get_first_drone_info(self):
+        """
+        Get the information of the first drone.
+
+        :return: The information of the first drone
+        """
+        return DroneInfo(
+            grid_size=self.grid_size_each_drone,
+            initial_position=(0, 0),
+            last_vertice=(self.grid_size_each_drone - 1, self.grid_size_each_drone - 1),
+        )
+
+    def get_drones_initial_positions(self):
         """
         Get all the drone cell boundaries.
 
         :return: All the drone cell boundaries
         """
-        # divide the grid in a multiple of 4
-        if self.n_drones not in {1, 2} and self.n_drones % 4 != 0:
-            raise ValueError("The number of agents must be 1 or 2 or a multiple of 4")
+        drones_initial_positions = []
+        for i in range(0, self.grid_size, self.grid_size_each_drone):
+            for j in range(0, self.grid_size, self.grid_size_each_drone):
+                drones_initial_positions.append((i, j))
 
-        griz_size_each_drone = self.grid_size / math.sqrt(self.n_drones)
-
-        if griz_size_each_drone % 1 != 0:
-            raise ValueError("The grid size must be a multiple of the number of agents")
-
-        griz_size_each_drone = int(griz_size_each_drone)
-
-        drone_cell_boundaries = []
-
-        drone_id = 0
-        for i in range(0, self.grid_size, griz_size_each_drone):
-            for j in range(0, self.grid_size, griz_size_each_drone):
-                drone_cell_boundaries.append(
-                    DroneInfo(
-                        drone_id=drone_id,
-                        grid_size=griz_size_each_drone,
-                        initial_position=(i, j),
-                        last_vertice=(
-                            i + griz_size_each_drone - 1,
-                            j + griz_size_each_drone - 1,
-                        ),
-                    )
-                )
-
-                drone_id += 1
-
-        return drone_cell_boundaries
+        return drones_initial_positions
 
     def generate_next_action(self):
         """
@@ -159,15 +162,25 @@ class MultipleParallelSweep:
 
         :yield: The next action of all the drones
         """
-        drone_cell_boundaries = self.get_all_drone_informations()
 
-        parallel_sweep = SingleParallelSweep(drone_cell_boundaries[0])
-        done = False
+        parallel_sweep = SingleParallelSweep(self.get_first_drone_info())
 
         for action in parallel_sweep.genarate_next_action():
-            actions = []
+            actions = {}
 
-            for drone in drone_cell_boundaries:
-                actions.append(action)
+            for i in range(self.n_drones):
+                actions[f"drone{i}"] = action
 
             yield actions
+
+    def run(self):
+        """
+        Run the algorithm.
+
+        :param env: The environment
+        """
+        drones_positions = self.get_drones_initial_positions()
+        self.env.reset(drones_positions=drones_positions)
+
+        for actions in self.generate_next_action():
+            self.env.step(actions)
