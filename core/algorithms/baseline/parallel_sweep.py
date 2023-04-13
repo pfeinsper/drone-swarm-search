@@ -124,7 +124,9 @@ class MultipleParallelSweep:
         if self.n_drones not in {1, 2} and self.n_drones % 4 != 0:
             raise ValueError("The number of agents must be 1 or 2 or a multiple of 4")
 
-        grid_size_each_drone = self.grid_size / math.sqrt(self.n_drones)
+        divisor = 2 if self.n_drones == 2 else math.sqrt(self.n_drones)
+
+        grid_size_each_drone = self.grid_size / divisor
 
         if grid_size_each_drone % 1 != 0:
             raise ValueError("The grid size must be a multiple of the number of agents")
@@ -137,10 +139,16 @@ class MultipleParallelSweep:
 
         :return: The information of the first drone
         """
+        last_vertice = (
+            (self.grid_size_each_drone - 1, self.grid_size_each_drone - 1)
+            if self.n_drones != 2
+            else (self.grid_size_each_drone * 2 - 1, self.grid_size_each_drone - 1)
+        )
+
         return DroneInfo(
             grid_size=self.grid_size_each_drone,
             initial_position=(0, 0),
-            last_vertice=(self.grid_size_each_drone - 1, self.grid_size_each_drone - 1),
+            last_vertice=last_vertice,
         )
 
     def get_drones_initial_positions(self):
@@ -150,7 +158,13 @@ class MultipleParallelSweep:
         :return: All the drone cell boundaries
         """
         drones_initial_positions = []
-        for i in range(0, self.grid_size, self.grid_size_each_drone):
+        for i in range(
+            0,
+            self.grid_size,
+            self.grid_size_each_drone
+            if self.n_drones != 2
+            else self.grid_size_each_drone * 2,
+        ):
             for j in range(0, self.grid_size, self.grid_size_each_drone):
                 drones_initial_positions.append((i, j))
 
@@ -183,4 +197,8 @@ class MultipleParallelSweep:
         self.env.reset(drones_positions=drones_positions)
 
         for actions in self.generate_next_action():
-            self.env.step(actions)
+            _, _, done, _, _ = self.env.step(actions)
+            done = all(done.values())
+
+            if done:
+                break
