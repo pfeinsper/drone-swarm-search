@@ -47,7 +47,7 @@ class CustomEnvironment(ParallelEnv):
     def required_drone_positions(self, drones_positions: list):
         for i in range(len(drones_positions)):
             x, y = drones_positions[i]
-            self.agents_positions[self.possible_agents[i]] = [x, y]
+            self.agents_positions[self.possible_agents[i]] = [y, x]
 
     def reset(self, seed=None, return_info=False, options=None, drones_positions=None):
         self.agents = copy(self.possible_agents)

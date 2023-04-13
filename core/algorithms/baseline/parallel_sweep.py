@@ -198,7 +198,7 @@ class MultipleParallelSweep:
 
         for actions in self.generate_next_action():
             _, _, done, _, _ = self.env.step(actions)
-            done = all(done.values())
+            done = any(done.values())
 
             if done:
                 break
