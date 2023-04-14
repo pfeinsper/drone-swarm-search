@@ -108,6 +108,8 @@ class CustomEnvironment(ParallelEnv):
 
             elif drone_action == 4:  # search
                 isSearching = True
+            elif drone_action == 5:  # idle
+                pass
 
 
             if (
@@ -203,7 +205,7 @@ class CustomEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return Discrete(5)
+        return Discrete(6)
 
 
 
