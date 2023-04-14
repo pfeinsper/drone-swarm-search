@@ -117,6 +117,8 @@ class CustomEnvironment(ParallelEnv):
 
             elif drone_action == 4:  # search
                 isSearching = True
+            elif drone_action == 5:  # idle
+                pass
 
             if drone_x == self.person_x and drone_y == self.person_y and isSearching:
                 rewards = {a: 0 for a in self.agents}
@@ -202,7 +204,7 @@ class CustomEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return Discrete(5)
+        return Discrete(6)
 
 
 from pettingzoo.test import parallel_api_test  # noqa: E402
