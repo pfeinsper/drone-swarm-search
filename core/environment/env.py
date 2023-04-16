@@ -62,7 +62,7 @@ class CustomEnvironment(ParallelEnv):
 
     def create_observations(self):
         observations = {}
-        for i in self.agents:
+        for i in self.possible_agents:
             observation = (
                 (self.agents_positions[i][0], self.agents_positions[i][1]),
                 self.probability_matrix,
@@ -138,15 +138,8 @@ class CustomEnvironment(ParallelEnv):
         self.timestep += 1
 
         # Get observations
-        observations = {}
-
-        for i in self.possible_agents:
-            observation = (
-                (self.agents_positions[i][0], self.agents_positions[i][1]),
-                self.probability_matrix,
-            )
-
-            observations[i] = {"observation": observation}
+        observations = self.create_observations()
+        
         # Get dummy infos (not used in this example)
         infos = {e: {} for e in self.agents}
 
