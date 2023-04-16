@@ -148,7 +148,6 @@ class CustomEnvironment(ParallelEnv):
 
         # Get observations
         observations = self.create_observations()
-
         # Get dummy infos (not used in this example)
         infos = {e: {} for e in self.agents}
 
