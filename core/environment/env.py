@@ -64,6 +64,7 @@ class CustomEnvironment(ParallelEnv):
 
     def create_observations(self):
         observations = {}
+
         new_map, new_x, new_y = dynamic_probability(
             self.probability_matrix, self.vector, self.vector_x, self.vector_y
         )
@@ -71,6 +72,7 @@ class CustomEnvironment(ParallelEnv):
         self.vector_x = deepcopy(new_x)
         self.vector_y = deepcopy(new_y)
         self.map, self.person_x, self.person_y = generate_map(self.probability_matrix)
+
         for i in self.possible_agents:
             observation = (
                 (self.agents_positions[i][0], self.agents_positions[i][1]),
