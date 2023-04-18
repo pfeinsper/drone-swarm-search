@@ -1,6 +1,6 @@
 import functools
 import random
-from copy import copy
+from copy import copy, deepcopy
 
 import numpy as np
 from gymnasium.spaces import MultiDiscrete, Discrete
@@ -11,8 +11,9 @@ import sys
 # from generator.probability import generate_probability_matrix
 # from generator.map import generate_map
 
-from core.environment.generator.probability import generate_probability_matrix
-from core.environment.generator.map import generate_map
+# from core.environment.generator.probability import generate_probability_matrix
+from core.environment.generator.map import generate_map, generate_matrix
+from core.environment.generator.dynamic_probability import dynamic_probability
 
 
 class CustomEnvironment(ParallelEnv):
@@ -21,6 +22,9 @@ class CustomEnvironment(ParallelEnv):
         self.person_y = None
         self.person_x = None
         self.timestep = None
+        self.vector_x = 0
+        self.vector_y = 0
+        self.vector = (-0.1, 0.3)
         self.possible_agents = []
         self.agents_positions = {}
         for i in range(n_drones):
@@ -30,9 +34,7 @@ class CustomEnvironment(ParallelEnv):
         self.probability_matrix = None
 
         self.render_mode = render_mode
-        self.probability_matrix = generate_probability_matrix(
-            self.grid_size, self.grid_size
-        )
+        self.probability_matrix = generate_matrix(self.grid_size)
         self.map, self.person_x, self.person_y = generate_map(self.probability_matrix)
         self.probability_matrix = self.probability_matrix.tolist()
 
@@ -62,6 +64,15 @@ class CustomEnvironment(ParallelEnv):
 
     def create_observations(self):
         observations = {}
+
+        new_map, new_x, new_y = dynamic_probability(
+            self.probability_matrix, self.vector, self.vector_x, self.vector_y
+        )
+        self.probability_matrix = deepcopy(new_map)
+        self.vector_x = deepcopy(new_x)
+        self.vector_y = deepcopy(new_y)
+        self.map, self.person_x, self.person_y = generate_map(self.probability_matrix)
+
         for i in self.possible_agents:
             observation = (
                 (self.agents_positions[i][0], self.agents_positions[i][1]),
@@ -139,7 +150,7 @@ class CustomEnvironment(ParallelEnv):
 
         # Get observations
         observations = self.create_observations()
-        
+
         # Get dummy infos (not used in this example)
         infos = {e: {} for e in self.agents}
 
