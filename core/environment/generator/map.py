@@ -1,4 +1,4 @@
-from numpy import array
+from numpy import array, zeros
 from random import randint
 from typing import Tuple
 
@@ -23,3 +23,19 @@ def generate_map(matrix: array) -> Tuple[array, int, int]:
     position_matrix[0][0] = "X" if position_matrix[0][0] != "P" else "PX"
 
     return array(position_matrix), column, line
+
+
+def generate_matrix(size: int):
+    map = zeros((size, size), dtype=float)
+
+    map[0][-1] = randint(10, 45)
+    map[0][-2] = randint(10, 45)
+    map[0][-3] = randint(5, 10)
+    map[1][-1] = randint(10, 45)
+    map[1][-2] = randint(10, 45)
+    map[1][-3] = randint(5, 10)
+    map[2][-1] = randint(10, 45)
+    map[2][-2] = randint(10, 45)
+    map[2][-3] = randint(5, 10)
+
+    return map
