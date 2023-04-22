@@ -72,7 +72,7 @@ class SingleParallelSweep:
         if reached_initial_position:
             self.is_going_down = True
 
-        return reached_last_vertice
+        return reached_initial_position
 
     def generate_next_movement(self):
         """
