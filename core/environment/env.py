@@ -7,7 +7,7 @@ from gymnasium.spaces import MultiDiscrete, Discrete
 
 from pettingzoo.utils.env import ParallelEnv
 import sys
-
+import time
 # from generator.probability import generate_probability_matrix
 # from generator.map import generate_map
 
@@ -169,6 +169,7 @@ class CustomEnvironment(ParallelEnv):
         return observations, rewards, terminations, truncations, infos
 
     def render(self):
+        time.sleep(0.5)
         # for windows OS
         if os.name =="nt":
             os.system("cls")
@@ -176,7 +177,7 @@ class CustomEnvironment(ParallelEnv):
         # for linux / Mac OS
         else:
             os.system("clear")
-            
+
         grid = np.zeros((self.grid_size, self.grid_size), dtype=object)
 
         grid[self.person_y][self.person_x] = "X"
@@ -215,7 +216,7 @@ class CustomEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return Discrete(6)
+        return [0,1,2,3,4,5]
 
 
 from pettingzoo.test import parallel_api_test  # noqa: E402
