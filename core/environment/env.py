@@ -1,7 +1,7 @@
 import functools
 import random
 from copy import copy, deepcopy
-
+import os
 import numpy as np
 from gymnasium.spaces import MultiDiscrete, Discrete
 
@@ -54,11 +54,11 @@ class CustomEnvironment(ParallelEnv):
     def reset(self, seed=None, return_info=False, options=None, drones_positions=None):
         self.agents = copy(self.possible_agents)
         self.timestep = 0
-
         self.default_drones_positions() if drones_positions is None else self.required_drone_positions(
             drones_positions
         )
-
+        if self.render_mode == "human":
+            self.render()
         observations = self.create_observations()
         return observations
 
@@ -71,7 +71,6 @@ class CustomEnvironment(ParallelEnv):
             )
 
             observations[i] = {"observation": observation}
-
         return observations
 
     def step(self, actions):
@@ -161,6 +160,14 @@ class CustomEnvironment(ParallelEnv):
         return observations, rewards, terminations, truncations, infos
 
     def render(self):
+        # for windows OS
+        if os.name =="nt":
+            os.system("cls")
+            
+        # for linux / Mac OS
+        else:
+            os.system("clear")
+            
         grid = np.zeros((self.grid_size, self.grid_size), dtype=object)
 
         grid[self.person_y][self.person_x] = "X"
