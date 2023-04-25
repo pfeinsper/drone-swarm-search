@@ -4,7 +4,7 @@ from copy import copy, deepcopy
 import os
 import numpy as np
 from gymnasium.spaces import MultiDiscrete, Discrete
-
+import pygame
 from pettingzoo.utils.env import ParallelEnv
 import sys
 import time
@@ -38,6 +38,15 @@ class CustomEnvironment(ParallelEnv):
         self.map, self.person_x, self.person_y = generate_map(self.probability_matrix)
         self.probability_matrix = self.probability_matrix.tolist()
 
+        pygame.init()
+        self.window_size = 700
+        self.screen = pygame.Surface([self.window_size + 20, self.window_size +20])
+        self.renderOn = False
+
+        self.block_size = self.window_size//self.grid_size
+        self.drone_img = None
+        self.person_img = None
+
     def default_drones_positions(self):
         counter_x = 0
         counter_y = 0
@@ -57,8 +66,11 @@ class CustomEnvironment(ParallelEnv):
         self.default_drones_positions() if drones_positions is None else self.required_drone_positions(
             drones_positions
         )
-        if self.render_mode == "human":
+        if self.render_mode == "human-terminal":
+            self.render_terminal()
+        elif self.render_mode == "human":
             self.render()
+           
         observations = self.create_observations()
         return observations
 
@@ -154,12 +166,61 @@ class CustomEnvironment(ParallelEnv):
                         rewards[ki] = -2000
         rewards["total_reward"] = sum([e for e in rewards.values()])
 
-        if self.render_mode == "human":
+        if self.render_mode == "human-terminal":
+            self.render_terminal()
+        elif self.render_mode == "human":
             self.render()
 
         return observations, rewards, terminations, truncations, infos
+    
 
+    def enable_render(self, mode="human"):
+        if not self.renderOn and mode == "human":
+            self.screen = pygame.display.set_mode(self.screen.get_size())
+
+            self.drone_img = pygame.image.load("core/environment/imgs/drone.png").convert()
+            self.drone_img = pygame.transform.scale(self.drone_img, (self.block_size, self.block_size))
+
+            self.person_img = pygame.image.load("core/environment/imgs/person-swimming.png").convert()
+            self.person_img = pygame.transform.scale(self.person_img, (self.block_size, self.block_size))
+
+            self.renderOn = True
+    
     def render(self):
+        self.enable_render(self.render_mode)
+
+        self.draw()
+
+        if self.render_mode == "human":
+            pygame.display.flip()
+            return
+        
+    
+    def draw(self):
+        time.sleep(0.5)
+        self.screen.fill((0,0,0))
+        drone_positions = [[x,y] for x,y in self.agents_positions.values()]
+        person_position = [self.person_x, self.person_y]
+        counter_x = 0
+        for x in range(10, self.window_size, self.block_size):
+            counter_y = 0
+            for y in range(10, self.window_size, self.block_size):
+                rect = pygame.Rect(x, y, self.block_size, self.block_size)
+                if [counter_x, counter_y] in drone_positions:
+                    self.screen.blit(self.drone_img, rect)
+                elif [counter_x, counter_y] == person_position:
+                    self.screen.blit(self.person_img, rect)
+                pygame.draw.rect(self.screen, "white", rect, 1)
+                counter_y += 1
+            counter_x += 1
+
+    def close(self):
+        if self.renderOn:
+            pygame.event.pump()
+            pygame.display.quit()
+            self.renderOn = False
+
+    def render_terminal(self):
         time.sleep(0.5)
         # for windows OS
         if os.name =="nt":
