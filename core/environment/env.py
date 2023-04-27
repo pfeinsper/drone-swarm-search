@@ -209,6 +209,7 @@ class CustomEnvironment(ParallelEnv):
             return
 
     def draw(self):
+        gradient = True
         time.sleep(0.5)
         self.screen.fill((0, 0, 0))
         drone_positions = [[x, y] for x, y in self.agents_positions.values()]
@@ -222,16 +223,31 @@ class CustomEnvironment(ParallelEnv):
             counter_y = 0
             for y in range(10, self.window_size, self.block_size):
                 rect = pygame.Rect(x, y, self.block_size, self.block_size)
+                prob = matrix[counter_y][counter_x]
+                normalizedProb = prob/max_matrix
+                if gradient:
+                    if prob == 0:
+                        r, g = 255, 0
+                    elif prob > 0.99:
+                        r, g = 0, 255
+                    else:                
+                        g = normalizedProb
+                        r = 1 - normalizedProb
+                        g = g * 255
+                        r = r * 255
+                        max_color = max(r, g)
+                        g = (g) * (255)/( max_color)
+                        r = (r) * (255)/( max_color)
+                else:
+                    r, g = (0, 255) if normalizedProb >= 0.75 else  (255, 255) if normalizedProb >= 0.25 else (255, 0)
+
+                pygame.draw.rect(self.screen, (r,g,0) , rect)
+                pygame.draw.rect(self.screen, (0,0,0) , rect, 2)
+
                 if [counter_x, counter_y] in drone_positions:
                     self.screen.blit(self.drone_img, rect)
                 elif [counter_x, counter_y] == person_position:
                     self.screen.blit(self.person_img, rect)
-                if matrix[counter_y][counter_x] > max_matrix - (max_matrix/4):
-                    pygame.draw.rect(self.screen, (0,255,0) , rect, 1)
-                elif matrix[counter_y][counter_x] >  max_matrix/4:
-                    pygame.draw.rect(self.screen, (255,255,0) , rect, 1)
-                else:
-                    pygame.draw.rect(self.screen, (255,0,0) , rect, 1)
                 counter_y += 1
             counter_x += 1
 
