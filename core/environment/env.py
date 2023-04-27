@@ -8,11 +8,6 @@ import pygame
 from pettingzoo.utils.env import ParallelEnv
 import sys
 import time
-
-# from generator.probability import generate_probability_matrix
-# from generator.map import generate_map
-
-# from core.environment.generator.probability import generate_probability_matrix
 from core.environment.generator.map import generate_map, generate_matrix
 from core.environment.generator.dynamic_probability import probability_matrix
 
@@ -23,7 +18,7 @@ class CustomEnvironment(ParallelEnv):
         self.person_y = None
         self.person_x = None
         self.timestep = None
-        self.vector = (-0.1, 0.3)
+        self.vector = (-0.2, 0.2)
         self.possible_agents = []
         self.agents_positions = {}
         self.render_mode_matrix = None
@@ -40,8 +35,8 @@ class CustomEnvironment(ParallelEnv):
         self.map, self.person_x, self.person_y = generate_map(
             self.probability_matrix.get_matrix()
         )
-        # self.probability_matrix = self.probability_matrix.tolist()
 
+        #Initializing render
         pygame.init()
         self.window_size = 700
         self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
@@ -218,6 +213,10 @@ class CustomEnvironment(ParallelEnv):
         self.screen.fill((0, 0, 0))
         drone_positions = [[x, y] for x, y in self.agents_positions.values()]
         person_position = [self.person_x, self.person_y]
+        matrix = self.probability_matrix.get_matrix()
+        
+        max_matrix = matrix.max()
+
         counter_x = 0
         for x in range(10, self.window_size, self.block_size):
             counter_y = 0
@@ -227,7 +226,12 @@ class CustomEnvironment(ParallelEnv):
                     self.screen.blit(self.drone_img, rect)
                 elif [counter_x, counter_y] == person_position:
                     self.screen.blit(self.person_img, rect)
-                pygame.draw.rect(self.screen, "white", rect, 1)
+                if matrix[counter_y][counter_x] > max_matrix - (max_matrix/4):
+                    pygame.draw.rect(self.screen, (0,255,0) , rect, 1)
+                elif matrix[counter_y][counter_x] >  max_matrix/4:
+                    pygame.draw.rect(self.screen, (255,255,0) , rect, 1)
+                else:
+                    pygame.draw.rect(self.screen, (255,0,0) , rect, 1)
                 counter_y += 1
             counter_x += 1
 
