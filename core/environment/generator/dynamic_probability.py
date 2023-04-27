@@ -1,563 +1,171 @@
 from numpy import array, zeros
+import numpy as np
 from random import randint, shuffle
 import copy
 import sys
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
+import math
 
 
-def animate_map(animation_matrix):
-    fig, ax = plt.subplots()
-    fig.subplots_adjust(bottom=0.25, left=0.25)
+class probability_matrix:
+    def __init__(
+        self, amplitude, spacement_x, spacement_y, vector, initial_position, size
+    ):
+        # amplitude of gaussian curve
+        self.amplitude = amplitude
+        # spacement of gaussian curve along the x axis
+        self.spacement_x = spacement_x
+        # spacement of gaussian curve along the y axis
+        self.spacement_y = spacement_y
+        # vector that determines the movement of the target ("water current")
+        self.vector = vector
+        # position of target, in form of list: [row, column]
+        self.initial_position = initial_position
+        # Gaussian map
+        self.map = zeros((size, size), dtype=float)
+        # Gaussian map with probabilities
+        self.map_prob = zeros((size, size), dtype=float)
+        # These determine the movement of the target as well
+        self.x = 0
+        self.y = 0
+        # Parameters of the ellipse
+        self.params = [1, 1, initial_position[1], initial_position[0]]
+        # Increase of the area, begins at 0
+        self.increase_area = 0
 
-    ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03])
-    slider = Slider(
-        ax_slider,
-        label="Frame",
-        valmin=0,
-        valmax=len(animation_matrix) - 1,
-        valinit=0,
-        valstep=1,
-    )
-    matshow = ax.matshow(animation_matrix[0])
+    def calc_prob(self, point):
+        x = ((point[0] - self.initial_position[1]) ** 2) / (2 * (self.spacement_x**2))
+        y = ((point[1] - self.initial_position[0]) ** 2) / (2 * (self.spacement_y**2))
 
-    def update(_):
-        # print(animation_matrix[slider.val].max())
-        matshow.set_data(animation_matrix[slider.val])
-        fig.canvas.draw_idle()
+        probability = self.amplitude * np.exp(-(x + y))
 
-    slider.on_changed(update)
-    matshow.set_data(animation_matrix[0])
-    plt.show()
+        return probability
 
+    def diffuse_probability(self, map):
+        entire_cells = []
+        h = self.params[2]
+        k = self.params[3]
+        a = self.params[0]
+        b = self.params[1]
+        for row in range(len(map)):
+            for column in range(0, len(map[row])):
+                p1 = (math.pow((column - (h - 0.5)), 2) / math.pow(a, 2)) + (
+                    math.pow((row - k), 2) / math.pow(b, 2)
+                )
+                p2 = (math.pow((column - (h + 0.5)), 2) / math.pow(a, 2)) + (
+                    math.pow((row - k), 2) / math.pow(b, 2)
+                )
+                p3 = (math.pow((column - h), 2) / math.pow(a, 2)) + (
+                    math.pow((row - (k - 0.5)), 2) / math.pow(b, 2)
+                )
+                p4 = (math.pow((column - h), 2) / math.pow(a, 2)) + (
+                    math.pow((row - (k + 0.5)), 2) / math.pow(b, 2)
+                )
+                if p1 <= 1 and p2 <= 1 and p3 <= 1 and p4 <= 1:
+                    entire_cells.append((column, row))
+        map_copy = zeros((len(map), len(map[0])), dtype=float)
+        for cell in entire_cells:
+            map_copy[cell[1]][cell[0]] = self.calc_prob(cell)
+        self.map_prob = map_copy / map_copy.sum()
+        self.map = copy.deepcopy(map_copy)
 
-def diffuse_probability(map: array, vector: tuple):
-    x = vector[0] * 10
-    y = vector[1] * 10
-    map_copy = zeros((len(map), len(map[0])), dtype=float)
-    for row in range(len(map)):
-        for column in range(0, len(map[row])):
-            if map[row][column] > 0:
-                counter_x = int(x)
-                counter_y = int(y)
-                while abs(counter_x) >= 0:
-                    while abs(counter_y) >= 0:
-                        new_row = row + counter_y
-                        new_col = column + counter_x
-                        if (
-                            (new_row < len(map))
-                            and (new_col < len(map[row]))
-                            and (new_row >= 0)
-                            and (new_col >= 0)
-                        ):
-                            if counter_x != 0 and counter_y != 0:
-                                divisor = 10 / (
-                                    1 / ((counter_x**2 + counter_y**2) ** 0.5)
-                                )
-                            else:
-                                divisor = (x**2 + y**2) ** 0.5
-                            probability = map[row][column] / divisor
-                            map_copy[row + counter_y][column + counter_x] += probability
-                            if map_copy[row + counter_y][column + counter_x] >= 50:
-                                map_copy[row + counter_y][
-                                    column + counter_x
-                                ] -= probability
-                            # map[row][column] -= probability
-                        if counter_y == 0:
-                            break
-                        if counter_y < 0:
-                            counter_y += 1
-                        else:
-                            counter_y -= 1
-                    if counter_x == 0:
-                        break
-                    if counter_x < 0:
-                        counter_x += 1
-                    else:
-                        counter_x -= 1
-                    counter_y = int(y)
-    return map_copy
+    def dynamic_probability(self):
+        if abs(self.x) >= 1:
+            self.x = 0
+        if abs(self.y) >= 1:
+            self.y = 0
+        self.x += self.vector[0]
+        self.y += self.vector[1]
+        map_copy = zeros((len(self.map), len(self.map[0])), dtype=float)
+        if self.initial_position[0] + int(self.y) < len(
+            self.map
+        ) and self.initial_position[1] + int(self.x) < len(self.map[0]):
+            map_copy[self.initial_position[0] + int(self.y)][
+                self.initial_position[1] + int(self.x)
+            ] += self.map[self.initial_position[0]][self.initial_position[1]]
+            self.initial_position[0] += int(self.y)
+            self.initial_position[1] += int(self.x)
+        self.diffuse_probability(map_copy)
 
+    def step(self):
+        self.dynamic_probability()
+        self.params = [
+            1 + self.increase_area,
+            1 + self.increase_area,
+            self.initial_position[1],
+            self.initial_position[0],
+        ]
+        self.increase_area += 0.5
+        return self.map_prob
 
-def dynamic_probability(map: array, vector: tuple, x: float, y: float):
-    if abs(x) >= 1:
-        x = 0
-    if abs(y) >= 1:
-        y = 0
-    x += vector[0]
-    y += vector[1]
-    # map_copy = copy.deepcopy(map)
-    map_copy = zeros((len(map), len(map[0])), dtype=float)
-    for row in range(len(map)):
-        for column in range(0, len(map[row])):
-            if map[row][column] > 0:
-                if row + int(y) < len(map) and column + int(x) < len(map[row]):
-                    map_copy[row + int(y)][column + int(x)] += map[row][column]
+    def render(self):
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=0.25, left=0.25)
+        angle = np.linspace(0, 2 * np.pi, 150)
 
-    new_map = diffuse_probability(map_copy, vector)
+        radius_x = self.params[0]
+        radius_y = self.params[1]
 
-    return new_map, x, y
+        x = radius_x * np.cos(angle) + self.params[2]
+        y = radius_y * np.sin(angle) + self.params[3]
 
+        ax.plot(x, y)
+        matshow = ax.matshow(self.map_prob)
+        plt.show()
 
-# map = [
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         8.0,
-#         12.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         10.0,
-#         25.0,
-#         30.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         7.0,
-#         15.0,
-#         13.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         5.0,
-#         6.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-#     [
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#         0.0,
-#     ],
-# ]
+    def render_episode(self, animation_matrix, cirumference_params):
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=0.25, left=0.25)
+        angle = np.linspace(0, 2 * np.pi, 150)
+
+        radius_x = cirumference_params[0][0]
+        radius_y = cirumference_params[0][1]
+
+        x = radius_x * np.cos(angle) + cirumference_params[0][2]
+        y = radius_y * np.sin(angle) + cirumference_params[0][3]
+
+        ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03])
+        slider = Slider(
+            ax_slider,
+            label="Frame",
+            valmin=0,
+            valmax=len(animation_matrix) - 1,
+            valinit=0,
+            valstep=1,
+        )
+        ax.plot(x, y)
+        matshow = ax.matshow(animation_matrix[0])
+
+        def update(_):
+            # print(animation_matrix[slider.val].max())
+            radius_x = cirumference_params[slider.val][0]
+            radius_y = cirumference_params[slider.val][1]
+
+            x = radius_x * np.cos(angle) + cirumference_params[slider.val][2]
+            y = radius_y * np.sin(angle) + cirumference_params[slider.val][3]
+            ax.cla()
+            ax.plot(x, y)
+            matshow = ax.matshow(animation_matrix[slider.val])
+            fig.canvas.draw_idle()
+
+        slider.on_changed(update)
+        # matshow.set_data(animation_matrix[0])
+        plt.show()
+
+    def get_matrix(self):
+        return self.map_prob
+
+    def get_params(self):
+        return self.params
 
 
-# print(len(map), len(map[0]))
-# x = 0
-# y = 0
-# vector = (-0.1, 0.3)
-# list_map = []
-# map = array(map)
-# list_map.append(map)
+# prob_matrix = probability_matrix(40, 3, 3, (-0.5, 0.5), [0, 19], 20)
+# list_matrix = []
+# list_params = []
+# for i in range(40):
+#     prob_matrix.step()
+#     list_matrix.append(prob_matrix.get_matrix())
+#     list_params.append(prob_matrix.get_params())
 
-
-# for i in range(50):
-#     new_map, new_x, new_y = dynamic_probability(map, vector, x, y)
-#     map = copy.deepcopy(new_map)
-#     x = copy.deepcopy(new_x)
-#     y = copy.deepcopy(new_y)
-#     list_map.append(map)
-
-
-# animate_map(list_map)
+# prob_matrix.render_episode(list_matrix, list_params)
