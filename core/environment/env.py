@@ -8,12 +8,13 @@ import pygame
 from pettingzoo.utils.env import ParallelEnv
 import sys
 import time
+
 # from generator.probability import generate_probability_matrix
 # from generator.map import generate_map
 
 # from core.environment.generator.probability import generate_probability_matrix
 from core.environment.generator.map import generate_map, generate_matrix
-from core.environment.generator.dynamic_probability import dynamic_probability
+from core.environment.generator.dynamic_probability import probability_matrix
 
 
 class CustomEnvironment(ParallelEnv):
@@ -22,11 +23,10 @@ class CustomEnvironment(ParallelEnv):
         self.person_y = None
         self.person_x = None
         self.timestep = None
-        self.vector_x = 0
-        self.vector_y = 0
         self.vector = (-0.1, 0.3)
         self.possible_agents = []
         self.agents_positions = {}
+        self.render_mode_matrix = None
         for i in range(n_drones):
             self.possible_agents.append("drone" + str(i))
             self.agents_positions["drone" + str(i)] = [None, None]
@@ -34,16 +34,20 @@ class CustomEnvironment(ParallelEnv):
         self.probability_matrix = None
 
         self.render_mode = render_mode
-        self.probability_matrix = generate_matrix(self.grid_size)
-        self.map, self.person_x, self.person_y = generate_map(self.probability_matrix)
-        self.probability_matrix = self.probability_matrix.tolist()
+        self.probability_matrix = probability_matrix(
+            40, 3, 3, self.vector, [0, (self.grid_size - 1)], self.grid_size
+        )
+        self.map, self.person_x, self.person_y = generate_map(
+            self.probability_matrix.get_matrix()
+        )
+        # self.probability_matrix = self.probability_matrix.tolist()
 
         pygame.init()
         self.window_size = 700
-        self.screen = pygame.Surface([self.window_size + 20, self.window_size +20])
+        self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
         self.renderOn = False
 
-        self.block_size = self.window_size//self.grid_size
+        self.block_size = self.window_size // self.grid_size
         self.drone_img = None
         self.person_img = None
 
@@ -70,28 +74,25 @@ class CustomEnvironment(ParallelEnv):
             self.render_terminal()
         elif self.render_mode == "human":
             self.render()
-           
+
         observations = self.create_observations()
         return observations
 
     def create_observations(self):
         observations = {}
-
-        new_map, new_x, new_y = dynamic_probability(
-            self.probability_matrix, self.vector, self.vector_x, self.vector_y
+        self.probability_matrix.step()
+        self.map, self.person_x, self.person_y = generate_map(
+            self.probability_matrix.get_matrix()
         )
-        self.probability_matrix = deepcopy(new_map)
-        self.vector_x = deepcopy(new_x)
-        self.vector_y = deepcopy(new_y)
-        self.map, self.person_x, self.person_y = generate_map(self.probability_matrix)
 
         for i in self.possible_agents:
             observation = (
                 (self.agents_positions[i][0], self.agents_positions[i][1]),
-                self.probability_matrix,
+                self.probability_matrix.get_matrix(),
             )
 
             observations[i] = {"observation": observation}
+        self.render_probability_matrix(self.render_mode_matrix)
         return observations
 
     def step(self, actions):
@@ -149,7 +150,8 @@ class CustomEnvironment(ParallelEnv):
                 self.agents = []
 
             elif isSearching:
-                rewards[i] = self.probability_matrix[drone_y][drone_x] - 100
+                prob_matrix = self.probability_matrix.get_matrix()
+                rewards[i] = prob_matrix[drone_y][drone_x] - 100
 
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep > 500:
@@ -181,20 +183,27 @@ class CustomEnvironment(ParallelEnv):
             self.render()
 
         return observations, rewards, terminations, truncations, infos
-    
 
     def enable_render(self, mode="human"):
         if not self.renderOn and mode == "human":
             self.screen = pygame.display.set_mode(self.screen.get_size())
 
-            self.drone_img = pygame.image.load("core/environment/imgs/drone.png").convert()
-            self.drone_img = pygame.transform.scale(self.drone_img, (self.block_size, self.block_size))
+            self.drone_img = pygame.image.load(
+                "core/environment/imgs/drone.png"
+            ).convert()
+            self.drone_img = pygame.transform.scale(
+                self.drone_img, (self.block_size, self.block_size)
+            )
 
-            self.person_img = pygame.image.load("core/environment/imgs/person-swimming.png").convert()
-            self.person_img = pygame.transform.scale(self.person_img, (self.block_size, self.block_size))
+            self.person_img = pygame.image.load(
+                "core/environment/imgs/person-swimming.png"
+            ).convert()
+            self.person_img = pygame.transform.scale(
+                self.person_img, (self.block_size, self.block_size)
+            )
 
             self.renderOn = True
-    
+
     def render(self):
         self.enable_render(self.render_mode)
 
@@ -203,12 +212,11 @@ class CustomEnvironment(ParallelEnv):
         if self.render_mode == "human":
             pygame.display.flip()
             return
-        
-    
+
     def draw(self):
         time.sleep(0.5)
-        self.screen.fill((0,0,0))
-        drone_positions = [[x,y] for x,y in self.agents_positions.values()]
+        self.screen.fill((0, 0, 0))
+        drone_positions = [[x, y] for x, y in self.agents_positions.values()]
         person_position = [self.person_x, self.person_y]
         counter_x = 0
         for x in range(10, self.window_size, self.block_size):
@@ -232,9 +240,9 @@ class CustomEnvironment(ParallelEnv):
     def render_terminal(self):
         time.sleep(0.5)
         # for windows OS
-        if os.name =="nt":
+        if os.name == "nt":
             os.system("cls")
-            
+
         # for linux / Mac OS
         else:
             os.system("clear")
@@ -255,20 +263,23 @@ class CustomEnvironment(ParallelEnv):
             print(string)
         print("----" * self.grid_size)
 
-    def render_probability_matrix(self):
-        grid = self.probability_matrix
-        print("PROBABILITY MATRIX:")
+    def render_probability_matrix(self, mode="human-terminal"):
+        if mode == "human-terminal":
+            grid = self.probability_matrix.get_matrix()
+            print("PROBABILITY MATRIX:")
 
-        print("----" * self.grid_size)
-        for i in grid:
-            string = "| "
-            for e in i:
-                if e >= 10:
-                    string += "{0} | ".format(e)
-                else:
-                    string += "{0}  | ".format(e)
-            print(string)
-        print("----" * self.grid_size)
+            print("----" * self.grid_size)
+            for i in grid:
+                string = "| "
+                for e in i:
+                    if e >= 10:
+                        string += "{0} | ".format(e)
+                    else:
+                        string += "{0}  | ".format(e)
+                print(string)
+            print("----" * self.grid_size)
+        elif mode == "human":
+            self.probability_matrix.render()
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
@@ -277,7 +288,7 @@ class CustomEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return [0,1,2,3,4,5]
+        return [0, 1, 2, 3, 4, 5]
 
 
 from pettingzoo.test import parallel_api_test  # noqa: E402
