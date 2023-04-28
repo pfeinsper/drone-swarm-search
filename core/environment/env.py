@@ -18,7 +18,7 @@ class CustomEnvironment(ParallelEnv):
         self.person_y = None
         self.person_x = None
         self.timestep = None
-        self.vector = (-0.2, 0.2)
+        self.vector = (-0.5, -0.5)
         self.possible_agents = []
         self.agents_positions = {}
         self.render_mode_matrix = None
@@ -30,7 +30,7 @@ class CustomEnvironment(ParallelEnv):
 
         self.render_mode = render_mode
         self.probability_matrix = probability_matrix(
-            40, 3, 3, self.vector, [0, (self.grid_size - 1)], self.grid_size
+            40, 5, 5, self.vector, [self.grid_size - 1, (self.grid_size - 1)], self.grid_size
         )
         self.map, self.person_x, self.person_y = generate_map(
             self.probability_matrix.get_matrix()
