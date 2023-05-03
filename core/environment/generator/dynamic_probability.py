@@ -1,8 +1,6 @@
-from numpy import array, zeros
+from numpy import zeros
 import numpy as np
-from random import randint, shuffle
 import copy
-import sys
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 import math

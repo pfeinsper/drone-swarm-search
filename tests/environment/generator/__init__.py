@@ -1,1 +1,0 @@
-"""Genarator tests package."""

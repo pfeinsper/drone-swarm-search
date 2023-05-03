@@ -1,33 +1,34 @@
 import functools
-import random
-from copy import copy, deepcopy
-import os
+from copy import copy
 import numpy as np
-from gymnasium.spaces import MultiDiscrete, Discrete
+from gymnasium.spaces import MultiDiscrete
 import pygame
 from pettingzoo.utils.env import ParallelEnv
-import sys
 import time
-from core.environment.generator.map import generate_map, generate_matrix
+from core.environment.generator.map import generate_map
 from core.environment.generator.dynamic_probability import probability_matrix
 
 
 class DroneSwarmSearch(ParallelEnv):
-    def __init__(self, grid_size=7, 
-                 render_mode="ansi", 
-                 render_grid = False,
-                 render_gradient = True,
-                 n_drones=1, 
-                 vector = (-0.5, -0.5), 
-                 person_initial_position = [0, 0],
-                 disperse_constant = 10):
-        
-        #Error Checking 
-        if n_drones > grid_size*grid_size:
-            raise Exception("There are more drones than grid spots. Reduce number of drones or increase grid size.")
+    def __init__(
+        self,
+        grid_size=7,
+        render_mode="ansi",
+        render_grid=False,
+        render_gradient=True,
+        n_drones=1,
+        vector=(-0.5, -0.5),
+        person_initial_position=[0, 0],
+        disperse_constant=10,
+    ):
+        # Error Checking
+        if n_drones > grid_size * grid_size:
+            raise Exception(
+                "There are more drones than grid spots. Reduce number of drones or increase grid size."
+            )
         if render_mode != "ansi" and render_mode != "human":
             raise Exception("Render mode not recognized")
-        
+
         self.grid_size = grid_size
         self.person_y = None
         self.person_x = None
@@ -42,13 +43,18 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.render_mode = render_mode
         self.probability_matrix = probability_matrix(
-            40, disperse_constant, disperse_constant, self.vector, person_initial_position, self.grid_size
+            40,
+            disperse_constant,
+            disperse_constant,
+            self.vector,
+            person_initial_position,
+            self.grid_size,
         )
         self.map, self.person_x, self.person_y = generate_map(
             self.probability_matrix.get_matrix()
         )
 
-        #Initializing render
+        # Initializing render
         pygame.init()
         self.window_size = 700
         self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
@@ -60,7 +66,6 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.render_gradient = render_gradient
         self.render_grid = render_grid
-
 
     def default_drones_positions(self):
         counter_x = 0
@@ -114,9 +119,9 @@ class DroneSwarmSearch(ParallelEnv):
         for i in self.agents:
             if not i in actions:
                 raise Exception("Missing action for " + i)
-            
+
             drone_action = actions[i]
-            
+
             drone_x = self.agents_positions[i][0]
             drone_y = self.agents_positions[i][1]
 
@@ -130,7 +135,7 @@ class DroneSwarmSearch(ParallelEnv):
                     truncations[i] = True
                     terminations[i] = True
 
-            elif drone_action == 1: # RIGHT
+            elif drone_action == 1:  # RIGHT
                 if drone_x < self.grid_size - 1:
                     self.agents_positions[i][0] += 1
                 else:
@@ -178,7 +183,7 @@ class DroneSwarmSearch(ParallelEnv):
         # Get observations
         observations = self.create_observations()
 
-        # Get dummy infos 
+        # Get dummy infos
         infos = {e: {} for e in self.agents}
 
         # CHECK COLISION
@@ -217,7 +222,6 @@ class DroneSwarmSearch(ParallelEnv):
             self.renderOn = True
 
     def render(self):
-        
         self.enable_render(self.render_mode)
 
         self.draw()
@@ -232,34 +236,40 @@ class DroneSwarmSearch(ParallelEnv):
         drone_positions = [[x, y] for x, y in self.agents_positions.values()]
         person_position = [self.person_x, self.person_y]
         matrix = self.probability_matrix.get_matrix()
-        
+
         max_matrix = matrix.max()
         counter_x = 0
-        for x in np.arange(10, self.window_size+10, self.block_size):
+        for x in np.arange(10, self.window_size + 10, self.block_size):
             counter_y = 0
-            for y in np.arange(10, self.window_size+10, self.block_size):
+            for y in np.arange(10, self.window_size + 10, self.block_size):
                 rect = pygame.Rect(x, y, self.block_size, self.block_size)
                 prob = matrix[counter_y][counter_x]
-                normalizedProb = prob/max_matrix
+                normalizedProb = prob / max_matrix
                 if self.render_gradient:
                     if prob == 0:
                         r, g = 255, 0
                     elif prob > 0.99:
                         r, g = 0, 255
-                    else:                
+                    else:
                         g = normalizedProb
                         r = 1 - normalizedProb
                         g = g * 255
                         r = r * 255
                         max_color = max(r, g)
-                        g = (g) * (255)/( max_color)
-                        r = (r) * (255)/( max_color)
+                        g = (g) * (255) / (max_color)
+                        r = (r) * (255) / (max_color)
                 else:
-                    r, g = (0, 255) if normalizedProb >= 0.75 else  (255, 255) if normalizedProb >= 0.25 else (255, 0)
+                    r, g = (
+                        (0, 255)
+                        if normalizedProb >= 0.75
+                        else (255, 255)
+                        if normalizedProb >= 0.25
+                        else (255, 0)
+                    )
 
-                pygame.draw.rect(self.screen, (r,g,0) , rect)
+                pygame.draw.rect(self.screen, (r, g, 0), rect)
                 if self.render_grid:
-                    pygame.draw.rect(self.screen, (0,0,0) , rect, 2)
+                    pygame.draw.rect(self.screen, (0, 0, 0), rect, 2)
 
                 if [counter_x, counter_y] in drone_positions:
                     self.screen.blit(self.drone_img, rect)
@@ -273,7 +283,6 @@ class DroneSwarmSearch(ParallelEnv):
             pygame.event.pump()
             pygame.display.quit()
             self.renderOn = False
-
 
     def render_probability_matrix(self, mode="human-terminal"):
         if mode == "human-terminal":
@@ -295,6 +304,7 @@ class DroneSwarmSearch(ParallelEnv):
 
     def get_agents(self):
         return self.possible_agents
+
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         # TODO: If x and y are the observation, then this should the observation space

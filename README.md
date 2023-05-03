@@ -1,80 +1,16 @@
 # Drone Swarm Search
 
-## Poetry
+## About:
 
-### Run Python Script with poetry
+The Drone Swarm Search project is an environment, based on PettingZoo, that is to be used in conjunction with multi-agent (or single-agent) reinforcement learning algorithms. It is an environment in which the agents (drones), have to find the targets (shipwrecked people). The agents do not know the position of the target, and do not receive rewards related to their own distance to the target(s). However, the agents receive the probabilities of the target(s) being in a certain cell of the map. The aim of this project is to aid in the study of reinforcement learning algorithms that require dynamic probabilities as inputs. A visual representation of the environment is displayed below. To test the environment (without an algorithm), run `basic_env.py`.
 
-```bash
-poetry run python <python_file.py>
-```
-
-### Run Single Script
-
-```bash
-poetry run  <script_name>
-```
-
-To configure a new script, just edit the `pyproject.toml` file and add the script in the following format:
-
-```toml
-[tool.poetry.scripts]
-<name> = "<module>:<function>"
-```
-
-As the example below:
-
-```toml
-[tool.poetry.scripts]
-test = 'scripts:poetry_test'
-```
-
-### Poetry Environment
-
-```bash
-poetry shell
-```
-
-Essentially, this command will create a virtual environment and install all the dependencies in it. You can then run your scripts from the virtual environment.
-
-### Poetry Environment in VSCode
-
-If you are using VSCode, you can the following command to be able to select poetry environment as the default interpreter.
-
-```bash
-poetry config virtualenvs.in-project true
-```
-
-After that, reload the VSCode window and you should be able to select the poetry environment as the default interpreter.
-
-### Add new dependency
-
-```bash
-poetry add <package_name>
-```
-
-If you want to add a dependency only for development, you can use the following command:
-
-```bash
-poetry add --dev <package_name>
-```
-
-If the dependency is only used for testing, you can use the following command:
-
-```bash
-poetry add pytest --group test
-```
-
-### Remove dependency
-
-```bash
-poetry remove <package_name>
-```
-
-## Drone Swarm Environment Docs
+### Visualization example:
 
 <p align="center">
     <img src="https://github.com/PFE-Embraer/drone-swarm-search/blob/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
 </p>
+
+The following code was used in order to create the representation above:
 
 ```python
 from core.environment.env import DroneSwarmSearch
@@ -108,6 +44,12 @@ while not done:
 
 print(rewards)
 ```
+
+### Installing Dependencies
+
+Using Python version above or equal to 3.10.5.
+
+In order to use the environment download the dependencies using the following command `pip install -r requirements.txt`.
 
 ### General Info
 | Import            | from core.environment.env import DroneSwarmSearch  |
@@ -164,5 +106,6 @@ The *render_grid* variable is a simple boolean that if set to **True** along wit
 ### `person_initial_position`:
 
 ### `disperse_constant`:
+
 
 
