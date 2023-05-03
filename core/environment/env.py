@@ -54,7 +54,7 @@ class DroneSwarmSearch(ParallelEnv):
         self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
         self.renderOn = False
 
-        self.block_size = self.window_size // self.grid_size
+        self.block_size = self.window_size / self.grid_size
         self.drone_img = None
         self.person_img = None
 
@@ -234,11 +234,10 @@ class DroneSwarmSearch(ParallelEnv):
         matrix = self.probability_matrix.get_matrix()
         
         max_matrix = matrix.max()
-
         counter_x = 0
-        for x in range(10, self.window_size, self.block_size):
+        for x in np.arange(10, self.window_size+10, self.block_size):
             counter_y = 0
-            for y in range(10, self.window_size, self.block_size):
+            for y in np.arange(10, self.window_size+10, self.block_size):
                 rect = pygame.Rect(x, y, self.block_size, self.block_size)
                 prob = matrix[counter_y][counter_x]
                 normalizedProb = prob/max_matrix

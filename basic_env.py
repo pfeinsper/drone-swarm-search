@@ -3,7 +3,7 @@ import numpy as np
 env = DroneSwarmSearch(
     grid_size=50, 
     render_mode="human", 
-    render_grid = True,
+    render_grid = False,
     render_gradient = True,
     n_drones=10, 
     vector=[0.5, 0.5],
