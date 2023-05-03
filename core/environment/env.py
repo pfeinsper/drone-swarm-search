@@ -12,7 +12,7 @@ from core.environment.generator.map import generate_map, generate_matrix
 from core.environment.generator.dynamic_probability import probability_matrix
 
 
-class CustomEnvironment(ParallelEnv):
+class DroneSwarmSearch(ParallelEnv):
     def __init__(self, grid_size=7, 
                  render_mode="ansi", 
                  render_grid = False,
@@ -122,7 +122,7 @@ class CustomEnvironment(ParallelEnv):
 
             isSearching = False
 
-            if drone_action == 0:  # left
+            if drone_action == 0:  # LEFT
                 if drone_x > 0:
                     self.agents_positions[i][0] -= 1
                 else:
@@ -130,7 +130,7 @@ class CustomEnvironment(ParallelEnv):
                     truncations[i] = True
                     terminations[i] = True
 
-            elif drone_action == 1:
+            elif drone_action == 1: # RIGHT
                 if drone_x < self.grid_size - 1:
                     self.agents_positions[i][0] += 1
                 else:
@@ -294,6 +294,8 @@ class CustomEnvironment(ParallelEnv):
         elif mode == "human":
             self.probability_matrix.render()
 
+    def get_agents(self):
+        return self.possible_agents
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         # TODO: If x and y are the observation, then this should the observation space
@@ -308,6 +310,6 @@ from pettingzoo.test import parallel_api_test  # noqa: E402
 
 if __name__ == "__main__":
     parallel_api_test(
-        CustomEnvironment(7, "human", n_drones=5),
+        DroneSwarmSearch(7, "human", n_drones=5),
         num_cycles=1000,
     )
