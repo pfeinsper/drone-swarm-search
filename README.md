@@ -110,28 +110,28 @@ print(rewards)
 ```
 
 ### General Info
-| Import            | from core.environment.env import DroneSwarmSearch  |
-| -------------     | -------------                                      |
-| Action Space      | Discrete (5)                                       |
-| Action Values     | [0,1,2,3,4,5]                                      |  
-| Agents            | N                                                  |
-| Observation Space | {droneN: {observation: ((x, y), probability_matrix}|
+| Import            | from core.environment.env import DroneSwarmSearch   |
+| ----------------- | --------------------------------------------------- |
+| Action Space      | Discrete (5)                                        |
+| Action Values     | [0,1,2,3,4,5]                                       |
+| Agents            | N                                                   |
+| Observation Space | {droneN: {observation: ((x, y), probability_matrix} |
 
 ### Action Space
-| Value         | Meaning       |
-| ------------- | ------------- |
-| 0             | Move Left     |
-| 1             | Move Right    |
-| 2             | Move Up       |
-| 3             | Move Down     |
-| 4             | Search Cell   |
-| 5             | Idle          |
+| Value | Meaning     |
+| ----- | ----------- |
+| 0     | Move Left   |
+| 1     | Move Right  |
+| 2     | Move Up     |
+| 3     | Move Down   |
+| 4     | Search Cell |
+| 5     | Idle        |
 
 ### Inputs
 | Inputs                    | Possible Values       |
-| -------------             | -------------         |
+| ------------------------- | --------------------- |
 | `grid_size`               | `int(N)`              |
-| `render_mode`             | `"ansi" or "human"`   |  
+| `render_mode`             | `"ansi" or "human"`   |
 | `render_grid`             | `bool`                |
 | `render_gradient`         | `bool`                |
 | `n_drones`                | `int(N)`              |

@@ -174,7 +174,7 @@ class MultipleParallelSweep:
         last_vertice = (
             (self.grid_size_each_drone - 1, self.grid_size_each_drone - 1)
             if self.n_drones != 2
-            else (self.grid_size_each_drone * 2 - 1, self.grid_size_each_drone - 1)
+            else (self.grid_size_each_drone * 2 - 1, 0)
         )
 
         return DroneInfo(
@@ -189,6 +189,9 @@ class MultipleParallelSweep:
 
         :return: All the drone cell boundaries
         """
+        if self.n_drones == 2:
+            return [(0, 0), (self.grid_size_each_drone, 0)]
+
         drones_initial_positions = []
         for i in range(
             0,
