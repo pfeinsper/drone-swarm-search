@@ -247,6 +247,7 @@ The observation is a dictionary with all the drones as keys. Each drone has a va
 The reward returns a dictionary with the drones names as keys and their respectful rewards as values, as well as a total reward which is the sum of all agents rewards. For example `{'drone0': -1, 'drone1': -100.0, 'drone2': -1, 'total_reward': -102.0}`
 
 The rewards values goes as follows:
+
 - **-1** for every action by default
 - **-1000** if the drone leaves the grid 
 - **-1000** if the drone does not find the person in 500 steps
@@ -254,6 +255,14 @@ The rewards values goes as follows:
 - ***probability of cell* - 100** for searching a cell
 - **0** if the drone searches the cell in which the person is located
 
+#### Termination & Truncation:
+
+The termination and truncation variables return a dictionary with all drones as keys and boolean as values. For example `{'drone0': False, 'drone1': False, 'drone2': False}`. The booleans will be False by default and will turn True in the event of the conditions below:
+
+- If two or more drones collide
+- If one of the drones leave the grid 
+- If more than 500 steps occur
+- If a drone searches the cell in which the person is located
 
 ### `env.get_agents`:
 
