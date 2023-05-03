@@ -105,6 +105,14 @@ while not done:
 print(rewards)
 ```
 
+### General Info
+| Import            | from core.environment.env import DroneSwarmSearch  |
+| -------------     | -------------                                      |
+| Action Space      | Discrete (5)                                       |
+| Action Values     | [0,1,2,3,4,5]                                      |  
+| Agents            | N                                                  |
+| Observation Space | {droneN: {observation: ((x, y), probability_matrix}|
+
 ### Action Space
 | Value         | Meaning       |
 | ------------- | ------------- |
@@ -114,3 +122,14 @@ print(rewards)
 | 3             | Move Down     |
 | 4             | Search Cell   |
 | 5             | Idle          |
+
+### Inputs
+| Inputs                    | Possible Values       |
+| -------------             | -------------         |
+| `grid_size`               | `int(N)`              |
+| `render_mode`             | `"ansi" or "human"`   |  
+| `render_grid`             | `bool`                |
+| `n_drones`                | `int(N)`              |
+| `vector`                  | `[float(x), float(y)` |
+| `person_initial_position` | `[int(x), int(y)]`    |
+| `disperse_constant`       | `float`               |
