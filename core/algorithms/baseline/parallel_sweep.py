@@ -36,6 +36,7 @@ class SingleParallelSweep:
         self.last_vertice_x = drone_info.last_vertice[0]
         self.last_vertice_y = drone_info.last_vertice[1]
         self.end_position_x, self.end_position_y = self.get_end_position()
+        self.is_going_down = True
 
     def get_end_position(self):
         """
@@ -55,9 +56,23 @@ class SingleParallelSweep:
 
         :return: True if the drone is at the end position, False otherwise
         """
-        return (
-            self.drone_x == self.end_position_x and self.drone_y == self.end_position_y
-        )
+        if self.is_going_down:
+            reached_last_vertice = (
+                self.drone_x == self.end_position_x
+                and self.drone_y == self.end_position_y
+            )
+
+            if reached_last_vertice:
+                self.is_going_down = False
+
+            return reached_last_vertice
+
+        reached_initial_position = self.drone_x == 0 and self.drone_y == 0
+
+        if reached_initial_position:
+            self.is_going_down = True
+
+        return reached_initial_position
 
     def generate_next_movement(self):
         """
@@ -70,33 +85,50 @@ class SingleParallelSweep:
             return
 
         is_going_right = True
-        done = False
 
-        while not done:
-            if is_going_right:
-                yield PossibleActions.search
-                yield PossibleActions.right
-                self.drone_y += 1
+        while True:
+            if self.is_going_down:
+                if is_going_right:
+                    yield PossibleActions.search
+                    yield PossibleActions.right
+                    self.drone_y += 1
 
-                if self.drone_y == self.grid_size - 1:
-                    is_going_right = False
-                    done = self.check_if_done()
-                    if not done:
-                        yield PossibleActions.down
-                        self.drone_x += 1
+                    if self.drone_y == self.grid_size - 1:
+                        is_going_right = False
+                        if not self.check_if_done():
+                            yield PossibleActions.down
+                            self.drone_x += 1
+                else:
+                    yield PossibleActions.search
+                    yield PossibleActions.left
+                    self.drone_y -= 1
+
+                    if self.drone_y == 0:
+                        is_going_right = True
+                        if not self.check_if_done():
+                            yield PossibleActions.down
+                            self.drone_x += 1
             else:
-                yield PossibleActions.search
-                yield PossibleActions.left
-                self.drone_y -= 1
+                if is_going_right:
+                    yield PossibleActions.search
+                    yield PossibleActions.right
+                    self.drone_y += 1
 
-                if self.drone_y == 0:
-                    is_going_right = True
-                    done = self.check_if_done()
-                    if not done:
-                        yield PossibleActions.down
-                        self.drone_x += 1
+                    if self.drone_y == self.grid_size - 1:
+                        is_going_right = False
+                        if not self.check_if_done():
+                            yield PossibleActions.up
+                            self.drone_x -= 1
+                else:
+                    yield PossibleActions.search
+                    yield PossibleActions.left
+                    self.drone_y -= 1
 
-        yield PossibleActions.search
+                    if self.drone_y == 0:
+                        is_going_right = True
+                        if not self.check_if_done():
+                            yield PossibleActions.up
+                            self.drone_x -= 1
 
     def genarate_next_action(self):
         """
