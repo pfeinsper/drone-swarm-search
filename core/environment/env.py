@@ -42,7 +42,7 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.render_mode = render_mode
         self.probability_matrix = probability_matrix(
-            40, disperse_constant, disperse_constant, self.vector, person_initial_position, self.grid_size
+            40, disperse_constant, disperse_constant, self.vector, [person_initial_position[1], person_initial_position[0]], self.grid_size
         )
         self.map, self.person_x, self.person_y = generate_map(
             self.probability_matrix.get_matrix()
@@ -73,6 +73,8 @@ class DroneSwarmSearch(ParallelEnv):
             counter_x += 1
 
     def required_drone_positions(self, drones_positions: list):
+        if len(drones_positions) != len(self.possible_agents):
+            raise Exception("There are more or less initial positions than drones, please make sure there are the same number of initial possitions and number of drones.")
         for i in range(len(drones_positions)):
             x, y = drones_positions[i]
             self.agents_positions[self.possible_agents[i]] = [x, y]
@@ -303,12 +305,3 @@ class DroneSwarmSearch(ParallelEnv):
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
         return [0, 1, 2, 3, 4, 5]
-
-
-from pettingzoo.test import parallel_api_test  # noqa: E402
-
-if __name__ == "__main__":
-    parallel_api_test(
-        DroneSwarmSearch(7, "human", n_drones=5),
-        num_cycles=1000,
-    )
