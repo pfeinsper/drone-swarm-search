@@ -242,6 +242,19 @@ The observation is a dictionary with all the drones as keys. Each drone has a va
 }
 ```
 
+#### Reward:
+
+The reward returns a dictionary with the drones names as keys and their respectful rewards as values, as well as a total reward which is the sum of all agents rewards. For example `{'drone0': -1, 'drone1': -100.0, 'drone2': -1, 'total_reward': -102.0}`
+
+The rewards values goes as follows:
+- **-1** for every action by default
+- **-1000** if the drone leaves the grid 
+- **-1000** if the drone does not find the person in 500 steps
+- **-2000** if the drones collide 
+- ***probability of cell* - 100** for searching a cell
+- **0** if the drone searches the cell in which the person is located
+
+
 ### `env.get_agents`:
 
 `env.get_agents()` will return a list of all the possible agents initialized in the scene, you can use it to confirm that all the drones exist in the environment. For example `['drone0', 'drone1', 'drone2', 'drone3', 'drone4', 'drone5', 'drone6', 'drone7', 'drone8', 'drone9']` in an environment with 10 drones.  
