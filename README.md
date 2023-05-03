@@ -194,8 +194,53 @@ The `env.step()` method defines the drone's next movement. When called upon, the
 
 The method returns the **observation**, the **reward**, the **termination** state, the **truncation** state and **info**, in the respectful order.
 
-#### observation:
+#### Observation:
 
+The observation is a dictionary with all the drones as keys. Each drone has a value of another dictionary with “observation” as key and a tuple as its value. The tuple follows the following pattern, `((x_position, y_position), probability_matrix)`. An output example can be seen below.
+
+```bash
+{
+    'drone0': 
+        {'observation': ((5, 5), array([[0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        ...,
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.]]))
+        }, 
+    'drone1': 
+        {'observation': ((25, 5), array([[0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        ...,
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.]]))
+        }, 
+    'drone2': 
+        {'observation': ((45, 5), array([[0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        ...,
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.]]))
+       }, 
+       
+       .................................
+       
+    'drone9': 
+        {'observation': ((33, 45), array([[0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        ...,
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.],
+                                        [0., 0., 0., ..., 0., 0., 0.]]))
+        }
+}
+```
 
 ### `env.get_agents`:
 
