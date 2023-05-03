@@ -133,6 +133,7 @@ print(rewards)
 | `grid_size`               | `int(N)`              |
 | `render_mode`             | `"ansi" or "human"`   |  
 | `render_grid`             | `bool`                |
+| `render_gradient`         | `bool`                |
 | `n_drones`                | `int(N)`              |
 | `vector`                  | `[float(x), float(y)` |
 | `person_initial_position` | `[int(x), int(y)]`    |
@@ -140,9 +141,13 @@ print(rewards)
 
 ### `grid_size`:
 
+The grid size defines the area in which the search will happen. It should always be an integer greater than one.
+
 ### `render_mode`:
 
 ### `render_grid`:
+
+### `render_gradient`:
 
 ### `n_drones`:
 
