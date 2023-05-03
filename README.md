@@ -137,3 +137,19 @@ print(rewards)
 | `vector`                  | `[float(x), float(y)` |
 | `person_initial_position` | `[int(x), int(y)]`    |
 | `disperse_constant`       | `float`               |
+
+### `grid_size`:
+
+### `render_mode`:
+
+### `render_grid`:
+
+### `n_drones`:
+
+### `vector`:
+
+### `person_initial_position`:
+
+### `disperse_constant`:
+
+
