@@ -70,7 +70,7 @@ poetry add pytest --group test
 poetry remove <package_name>
 ```
 
-### Drone Swarm Environment Docs
+## Drone Swarm Environment Docs
 
 ```python
 from core.environment.env import DroneSwarmSearch
@@ -104,3 +104,13 @@ while not done:
 
 print(rewards)
 ```
+
+### Action Space
+| Value         | Meaning       |
+| ------------- | ------------- |
+| 0             | Move Left     |
+| 1             | Move Right    |
+| 2             | Move Up       |
+| 3             | Move Down     |
+| 4             | Search Cell   |
+| 5             | Idle          |
