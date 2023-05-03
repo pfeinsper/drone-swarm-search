@@ -69,3 +69,38 @@ poetry add pytest --group test
 ```bash
 poetry remove <package_name>
 ```
+
+### Drone Swarm Environment Docs
+
+```python
+from core.environment.env import DroneSwarmSearch
+
+env = DroneSwarmSearch(
+    grid_size=50, 
+    render_mode="human", 
+    render_grid = True,
+    render_gradient = True,
+    n_drones=11, 
+    vector=[0.5, 0.5],
+    person_initial_position = [5, 10],
+    disperse_constant = 3)
+
+def policy(obs, agent):
+    actions = {}
+    for i in range(11):
+        actions["drone{}".format(i)] = 1
+    return actions
+
+
+observations = env.reset()
+rewards = 0
+done = False
+
+while not done:
+    actions = policy(observations, env.get_agents())
+    observations, reward, _, done, info = env.step(actions)
+    rewards += reward["total_reward"]
+    done = True if True in [e for e in done.values()] else False
+
+print(rewards)
+```
