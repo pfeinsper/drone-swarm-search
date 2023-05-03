@@ -145,7 +145,15 @@ The grid size defines the area in which the search will happen. It should always
 
 ### `render_mode`:
 
+There are two available render modes, *ansi*  and *human*.
+
+**Ansi**: This mode presents no visualization and is intended to train the reinforcement learning algorithm.
+
+**Human**: This mode presents a visualization of the drones actively searching the target, as well as the visualization of the person moving according to the input vector. 
+
 ### `render_grid`:
+
+The *render_grid* variable is a simple boolean that if set to **True** along with the `render_mode = “human”` the visualization will be rendered with a grid, if it is set to **False** there will be no grid when rendering.   
 
 ### `render_gradient`:
 
