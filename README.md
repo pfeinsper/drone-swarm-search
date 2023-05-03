@@ -72,6 +72,10 @@ poetry remove <package_name>
 
 ## Drone Swarm Environment Docs
 
+<p align="center">
+    <img src="https://github.com/PFE-Embraer/drone-swarm-search/blob/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
+</p>
+
 ```python
 from core.environment.env import DroneSwarmSearch
 
