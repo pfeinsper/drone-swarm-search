@@ -46,6 +46,12 @@ while not done:
 print(rewards)
 ```
 
+### Installing Dependencies
+
+Using Python version above or equal to 3.10.5.
+
+In order to use the environment download the dependencies using the following command `pip install -r requirements.txt`.
+
 ### General Info
 | Import            | from core.environment.env import DroneSwarmSearch  |
 | -------------     | -------------                                      |
