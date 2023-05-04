@@ -130,7 +130,7 @@ class DroneSwarmSearch(ParallelEnv):
                 if drone_x > 0:
                     self.agents_positions[i][0] -= 1
                 else:
-                    rewards[i] = -1000
+                    rewards[i] = -10000
                     truncations[i] = True
                     terminations[i] = True
 
@@ -138,28 +138,28 @@ class DroneSwarmSearch(ParallelEnv):
                 if drone_x < self.grid_size - 1:
                     self.agents_positions[i][0] += 1
                 else:
-                    rewards[i] = -1000
+                    rewards[i] = -10000
                     truncations[i] = True
                     terminations[i] = True
             elif drone_action == 2:  # UP
                 if drone_y > 0:
                     self.agents_positions[i][1] -= 1
                 else:
-                    rewards[i] = -1000
+                    rewards[i] = -10000
                     truncations[i] = True
                     terminations[i] = True
             elif drone_action == 3:  # DOWN
                 if drone_y < self.grid_size - 1:
                     self.agents_positions[i][1] += 1
                 else:
-                    rewards[i] = -1000
+                    rewards[i] = -10000
                     truncations[i] = True
                     terminations[i] = True
 
             elif drone_action == 4:  # search
                 isSearching = True
             elif drone_action == 5:  # idle
-                pass
+                rewards[i] = -1000
 
             if drone_x == self.person_x and drone_y == self.person_y and isSearching:
                 rewards = {a: 0 for a in self.agents}
@@ -172,8 +172,8 @@ class DroneSwarmSearch(ParallelEnv):
                 rewards[i] = prob_matrix[drone_y][drone_x] - 100
 
             # Check truncation conditions (overwrites termination conditions)
-            if self.timestep > 500:
-                rewards[i] = -1000
+            if self.timestep > 30:
+                rewards[i] = -10000
                 truncations[i] = True
                 terminations[i] = True
                 self.agents = []
@@ -192,7 +192,7 @@ class DroneSwarmSearch(ParallelEnv):
                     if i[0] == e[0] and i[1] == e[1]:
                         truncations[ki] = True
                         terminations[ki] = True
-                        rewards[ki] = -2000
+                        rewards[ki] = -50000
         rewards["total_reward"] = sum([e for e in rewards.values()])
 
         if self.render_mode == "human":

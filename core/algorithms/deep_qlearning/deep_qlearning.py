@@ -7,14 +7,14 @@ from collections import deque
 
 class DQN:
     def __init__(
-        self,
-        env,
-        load_weights=False,
-        n_episodes=500,
-        n_steps=200,
-        filename="dqn_weights_multi.h5",
-        batch_size=32,
-        discount_rate=0.95,
+            self,
+            env,
+            load_weights=False,
+            n_episodes=500,
+            n_steps=200,
+            filename="dqn_weights_multi.h5",
+            batch_size=100,
+            discount_rate=0.98,
     ):
         self.env = env
         self.num_agents = len(env.possible_agents)
@@ -52,10 +52,11 @@ class DQN:
         model = keras.models.Sequential(
             [
                 keras.layers.Dense(
-                    32,
+                    64,
                     activation="elu",
                     input_shape=self.num_obs,
                 ),
+                keras.layers.Dense(64, activation="elu"),
                 keras.layers.Dense(32, activation="elu"),
                 keras.layers.Dense(self.num_actions),
             ]
@@ -114,7 +115,7 @@ class DQN:
 
         for agent in self.env.possible_agents:
             actions[agent] = np.argmax(
-                Q_values[0][current_action_range[0] : current_action_range[1]]
+                Q_values[0][current_action_range[0]: current_action_range[1]]
             )
             current_action_range = (
                 current_action_range[1],
@@ -150,13 +151,13 @@ class DQN:
         next_Q_values = self.model.predict(self.transform_all_states(next_states))
         max_next_Q_values = np.max(next_Q_values, axis=1)
 
-        # TODO: Check if this is correct
-        target_Q_values = (
-            self.transform_rewards(rewards)
-            + (1 - self.transform_dones(dones)) * self.discount_rate * max_next_Q_values
-        )
-        target_Q_values = target_Q_values.reshape(-1, 1)
-        # END TODO
+        # # TODO: Check if this is correct
+        # target_Q_values = (
+        #         self.transform_rewards(rewards)
+        #         + (1 - self.transform_dones(dones)) * self.discount_rate * max_next_Q_values
+        # )
+        # target_Q_values = target_Q_values.reshape(-1, 1)
+        # # END TODO
 
         mask = self.one_hot_encode_all_actions(actions)
         mask = tf.convert_to_tensor(mask, dtype=tf.float32)
@@ -164,6 +165,7 @@ class DQN:
         with tf.GradientTape() as tape:
             all_Q_values = self.model(self.transform_all_states(states))
             Q_values = tf.reduce_sum(all_Q_values * mask, axis=1, keepdims=True)
+            target_Q_values = [0] * len(Q_values)
             loss = tf.reduce_mean(self.loss_fn(target_Q_values, Q_values))
 
         grads = tape.gradient(loss, self.model.trainable_variables)
@@ -180,7 +182,7 @@ class DQN:
             done = False
 
             while not done:
-                epsilon = max(1 - episode / 500, 0.01)
+                epsilon = max(1 - episode / self.n_episodes, 0.01)
                 obs, reward, done, _, _ = self.play_one_step(obs, epsilon)
                 episode_reward += reward["total_reward"]
                 done = all(done.values())
@@ -198,7 +200,7 @@ class DQN:
                 end="",
             )  # Not shown
 
-            if episode > 50:
+            if episode > 1000:
                 self.training_step()
 
         self.model.set_weights(best_weights)
