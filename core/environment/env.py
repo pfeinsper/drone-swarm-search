@@ -64,7 +64,7 @@ class DroneSwarmSearch(ParallelEnv):
 
         #Reward Function
         self.reward_scheme = {
-            "default" : -1,
+            "default" : 1,
             "leave_grid": -100000,
             "exceed_timestep": -1000,
             "drones_collision": -2000,
