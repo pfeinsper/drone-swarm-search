@@ -3,21 +3,22 @@ import numpy as np
 env = DroneSwarmSearch(
     grid_size=50, 
     render_mode="human", 
-    render_grid = False,
+    render_grid = True,
     render_gradient = True,
-    n_drones=10, 
+    n_drones=1, 
     vector=[0.5, 0.5],
-    person_initial_position = [5, 10],
-    disperse_constant = 5)
+    person_initial_position = [0, 0],
+    disperse_constant = 2)
 
 def policy(obs, agent):
     actions = {}
     for i in range(11):
-        actions["drone{}".format(i)] = np.random.randint(5)
+        #actions["drone{}".format(i)] = np.random.randint(5)
+        actions["drone{}".format(i)] = 4
     return actions
 
 
-observations = env.reset(drones_positions=[[5, 5], [25, 5], [45, 5], [5, 15], [25, 15], [45, 15], [10, 35], [30, 35], [45, 25], [33, 45]])
+observations = env.reset(drones_positions=[[10, 10]])
 
 rewards = 0
 done = False
@@ -27,4 +28,4 @@ while not done:
     observations, reward, _, done, info = env.step(actions)
     rewards += reward["total_reward"]
     done = True if True in [e for e in done.values()] else False
-print(rewards)
+    print(reward["total_reward"])

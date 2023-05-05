@@ -8,8 +8,6 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
     <img src="https://github.com/PFE-Embraer/drone-swarm-search/blob/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
 </p>
 
-The following code was used in order to create the representation above:
-
 ## Basic Usage
 ```python
 from core.environment.env import DroneSwarmSearch
@@ -211,6 +209,3 @@ The termination and truncation variables return a dictionary with all drones as 
 ### `env.close`:
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
-
-
-
