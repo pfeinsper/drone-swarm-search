@@ -1,19 +1,22 @@
 from core.environment.env import DroneSwarmSearch
 import numpy as np
+
 env = DroneSwarmSearch(
-    grid_size=50, 
-    render_mode="human", 
-    render_grid = True,
-    render_gradient = True,
-    n_drones=1, 
+    grid_size=50,
+    render_mode="human",
+    render_grid=True,
+    render_gradient=True,
+    n_drones=1,
     vector=[0.5, 0.5],
-    person_initial_position = [0, 0],
-    disperse_constant = 2)
+    person_initial_position=[0, 0],
+    disperse_constant=2,
+)
+
 
 def policy(obs, agent):
     actions = {}
     for i in range(11):
-        #actions["drone{}".format(i)] = np.random.randint(5)
+        # actions["drone{}".format(i)] = np.random.randint(5)
         actions["drone{}".format(i)] = 4
     return actions
 
