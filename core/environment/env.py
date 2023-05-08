@@ -73,13 +73,13 @@ class DroneSwarmSearch(ParallelEnv):
         # Reward Function
         self.reward_scheme = {
             "default": 1,
-            "move_closer": 100,
-            "move_away": -100,
+            # "move_closer": 100,
+            # "move_away": -100,
             "leave_grid": -100000,
             "exceed_timestep": -1000,
             "drones_collision": -2000,
             "search_cell": 0,
-            "search_and_find": 0,
+            "search_and_find": 1000,
         }
 
     def default_drones_positions(self):
@@ -132,24 +132,24 @@ class DroneSwarmSearch(ParallelEnv):
         self.render_probability_matrix(self.render_mode_matrix)
         return observations
 
-    def get_move_reward(self, position, new_position, matrix):
-        max_value_index = np.argmax(matrix)
-        max_row_index, max_col_index = np.unravel_index(max_value_index, matrix.shape)
-        current_distance = np.sqrt(
-            (position[0] - max_row_index) ** 2 + (position[1] - max_col_index) ** 2
-        )
-
-        new_distance = np.sqrt(
-            (new_position[0] - max_row_index) ** 2
-            + (new_position[1] - max_col_index) ** 2
-        )
-
-        if new_distance < current_distance:
-            return self.reward_scheme["move_closer"]
-        elif new_distance > current_distance:
-            return self.reward_scheme["move_away"]
-
-        return self.reward_scheme["default"]
+    # def get_move_reward(self, position, new_position, matrix):
+    #     max_value_index = np.argmax(matrix)
+    #     max_row_index, max_col_index = np.unravel_index(max_value_index, matrix.shape)
+    #     current_distance = np.sqrt(
+    #         (position[0] - max_row_index) ** 2 + (position[1] - max_col_index) ** 2
+    #     )
+    #
+    #     new_distance = np.sqrt(
+    #         (new_position[0] - max_row_index) ** 2
+    #         + (new_position[1] - max_col_index) ** 2
+    #     )
+    #
+    #     if new_distance < current_distance:
+    #         return self.reward_scheme["move_closer"]
+    #     elif new_distance > current_distance:
+    #         return self.reward_scheme["move_away"]
+    #
+    #     return self.reward_scheme["default"]
 
     def move(self, position, matrix, action):
         """Returns a tuple with (is_terminal, new_position, reward)"""
@@ -171,7 +171,7 @@ class DroneSwarmSearch(ParallelEnv):
         ):
             return True, new_position, self.reward_scheme["leave_grid"]
 
-        return False, new_position, self.get_move_reward(position, new_position, matrix)
+        return False, new_position, 1 #self.get_move_reward(position, new_position, matrix) Todo
 
     def step(self, actions):
         """Returns a tuple with (observations, rewards, terminations, truncations, infos)"""

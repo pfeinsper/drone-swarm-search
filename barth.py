@@ -36,6 +36,7 @@ def train(env, y, lr, episodes):
         Actions, States, Rewards = [], [], []
         count_actions = 0
         rewards = 0
+        time_penality = 1
 
         while not done:
             probs = nn(obs.float())
@@ -45,7 +46,8 @@ def train(env, y, lr, episodes):
 
             Actions.append(torch.tensor(action, dtype=torch.int))
             States.append(obs)
-            Rewards.append(reward["total_reward"])
+            Rewards.append(reward["total_reward"] - time_penality)
+            time_penality *= 1.1
 
             obs = flatten_state(obs_)
             # obs = torch.tensor(obs_, dtype=torch.float)
@@ -99,7 +101,7 @@ env = DroneSwarmSearch(
 
 observations = env.reset(drones_positions=[[5, 5]])
 
-lr = 0.00001
+lr = 0.00003
 y = 0.99999
 nn, statistics = train(env, y, lr, 10_000)
 torch.save(nn, "data/nn_10_10.pt")
