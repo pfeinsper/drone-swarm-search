@@ -7,8 +7,9 @@ env = DroneSwarmSearch(
     render_gradient = True,
     n_drones=1, 
     vector=[0.5, 0.5],
-    person_initial_position = [0, 0],
-    disperse_constant = 2)
+    person_initial_position = [1, 1],
+    disperse_constant = 1,
+    timestep_limit=5)
 
 def policy(obs, agent):
     actions = {}
@@ -18,7 +19,7 @@ def policy(obs, agent):
     return actions
 
 
-observations = env.reset(drones_positions=[[10, 10]])
+observations = env.reset(drones_positions=[[25, 25]])
 
 rewards = 0
 done = False
@@ -28,4 +29,4 @@ while not done:
     observations, reward, _, done, info = env.step(actions)
     rewards += reward["total_reward"]
     done = True if True in [e for e in done.values()] else False
-    print(reward["total_reward"])
+   
