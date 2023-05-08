@@ -145,7 +145,7 @@ class DroneSwarmSearch(ParallelEnv):
         terminations = {a: False for a in self.agents}
         rewards = {a: self.reward_scheme["default"] for a in self.agents}
         truncations = {a: False for a in self.agents}
-
+        person_found = False
         for i in self.agents:
             if not i in actions:
                 raise Exception("Missing action for " + i)
@@ -201,6 +201,7 @@ class DroneSwarmSearch(ParallelEnv):
                 terminations = {a: True for a in self.agents}
                 truncations = {a: True for a in self.agents}
                 self.agents = []
+                person_found = True
 
             elif isSearching:
                 prob_matrix = self.probability_matrix.get_matrix()
@@ -232,7 +233,12 @@ class DroneSwarmSearch(ParallelEnv):
                         rewards[ki] = self.reward_scheme["drones_collision"]
         rewards["total_reward"] = sum([e for e in rewards.values()])
 
-        if self.render_mode == "human":
+        if True in terminations.values():
+            if person_found:
+                self.victory_render()
+            else:
+                self.failure_render()
+        elif self.render_mode == "human":
             self.render()
 
         return observations, rewards, terminations, truncations, infos
@@ -313,7 +319,35 @@ class DroneSwarmSearch(ParallelEnv):
                     self.screen.blit(self.person_img, rect)
                 counter_y += 1
             counter_x += 1
-
+    
+    def failure_render(self):
+        done = False
+        font = pygame.font.SysFont(None, 50)
+        motd = 'The target was not found.'
+        text = font.render(motd, True, (0,0,0))
+        text_rect = text.get_rect(center=(self.window_size//2, self.window_size//2))
+        while not done:  
+            for event in pygame.event.get():  
+                if event.type == pygame.QUIT:  
+                    done = True  
+            self.screen.fill((255,0,0)) 
+            self.screen.blit(text, text_rect) 
+            pygame.display.flip()  
+        self.close()
+    def victory_render(self):
+        done = False
+        font = pygame.font.SysFont(None, 50)
+        motd = 'The target was found in {0} moves.'.format(self.timestep)
+        text = font.render(motd, True, (0,0,0))
+        text_rect = text.get_rect(center=(self.window_size//2, self.window_size//2))
+        while not done:  
+            for event in pygame.event.get():  
+                if event.type == pygame.QUIT:  
+                    done = True  
+            self.screen.fill((0,255,0)) 
+            self.screen.blit(text, text_rect) 
+            pygame.display.flip()  
+        self.close()
     def close(self):
         if self.renderOn:
             pygame.event.pump()
