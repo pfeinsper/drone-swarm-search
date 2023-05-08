@@ -1,4 +1,4 @@
-import gymnasium as gym
+import numpy as np
 import torch
 from core.environment.env import DroneSwarmSearch
 
@@ -35,7 +35,6 @@ env = DroneSwarmSearch(
 
 state = env.reset(drones_positions=[[5, 5]])
 obs = flatten_state(state)
-# obs = torch.tensor(state, dtype=torch.float)
 done = False
 
 rewards = 0

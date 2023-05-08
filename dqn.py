@@ -139,13 +139,15 @@ class DQN:
                 done = all(done.values())
 
             rewards.append(total_reward)
-            if len(self.memory) > self.batch_size:
-                self.replay()
-            print(
-                "Episode: {}, Reward: {}, Epsilon: {}".format(
-                    episode, total_reward, self.epsilon
+
+            if episode % 10 == 0:
+                if len(self.memory) > self.batch_size:
+                    self.replay()
+                print(
+                    "Episode: {}, Reward: {}, Epsilon: {}".format(
+                        episode, total_reward, self.epsilon
+                    )
                 )
-            )
 
         self.model.save(self.filename)
         self.plot_learning_curves(rewards)
@@ -181,11 +183,11 @@ class DQN:
 
 from core.environment.env import DroneSwarmSearch
 
-n_episodes = 100
+n_episodes = 1000
 batch_size = 32
 env = DroneSwarmSearch(
     grid_size=5,
-    render_mode="human",
+    render_mode="ansi",
     render_grid=True,
     render_gradient=True,
     n_drones=1,
@@ -194,5 +196,5 @@ env = DroneSwarmSearch(
     disperse_constant=3,
     timestep_limit=30,
 )
-dqn = DQN(env, load_weights=True, n_episodes=n_episodes, batch_size=batch_size)
+dqn = DQN(env, load_weights=False, n_episodes=n_episodes, batch_size=batch_size)
 dqn.play()
