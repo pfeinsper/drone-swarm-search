@@ -79,7 +79,7 @@ class DroneSwarmSearch(ParallelEnv):
             "exceed_timestep": -1000,
             "drones_collision": -2000,
             "search_cell": 0,
-            "search_and_find": 1000,
+            "search_and_find": 100000,
         }
 
     def default_drones_positions(self):
@@ -106,6 +106,7 @@ class DroneSwarmSearch(ParallelEnv):
     def reset(self, seed=None, return_info=False, options=None, drones_positions=None):
         self.agents = copy(self.possible_agents)
         self.timestep = 0
+
         self.probability_matrix = probability_matrix(
             40,
             self.disperse_constant,
@@ -138,8 +139,8 @@ class DroneSwarmSearch(ParallelEnv):
                 (self.agents_positions[i][0], self.agents_positions[i][1]),
                 self.probability_matrix.get_matrix(),
             )
-
             observations[i] = {"observation": observation}
+
         self.render_probability_matrix(self.render_mode_matrix)
         return observations
 
@@ -163,7 +164,7 @@ class DroneSwarmSearch(ParallelEnv):
         ):
             return True, new_position, self.reward_scheme["leave_grid"]
 
-        return (False, new_position, self.reward_scheme["default"])
+        return False, new_position, self.reward_scheme["default"]
 
     def step(self, actions):
         """Returns a tuple with (observations, rewards, terminations, truncations, infos)"""
@@ -195,7 +196,8 @@ class DroneSwarmSearch(ParallelEnv):
             if drone_x == self.person_x and drone_y == self.person_y and isSearching:
                 rewards = {
                     a: self.reward_scheme["search_and_find"]
-                    + (self.timestep_limit - self.timestep) * 10
+                    + self.reward_scheme["search_and_find"]
+                    * (1 - self.timestep / self.timestep_limit)
                     for a in self.agents
                 }
                 terminations = {a: True for a in self.agents}
@@ -232,13 +234,14 @@ class DroneSwarmSearch(ParallelEnv):
                         rewards[ki] = self.reward_scheme["drones_collision"]
         rewards["total_reward"] = sum([e for e in rewards.values()])
 
-        if True in terminations.values():
-            if person_found:
-                self.victory_render()
-            else:
-                self.failure_render()
-        elif self.render_mode == "human":
+        if self.render_mode == "human":
             self.render()
+
+            if True in terminations.values():
+                if person_found:
+                    self.victory_render()
+                else:
+                    self.failure_render()
 
         return observations, rewards, terminations, truncations, infos
 
@@ -266,7 +269,6 @@ class DroneSwarmSearch(ParallelEnv):
         """Renders the environment."""
         self.enable_render(self.render_mode)
         self.draw()
-
         if self.render_mode == "human":
             pygame.display.flip()
             return

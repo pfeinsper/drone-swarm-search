@@ -1,92 +1,96 @@
-import gymnasium as gym
 import torch
 import pandas as pd
 from core.environment.env import DroneSwarmSearch
 
 
-#
-# eu um estado 50x50 irah retornar um vetor de 2502 posicoes
-#
-def flatten_state(observations):
-    drone_position = torch.tensor(observations["drone0"]["observation"][0])
-    flatten_obs = torch.flatten(torch.tensor(observations["drone0"]["observation"][1]))
-    all_obs = torch.cat((drone_position, flatten_obs), dim=-1)
-    return all_obs
+class RLAgent:
+    def __init__(self, env, y, lr, episodes):
+        self.env = env
+        self.y = y
+        self.lr = lr
+        self.episodes = episodes
 
+        self.num_agents = len(env.possible_agents)
+        self.num_obs = (
+            2 * self.num_agents
+            + env.observation_space("drone0").nvec[0]
+            * env.observation_space("drone0").nvec[1]
+        )
+        self.num_actions = sum(
+            [len(env.action_space(agent)) for agent in env.possible_agents]
+        )
 
-def train(env, y, lr, episodes):
-    nn = torch.nn.Sequential(
-        torch.nn.Linear(102, 512),
-        torch.nn.ReLU(),
-        torch.nn.Linear(512, 6),
-        torch.nn.Softmax(dim=-1),
-    )
-    # usa o Adam algorithm para otimização
-    optim = torch.optim.Adam(nn.parameters(), lr=lr)
+    def flatten_state(self, observations):
+        drone_position = torch.tensor(observations["drone0"]["observation"][0])
+        flatten_obs = torch.flatten(
+            torch.tensor(observations["drone0"]["observation"][1])
+        )
+        all_obs = torch.cat((drone_position, flatten_obs), dim=-1)
+        return all_obs
 
-    statistics = []
+    def train(self):
+        nn = torch.nn.Sequential(
+            torch.nn.Linear(self.num_obs, 512),
+            torch.nn.ReLU(),
+            torch.nn.Linear(512, 256),
+            torch.nn.ReLU(),
+            torch.nn.Linear(256, self.num_actions),
+            torch.nn.Softmax(dim=-1),
+        )
+        optim = torch.optim.Adam(nn.parameters(), lr=self.lr)
+        statistics = []
 
-    nn = nn.float()
+        nn = nn.float()
 
-    for i in range(episodes + 1):
-        state = env.reset(drones_positions=[[5, 5]])
-        obs = flatten_state(state)
-        # obs = torch.tensor(state, dtype=torch.float)
-        done = False
-        Actions, States, Rewards = [], [], []
-        count_actions = 0
-        rewards = 0
-        time_penality = 1
+        for i in range(self.episodes + 1):
+            state = self.env.reset(drones_positions=[[5, 5]])
+            obs = self.flatten_state(state)
+            done = False
+            actions, states, rewards = [], [], []
+            count_actions = 0
+            total_reward = 0
 
-        while not done:
-            probs = nn(obs.float())
-            dist = torch.distributions.Categorical(probs)
-            action = dist.sample().item()
-            obs_, reward, _, done, info = env.step({"drone0": action})
+            while not done:
+                probs = nn(obs.float())
+                dist = torch.distributions.Categorical(probs)
+                action = dist.sample().item()
+                obs_, reward, _, done, _ = self.env.step({"drone0": action})
 
-            Actions.append(torch.tensor(action, dtype=torch.int))
-            States.append(obs)
-            Rewards.append(reward["total_reward"] - time_penality)
-            time_penality *= 1.1
+                actions.append(torch.tensor(action, dtype=torch.int))
+                states.append(obs)
+                rewards.append(reward["total_reward"])
 
-            obs = flatten_state(obs_)
-            # obs = torch.tensor(obs_, dtype=torch.float)
-            count_actions += 1
-            rewards = rewards + reward["total_reward"]
+                obs = self.flatten_state(obs_)
+                count_actions += 1
+                total_reward += reward["total_reward"]
 
-            done = True if True in [e for e in done.values()] else False
+                done = any(done.values())
 
-        if i % 100 == 0:
-            print(f"Episode = {i}, Actions = {count_actions}, Rewards = {rewards}")
+            if i % 100 == 0:
+                print(
+                    f"Episode = {i}, Actions = {count_actions}, Rewards = {total_reward}"
+                )
 
-        statistics.append([i, count_actions, rewards])
+            statistics.append([i, count_actions, total_reward])
 
-        DiscountedReturns = []
-        for t in range(len(Rewards)):
-            G = 0.0
-            for k, r in enumerate(Rewards[t:]):
-                G += (y**k) * r
-            DiscountedReturns.append(G)
+            discounted_returns = []
+            for t in range(len(rewards)):
+                G = sum((self.y**k) * r for k, r in enumerate(rewards[t:]))
+                discounted_returns.append(G)
 
-        for State, Action, G in zip(States, Actions, DiscountedReturns):
-            probs = nn(State.float())
-            dist = torch.distributions.Categorical(probs=probs)
-            log_prob = dist.log_prob(Action)
+            for state, action, G in zip(states, actions, discounted_returns):
+                probs = nn(state.float())
+                dist = torch.distributions.Categorical(probs=probs)
+                log_prob = dist.log_prob(action)
 
-            # importante: aqui deve ser negativo pq eh um gradient ascendent
-            loss = -log_prob * G
+                loss = -log_prob * G
 
-            optim.zero_grad()
-            loss.backward()
-            optim.step()
+                optim.zero_grad()
+                loss.backward()
+                optim.step()
 
-    return nn, statistics
+        return nn, statistics
 
-
-#
-# iniciando o treinamento
-#
-print("##### Treinando o modelo #####")
 
 env = DroneSwarmSearch(
     grid_size=10,
@@ -99,11 +103,9 @@ env = DroneSwarmSearch(
     disperse_constant=5,
 )
 
-observations = env.reset(drones_positions=[[5, 5]])
+rl_agent = RLAgent(env, y=0.99999, lr=0.00001, episodes=5_000)
+nn, statistics = rl_agent.train()
 
-lr = 0.00003
-y = 0.99999
-nn, statistics = train(env, y, lr, 10_000)
 torch.save(nn, "data/nn_10_10.pt")
 df = pd.DataFrame(statistics, columns=["episode", "actions", "rewards"])
 df.to_csv("results/statistics_10_10.csv")
