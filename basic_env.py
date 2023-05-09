@@ -21,11 +21,10 @@ def policy(obs, agent):
     return actions
 
 
-observations = env.reset(drones_positions=[[10, 10]])
+observations = env.reset(drones_positions=[[25, 25]])
 
 rewards = 0
 done = False
-
 while not done:
     actions = policy(observations, env.get_agents())
     observations, reward, _, done, info = env.step(actions)
