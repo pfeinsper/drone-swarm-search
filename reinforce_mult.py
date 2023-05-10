@@ -195,7 +195,7 @@ config = get_config(3)
 
 env = DroneSwarmSearch(
     grid_size=config.grid_size,
-    render_mode="ansi",
+    render_mode="human",
     render_grid=False,
     render_gradient=False,
     n_drones=config.n_drones,

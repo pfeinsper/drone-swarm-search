@@ -111,7 +111,7 @@ class DroneSwarmSearch(ParallelEnv):
         for i in drones_positions:
             if max(i) > self.grid_size:
                 raise Exception("You are trying to place the drone outside the grid")
-        
+
         self.agents = copy(self.possible_agents)
         self.timestep = 0
         self.vector = vector if vector else self.vector
@@ -137,35 +137,30 @@ class DroneSwarmSearch(ParallelEnv):
         self.probability_matrix.step()
 
         probability_matrix = self.probability_matrix.get_matrix()
-        
-        leftX = self.person_x -1 if self.person_x > 0 else 0
-        rightX = self.person_x + 2 if self.person_x < self.grid_size - 1 else self.grid_size
-        leftY = self.person_y - 1 if self.person_y > 0 else 0
-        rightY = self.person_y + 2 if self.person_y < self.grid_size - 1 else self.grid_size
 
-        temp_map = [
-            line[leftX : rightX]
-            for line in probability_matrix[leftY: rightY]
-        ]
-        
+        leftX = self.person_x - 1 if self.person_x > 0 else 0
+        rightX = (
+            self.person_x + 2 if self.person_x < self.grid_size - 1 else self.grid_size
+        )
+        leftY = self.person_y - 1 if self.person_y > 0 else 0
+        rightY = (
+            self.person_y + 2 if self.person_y < self.grid_size - 1 else self.grid_size
+        )
+
+        temp_map = [line[leftX:rightX] for line in probability_matrix[leftY:rightY]]
+
         if self.person_x == 0:
-            for i in range(rightY  - leftY):
+            for i in range(rightY - leftY):
                 temp_map[i] = np.insert(temp_map[i], 0, 0)
-        elif self.person_x == self.grid_size-1:
-            for i in range(rightY  - leftY):
+        elif self.person_x == self.grid_size - 1:
+            for i in range(rightY - leftY):
                 temp_map[i] = np.insert(temp_map[i], 2, 0)
         if self.person_y == 0:
-            temp_map = np.insert(temp_map, 0, np.array([0,0,0]), axis=0)
-        elif self.person_y == self.grid_size -1:
-            temp_map = np.insert(temp_map, 2, np.array([0,0,0]), axis=0)
+            temp_map = np.insert(temp_map, 0, np.array([0, 0, 0]), axis=0)
+        elif self.person_y == self.grid_size - 1:
+            temp_map = np.insert(temp_map, 2, np.array([0, 0, 0]), axis=0)
 
-        if self.person_y == 0:
-            pass
-
-        if temp_map == []:
-            pass
-
-        if all([e == [] for e in temp_map]):
+        if all([e == [] for e in temp_map]) or temp_map == []:
             pass
 
         prev_person_x, prev_person_y = self.person_x, self.person_y
@@ -185,6 +180,17 @@ class DroneSwarmSearch(ParallelEnv):
             if self.person_y == 1
             else prev_person_y + 1
         )
+
+        if self.person_y < 0:
+            self.person_y = 0
+        elif self.person_y >= self.grid_size:
+            self.person_y = self.grid_size - 1
+
+        if self.person_x < 0:
+            self.person_x = 0
+        elif self.person_x >= self.grid_size:
+            self.person_x = self.grid_size - 1
+
         for i in self.possible_agents:
             observation = (
                 (self.agents_positions[i][0], self.agents_positions[i][1]),
@@ -378,14 +384,15 @@ class DroneSwarmSearch(ParallelEnv):
         motd = "The target was not found."
         text = font.render(motd, True, (0, 0, 0))
         text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
-        while not done:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    done = True
-            self.screen.fill((255, 0, 0))
-            self.screen.blit(text, text_rect)
-            pygame.display.flip()
-        self.close()
+        # while not done:
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             done = True
+        self.screen.fill((255, 0, 0))
+        self.screen.blit(text, text_rect)
+        pygame.display.flip()
+        time.sleep(1)
+        # self.close()
 
     def victory_render(self):
         done = False
@@ -393,14 +400,15 @@ class DroneSwarmSearch(ParallelEnv):
         motd = "The target was found in {0} moves.".format(self.timestep)
         text = font.render(motd, True, (0, 0, 0))
         text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
-        while not done:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    done = True
-            self.screen.fill((0, 255, 0))
-            self.screen.blit(text, text_rect)
-            pygame.display.flip()
-        self.close()
+        # while not done:
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             done = True
+        self.screen.fill((0, 255, 0))
+        self.screen.blit(text, text_rect)
+        pygame.display.flip()
+        time.sleep(1)
+        # self.close()
 
     def close(self):
         if self.renderOn:
