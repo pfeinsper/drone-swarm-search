@@ -2,7 +2,7 @@ import torch
 from config import get_config
 from core.environment.env import DroneSwarmSearch
 
-config = get_config(1)
+config = get_config(2)
 
 
 def flatten_state(observations):
@@ -12,13 +12,13 @@ def flatten_state(observations):
     return all_obs
 
 
-nn = torch.load("data/nn_10_10.pt")
+nn = torch.load(f"data/nn_{config.grid_size}_{config.grid_size}.pt")
 nn = nn.float()
 
 env = DroneSwarmSearch(
     grid_size=config.grid_size,
     render_mode="human",
-    render_grid=False,
+    render_grid=True,
     render_gradient=False,
     n_drones=config.n_drones,
     vector=config.vector,
