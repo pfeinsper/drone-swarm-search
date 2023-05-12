@@ -2,14 +2,25 @@ import torch
 from config import get_config
 from core.environment.env import DroneSwarmSearch
 
-config = get_config(2)
+config = get_config(3)
 
 
-def flatten_state(observations):
-    drone_position = torch.tensor(observations["drone0"]["observation"][0])
-    flatten_obs = torch.flatten(torch.tensor(observations["drone0"]["observation"][1]))
-    all_obs = torch.cat((drone_position, flatten_obs), dim=-1)
-    return all_obs
+def flatten_state(observations, num_agents):
+
+    flatten_all = []
+
+    for drone_index in range(num_agents):
+        drone_position = torch.tensor(observations["drone" + str(drone_index)]["observation"][0])
+        flatten_obs = torch.flatten(
+            torch.tensor(observations["drone" + str(drone_index)]["observation"][1])
+        )
+        others_position = torch.flatten(torch.tensor(
+            [observations["drone" + str(index)]["observation"][0] for index in range(num_agents) if
+             index != drone_index]))
+
+        flatten_all.append(torch.cat((drone_position, others_position, flatten_obs), dim=-1))
+
+    return flatten_all
 
 
 nn = torch.load(f"data/nn_{config.grid_size}_{config.grid_size}.pt")
@@ -27,19 +38,24 @@ env = DroneSwarmSearch(
 )
 
 state = env.reset(drones_positions=config.drones_initial_positions)
-obs = flatten_state(state)
+obs_list = flatten_state(state, len(env.possible_agents))
 done = False
 
 rewards = 0
 done = False
 
 while not done:
-    probs = nn(obs.float())
-    dist = torch.distributions.Categorical(probs)
-    action = dist.sample().item()
-    obs_, reward, _, done, info = env.step({"drone0": action})
-    rewards += reward["total_reward"]
+    episode_actions = {}
+
+    for drone_index in range(len(env.possible_agents)):
+        probs = nn(obs_list[drone_index].float())
+        dist = torch.distributions.Categorical(probs)
+        episode_actions[f"drone{drone_index}"] = dist.sample().item()
+
+    obs_list_, reward_dict, _, done, _ = env.step(episode_actions)
+
+    rewards += reward_dict["total_reward"]
     done = True if True in [e for e in done.values()] else False
-    obs = flatten_state(obs_)
+    obs_list = flatten_state(obs_list_, len(env.possible_agents))
 
 print(rewards)
