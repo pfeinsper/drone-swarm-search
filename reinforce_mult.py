@@ -14,37 +14,30 @@ class RLAgent:
 
         self.num_agents = len(env.possible_agents)
         self.num_obs = (
-            2 * self.num_agents
-            + env.observation_space("drone0").nvec[0]
-            * env.observation_space("drone0").nvec[1]
+                2 * self.num_agents
+                + env.observation_space("drone0").nvec[0]
+                * env.observation_space("drone0").nvec[1]
         )
-        self.num_actions = len(env.action_space("drone0"))
+        self.num_actions = sum(
+            [len(env.action_space(agent)) for agent in env.possible_agents]
+        )
 
-    def flatten_state(self, observations, agent):
-        """
-        Flatten the state of the environment to be used in the neural network.
+    def flatten_state(self, observations):
 
-        Args:
-            observations (dict): Dictionary containing the observations of the environment.
-            agent (str): Name of the agent.
+        flatten_all = []
 
-        Returns:
-            torch.tensor: Flattened state of the environment.
-        """
-        drones_positions = torch.tensor(observations[agent]["observation"][0])
-        for drone in self.env.possible_agents:
-            if drone != agent:
-                drones_positions = torch.cat(
-                    (
-                        drones_positions,
-                        torch.tensor(observations[drone]["observation"][0]),
-                    ),
-                    dim=-1,
-                )
+        for drone_index in range(self.num_agents):
+            drone_position = torch.tensor(observations["drone" + str(drone_index)]["observation"][0])
+            flatten_obs = torch.flatten(
+                torch.tensor(observations["drone" + str(drone_index)]["observation"][1])
+            )
+            others_position = torch.flatten(torch.tensor(
+                [observations["drone" + str(index)]["observation"][0] for index in range(self.num_agents) if
+                 index != drone_index]))
 
-        flatten_obs = torch.flatten(torch.tensor(observations[agent]["observation"][1]))
-        all_obs = torch.cat((drones_positions, flatten_obs), dim=-1)
-        return all_obs
+            flatten_all.append(torch.cat((drone_position, others_position, flatten_obs), dim=-1))
+
+        return flatten_all
 
     def enhance_reward(self, drone_position, probability_matrix, action):
         if action in {0, 1, 2, 3}:
@@ -79,20 +72,18 @@ class RLAgent:
 
         return 0
 
-    def get_reward_enhanced(self, drones_observations, actions, current_reward):
-        total_reward = 0
-        for agent in env.possible_agents:
-            drone_position = drones_observations[agent]["observation"][0]
-            probability_matrix = drones_observations[agent]["observation"][1]
-            agent_reward = current_reward[agent]
-            total_reward += agent_reward + self.enhance_reward(
-                drone_position, probability_matrix, actions[agent]
+    def get_reward_enhanced(self, observations, actions_dict, current_reward):
+
+        reward = current_reward
+
+        for drone, action in actions_dict.items():
+            drone_position = observations[drone]["observation"][0]
+            probability_matrix = observations[drone]["observation"][1]
+            reward += self.enhance_reward(
+                drone_position, probability_matrix, action
             )
 
-        return total_reward
-    
-    def get_actions(self, nn, state):
-        pass 
+        return reward
 
     def train(self):
         nn = torch.nn.Sequential(
@@ -110,52 +101,68 @@ class RLAgent:
 
         for i in range(self.episodes + 1):
             state = self.env.reset(drones_positions=self.drones_initial_positions)
-            obs = self.flatten_state(state, "drone0")
+            obs_list = self.flatten_state(state)
             done = False
             actions, states, rewards = [], [], []
-            count_actions, total_reward = 0, 0
+            count_actions = 0
+            total_reward = 0
+            show_rewards = []
 
             while not done:
-                probs = nn(obs.float())
-                dist = torch.distributions.Categorical(probs)
-                action = dist.sample().item()
-                obs_, reward, _, done, _ = self.env.step({"drone0": action})
 
-                # TODO: Check if we'll keep this strategy
-                reward = self.get_reward_enhanced(obs_, action, reward["total_reward"])
+                episode_actions = {}
 
-                actions.append(torch.tensor(action, dtype=torch.int))
-                states.append(obs)
-                rewards.append(reward)
+                for drone_index in range(self.num_agents):
+                    probs = nn(obs_list[drone_index].float())
+                    dist = torch.distributions.Categorical(probs)
+                    episode_actions[f"drone{drone_index}"] = dist.sample().item()
 
-                obs = self.flatten_state(obs_)
-                count_actions += 1
+                obs_list_, reward_dict, _, done, _ = self.env.step(episode_actions)
+
+                reward = self.get_reward_enhanced(obs_list_, episode_actions, reward_dict["total_reward"])
+
+                actions.append(torch.tensor(list(episode_actions.values()), dtype=torch.int))
+                states.append(obs_list)
+                rewards.append([drone_reward for key, drone_reward in reward_dict.items() if "drone" in key])
+
+                obs_list = self.flatten_state(obs_list_)
+                count_actions += self.num_agents
                 total_reward += reward
 
                 done = any(done.values())
 
+            show_rewards.append(total_reward)
             if i % 100 == 0:
                 print(
-                    f"Episode = {i}, Actions = {count_actions}, Rewards = {total_reward}"
+                    f"Up to episode = {i}, Actions (last) = {count_actions}, Reward (mean) = {sum(show_rewards) / len(show_rewards)}"
                 )
+                show_rewards = []
 
             statistics.append([i, count_actions, total_reward])
 
             discounted_returns = []
             for t in range(len(rewards)):
-                G = sum((self.y**k) * r for k, r in enumerate(rewards[t:]))
-                discounted_returns.append(G)
 
-            for state, action, G in zip(states, actions, discounted_returns):
-                probs = nn(state.float())
-                dist = torch.distributions.Categorical(probs=probs)
-                log_prob = dist.log_prob(action)
+                G_list = []
 
-                loss = -log_prob * G
+                for drone_index in range(self.num_agents):
+                    agent_rewards = [r[drone_index] for r in rewards]
+                    G_list.append(sum((self.y ** k) * r for k, r in enumerate(agent_rewards[t:])))
 
-                optim.zero_grad()
-                loss.backward()
-                optim.step()
+                discounted_returns.append(G_list)
+
+            for state_list, action_list, G_list in zip(states, actions, discounted_returns):
+
+                for drone_index in range(self.num_agents):
+                    probs = nn(state_list[drone_index].float())
+                    dist = torch.distributions.Categorical(probs=probs)
+                    log_prob = dist.log_prob(action_list[drone_index])
+
+                    loss = -log_prob * G_list[drone_index]
+
+                    optim.zero_grad()
+                    loss.backward()
+                    optim.step()
 
         return nn, statistics
 
