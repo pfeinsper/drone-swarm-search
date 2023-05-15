@@ -7,9 +7,9 @@ env = DroneSwarmSearch(
     render_grid=True,
     render_gradient=True,
     n_drones=1,
-    vector=[0.1, 0.1],
-    person_initial_position=[0, 0],
-    disperse_constant=2,
+    vector=[0.3, 0.3],
+    person_initial_position=[2, 2],
+    disperse_constant=1,
 )
 
 
@@ -30,4 +30,3 @@ while not done:
     observations, reward, _, done, info = env.step(actions)
     rewards += reward["total_reward"]
     done = True if True in [e for e in done.values()] else False
-    print(reward["total_reward"])
