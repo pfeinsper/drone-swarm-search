@@ -43,12 +43,9 @@ class DroneSwarmSearch(ParallelEnv):
         self.possible_agents = []
         self.agents_positions = {}
         self.render_mode_matrix = None
-        self.possible_agents = [
-            "drone" + str(i) for i in range(len(self.possible_agents))
-        ]
-        self.agents_positions = {
-            "drone" + str(i): [None, None] for i in range(len(self.possible_agents))
-        }
+        for i in range(n_drones):
+            self.possible_agents.append("drone" + str(i))
+            self.agents_positions["drone" + str(i)] = [None, None]
 
         self.render_mode = render_mode
         self.probability_matrix = probability_matrix(

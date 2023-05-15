@@ -1,3 +1,6 @@
+from core.environment.env import DroneSwarmSearch
+from config import get_config
+
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
@@ -10,14 +13,12 @@ class DQN:
     def __init__(
         self,
         env,
-        load_weights=False,
-        filename="dqn_weights_multi.h5",
-        n_episodes=1000,
+        n_episodes=10_000,
         batch_size=32,
     ):
         self.env = env
+        self.config = config
         self.n_episodes = n_episodes
-        self.filename = filename
         self.batch_size = batch_size
         self.gamma = 0.95  # Discount factor
         self.epsilon = 1.0  # Exploration rate
@@ -31,23 +32,15 @@ class DQN:
             + env.observation_space("drone0").nvec[0]
             * env.observation_space("drone0").nvec[1]
         )
-        self.num_actions = sum(
-            [len(env.action_space(agent)) for agent in env.possible_agents]
-        )
+        self.num_actions = len(env.action_space("drone0"))
         self.memory = deque(maxlen=2000)
-
-        if load_weights:
-            self.model = self.load_weights()
-        else:
-            self.model = self.build_model()
-            self.train()
 
     def build_model(self):
         model = keras.models.Sequential()
         model.add(keras.layers.Dense(64, activation="relu", input_dim=self.num_obs))
         model.add(keras.layers.Dense(64, activation="relu"))
-        model.add(keras.layers.Dense(self.num_actions, activation="linear"))
-        model.compile(loss="mse", optimizer=keras.optimizers.Adam(lr=0.001))
+        model.add(keras.layers.Dense(self.num_actions, activation="softmax"))
+        model.compile(loss="mse", optimizer=keras.optimizers.Adam(lr=0.0001))
         return model
 
     def transform_state(self, state):
@@ -149,11 +142,15 @@ class DQN:
                     )
                 )
 
-        self.model.save(self.filename)
+        self.save_weights()
         self.plot_learning_curves(rewards)
 
-    def save_fig(self, filename, fig_extension="png", resolution=300):
-        plt.savefig(filename + "." + fig_extension, dpi=resolution)
+    def save_fig(self):
+        plt.savefig(
+            f"results/dqn_{self.env.grid_size}_{self.env.grid_size}_{self.env.n_drones}.png",
+            format="png",
+            dpi=300,
+        )
 
     def plot_learning_curves(self, rewards):
         plt.figure(figsize=(8, 4))
@@ -161,40 +158,23 @@ class DQN:
         plt.xlabel("Episode", fontsize=14)
         plt.ylabel("Sum of rewards", fontsize=14)
         self.save_fig("dqn_rewards_plot")
-        plt.show()
 
-    def load_weights(self):
-        model = keras.models.load_model(self.filename)
-        print(model.summary())
-        keras.utils.plot_model(model, to_file="model.png", show_shapes=True)
-        return model
-
-    def play(self, n_episodes=10, n_max_steps=50):
-        for _ in range(n_episodes):
-            obs = self.env.reset()
-            done = False
-            while not done:
-                self.env.render()
-                action = self.get_action(obs)
-                print(action)
-                obs, _, done, _, _ = self.env.step(action)
-                done = all(done.values())
+    def save_weights(self):
+        self.model.save(
+            f"data/dqn_{self.env.grid_size}_{self.env.grid_size}_{self.env.n_drones}.h5"
+        )
 
 
-from core.environment.env import DroneSwarmSearch
-
-n_episodes = 1000
-batch_size = 32
+config = get_config(3)
 env = DroneSwarmSearch(
-    grid_size=5,
+    grid_size=config.grid_size,
     render_mode="ansi",
     render_grid=True,
-    render_gradient=True,
-    n_drones=1,
-    vector=[0.5, 0.5],
-    person_initial_position=[3, 3],
-    disperse_constant=3,
-    timestep_limit=30,
+    render_gradient=False,
+    n_drones=config.n_drones,
+    vector=config.vector,
+    person_initial_position=config.person_initial_position,
+    disperse_constant=config.disperse_constant,
 )
-dqn = DQN(env, load_weights=False, n_episodes=n_episodes, batch_size=batch_size)
-dqn.play()
+dqn = DQN(env)
+dqn.train()
