@@ -13,6 +13,7 @@ env = DroneSwarmSearch(
 )
 
 
+
 def policy(obs, agent):
     actions = {}
     for i in range(11):
@@ -30,4 +31,3 @@ while not done:
     observations, reward, _, done, info = env.step(actions)
     rewards += reward["total_reward"]
     done = True if True in [e for e in done.values()] else False
-    # print(reward["total_reward"])
