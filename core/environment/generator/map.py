@@ -8,7 +8,6 @@ def generate_map(matrix: array) -> Tuple[array, int, int]:
     probabilities_times_random_factor: list = [
         (randint(1, 100) * probability) / 100 for probability in probabilities
     ]
-
     person_position: int = probabilities_times_random_factor.index(
         max(probabilities_times_random_factor)
     )

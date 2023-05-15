@@ -33,8 +33,8 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.grid_size = grid_size
         self.person_initial_position = person_initial_position
-        self.person_y = None
-        self.person_x = None
+        self.person_y = person_initial_position[1]
+        self.person_x = person_initial_position[0]
         self.timestep = None
         self.timestep_limit = timestep_limit
         self.disperse_constant = disperse_constant
@@ -54,9 +54,6 @@ class DroneSwarmSearch(ParallelEnv):
             self.vector,
             [person_initial_position[1], person_initial_position[0]],
             self.grid_size,
-        )
-        self.map, self.person_x, self.person_y = generate_map(
-            self.probability_matrix.get_matrix()
         )
 
         # Initializing render
@@ -101,9 +98,19 @@ class DroneSwarmSearch(ParallelEnv):
             x, y = drones_positions[i]
             self.agents_positions[self.possible_agents[i]] = [x, y]
 
-    def reset(self, seed=None, return_info=False, options=None, drones_positions=None):
+    def reset(
+        self,
+        seed=None,
+        return_info=False,
+        options=None,
+        drones_positions=None,
+        vector=None,
+    ):
         self.agents = copy(self.possible_agents)
         self.timestep = 0
+
+        self.vector = vector if vector else self.vector
+
         self.probability_matrix = probability_matrix(
             40,
             self.disperse_constant,
@@ -111,9 +118,6 @@ class DroneSwarmSearch(ParallelEnv):
             self.vector,
             [self.person_initial_position[1], self.person_initial_position[0]],
             self.grid_size,
-        )
-        self.map, self.person_x, self.person_y = generate_map(
-            self.probability_matrix.get_matrix()
         )
         self.default_drones_positions() if drones_positions is None else self.required_drone_positions(
             drones_positions
@@ -127,8 +131,31 @@ class DroneSwarmSearch(ParallelEnv):
     def create_observations(self):
         observations = {}
         self.probability_matrix.step()
-        self.map, self.person_x, self.person_y = generate_map(
-            self.probability_matrix.get_matrix()
+        highest_probs = np.zeros((3, 3))
+
+        probability_matrix = self.probability_matrix.get_matrix()
+
+        temp_map = [
+            line[self.person_x - 1 : self.person_x + 2]
+            for line in probability_matrix[self.person_y - 1 : self.person_y + 2]
+        ]
+
+        prev_person_x = self.person_x
+        prev_person_y = self.person_y
+        self.map, self.person_x, self.person_y = generate_map(np.array(temp_map))
+        self.person_x = (
+            prev_person_x - 1
+            if self.person_x == 0
+            else prev_person_x
+            if self.person_x == 1
+            else prev_person_x + 1
+        )
+        self.person_y = (
+            prev_person_y - 1
+            if self.person_y == 0
+            else prev_person_y
+            if self.person_y == 1
+            else prev_person_y + 1
         )
 
         for i in self.possible_agents:
