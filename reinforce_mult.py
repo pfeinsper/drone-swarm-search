@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from config import get_config
+import pandas as pd
 from core.environment.env import DroneSwarmSearch
 
 
@@ -18,9 +19,7 @@ class RLAgent:
             + env.observation_space("drone0").nvec[0]
             * env.observation_space("drone0").nvec[1]
         )
-        self.num_actions = sum(
-            [len(env.action_space(agent)) for agent in env.possible_agents]
-        )
+        self.num_actions = len(env.action_space("drone0"))
         self.grid_size = env.grid_size
 
     def flatten_state(self, observations):
@@ -76,9 +75,9 @@ class RLAgent:
             )
 
             if previous_distance < current_distance:
-                return -100
+                return -5
 
-            return 100
+            return 5
 
         return 0
 
@@ -171,34 +170,29 @@ class RLAgent:
 
             discounted_returns = []
 
-            try:
-                for t in range(len(rewards)):
-                    G_list = []
+            for t in range(len(rewards)):
+                G_list = []
 
-                    for drone_index in range(self.num_agents):
-                        agent_rewards = [r[drone_index] for r in rewards]
-                        G_list.append(
-                            sum((self.y**k) * r for k, r in enumerate(agent_rewards[t:]))
-                        )
+                for drone_index in range(self.num_agents):
+                    agent_rewards = [r[drone_index] for r in rewards]
+                    G_list.append(
+                        sum((self.y**k) * r for k, r in enumerate(agent_rewards[t:]))
+                    )
+                discounted_returns.append(G_list)
 
-                    discounted_returns.append(G_list)
+            for state_list, action_list, G_list in zip(
+                states, actions, discounted_returns
+            ):
+                for drone_index in range(self.num_agents):
+                    probs = nn(state_list[drone_index].float())
+                    dist = torch.distributions.Categorical(probs=probs)
+                    log_prob = dist.log_prob(action_list[drone_index])
 
-                for state_list, action_list, G_list in zip(
-                    states, actions, discounted_returns
-                ):
-                    for drone_index in range(self.num_agents):
-                        probs = nn(state_list[drone_index].float())
-                        dist = torch.distributions.Categorical(probs=probs)
-                        log_prob = dist.log_prob(action_list[drone_index])
+                    loss = -log_prob * G_list[drone_index]
 
-                        loss = -log_prob * G_list[drone_index]
-
-                        optim.zero_grad()
-                        loss.backward()
-                        optim.step()
-            except:
-                print("Error")
-                
+                    optim.zero_grad()
+                    loss.backward()
+                    optim.step()
 
         return nn, statistics
 
@@ -226,5 +220,5 @@ rl_agent = RLAgent(
 nn, statistics = rl_agent.train()
 
 torch.save(nn, f"data/nn_{config.grid_size}_{config.grid_size}_{config.n_drones}.pt")
-# df = pd.DataFrame(statistics, columns=["episode", "actions", "rewards"])
-# df.to_csv("results/statistics_10_10.csv")
+df = pd.DataFrame(statistics, columns=["episode", "actions", "rewards"])
+df.to_csv(f"results/rl_{config.grid_size}_{config.grid_size}_{config.n_drones}.csv")

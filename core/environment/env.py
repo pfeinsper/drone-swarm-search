@@ -43,9 +43,12 @@ class DroneSwarmSearch(ParallelEnv):
         self.possible_agents = []
         self.agents_positions = {}
         self.render_mode_matrix = None
-        for i in range(n_drones):
-            self.possible_agents.append("drone" + str(i))
-            self.agents_positions["drone" + str(i)] = [None, None]
+        self.possible_agents = [
+            "drone" + str(i) for i in range(len(self.possible_agents))
+        ]
+        self.agents_positions = {
+            "drone" + str(i): [None, None] for i in range(len(self.possible_agents))
+        }
 
         self.render_mode = render_mode
         self.probability_matrix = probability_matrix(
@@ -76,11 +79,11 @@ class DroneSwarmSearch(ParallelEnv):
         # Reward Function
         self.reward_scheme = {
             "default": 1,
-            "leave_grid": -100000,
+            "leave_grid": -1000,
             "exceed_timestep": -1000,
-            "drones_collision": -2000,
+            "drones_collision": -1000,
             "search_cell": 0,
-            "search_and_find": 100000,
+            "search_and_find": 1000,
         }
 
     def default_drones_positions(self):
