@@ -7,6 +7,7 @@ from pettingzoo.utils.env import ParallelEnv
 import time
 from core.environment.generator.map import generate_map
 from core.environment.generator.dynamic_probability import probability_matrix
+import random
 
 
 class DroneSwarmSearch(ParallelEnv):
@@ -103,6 +104,12 @@ class DroneSwarmSearch(ParallelEnv):
             x, y = drones_positions[i]
             self.agents_positions[self.possible_agents[i]] = [x, y]
 
+    def get_person_random_position(self):
+        return [
+            random.randint(0, self.grid_size - 1),
+            random.randint(0, self.grid_size - 1),
+        ]
+
     def reset(self, seed=None, return_info=False, options=None, drones_positions=None):
         self.agents = copy(self.possible_agents)
         self.timestep = 0
@@ -112,7 +119,7 @@ class DroneSwarmSearch(ParallelEnv):
             self.disperse_constant,
             self.disperse_constant,
             self.vector,
-            [self.person_initial_position[1], self.person_initial_position[0]],
+            self.get_person_random_position(),
             self.grid_size,
         )
         self.map, self.person_x, self.person_y = generate_map(

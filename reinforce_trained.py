@@ -6,24 +6,33 @@ config = get_config(3)
 
 
 def flatten_state(observations, num_agents):
-
     flatten_all = []
 
     for drone_index in range(num_agents):
-        drone_position = torch.tensor(observations["drone" + str(drone_index)]["observation"][0])
+        drone_position = torch.tensor(
+            observations["drone" + str(drone_index)]["observation"][0]
+        )
         flatten_obs = torch.flatten(
             torch.tensor(observations["drone" + str(drone_index)]["observation"][1])
         )
-        others_position = torch.flatten(torch.tensor(
-            [observations["drone" + str(index)]["observation"][0] for index in range(num_agents) if
-             index != drone_index]))
+        others_position = torch.flatten(
+            torch.tensor(
+                [
+                    observations["drone" + str(index)]["observation"][0]
+                    for index in range(num_agents)
+                    if index != drone_index
+                ]
+            )
+        )
 
-        flatten_all.append(torch.cat((drone_position, others_position, flatten_obs), dim=-1))
+        flatten_all.append(
+            torch.cat((drone_position, others_position, flatten_obs), dim=-1)
+        )
 
     return flatten_all
 
 
-nn = torch.load(f"data/nn_{config.grid_size}_{config.grid_size}.pt")
+nn = torch.load(f"data/nn_{config.grid_size}_{config.grid_size}_{config.n_drones}.pt")
 nn = nn.float()
 
 env = DroneSwarmSearch(
@@ -52,6 +61,7 @@ while not done:
         dist = torch.distributions.Categorical(probs)
         episode_actions[f"drone{drone_index}"] = dist.sample().item()
 
+    print(f"Actions: {episode_actions}")
     obs_list_, reward_dict, _, done, _ = env.step(episode_actions)
 
     rewards += reward_dict["total_reward"]
