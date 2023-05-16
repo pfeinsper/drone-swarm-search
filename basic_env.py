@@ -7,7 +7,7 @@ env = DroneSwarmSearch(
     render_grid=True,
     render_gradient=True,
     n_drones=1,
-    vector=[0.3, 0.3],
+    vector=[0, 0.2],
     person_initial_position=[2, 2],
     disperse_constant=1,
 )
@@ -21,7 +21,7 @@ def policy(obs, agent):
     return actions
 
 
-observations = env.reset(drones_positions=[[25, 25]])
+observations = env.reset(drones_positions=[[10, 10]])
 
 rewards = 0
 done = False

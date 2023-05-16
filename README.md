@@ -1,12 +1,20 @@
 # Drone Swarm Search
 
-## About:
+## About
 
 The Drone Swarm Search project is an environment, based on PettingZoo, that is to be used in conjunction with multi-agent (or single-agent) reinforcement learning algorithms. It is an environment in which the agents (drones), have to find the targets (shipwrecked people). The agents do not know the position of the target, and do not receive rewards related to their own distance to the target(s). However, the agents receive the probabilities of the target(s) being in a certain cell of the map. The aim of this project is to aid in the study of reinforcement learning algorithms that require dynamic probabilities as inputs. A visual representation of the environment is displayed below. To test the environment (without an algorithm), run `basic_env.py`.
 
 <p align="center">
     <img src="https://github.com/PFE-Embraer/drone-swarm-search/blob/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
 </p>
+
+
+## Outcome
+
+| If drone is found            | If drone is not found  |
+| -------------     | -------------   |
+| ![](https://github.com/PFE-Embraer/drone-swarm-search/docs/pics/victory_render.png)      | [](https://github.com/PFE-Embraer/drone-swarm-search/docs/pics/fail_render.png)                      |
+
 
 ## Basic Usage
 ```python
@@ -104,7 +112,7 @@ The `n_drones` input defines the number of drones that will be involved in the s
 
 ### `vector`:
 
-The `vector` is a list with two values that defines the direction in which the person will drift over time. It is a list with two components where the first value of the list is the displacement in the `x axis` and the second value is the displacement in the `y axis`. A positive x value will result in a displacement to the right and vice versa, and a positive y value will result in a displacement downward. A value equal to 1 will result in a displacement of 1 cell per timestamp, a value of 0.5 will result in a displacement of 1 cell every 2 timesteps, and so on.
+The `vector` is a list with two values that defines the direction in which the person will drift over time. It is a list with two components where the first value of the list is the displacement in the `x axis` and the second value is the displacement in the `y axis`. A positive x value will result in a displacement to the right and vice versa, and a positive y value will result in a displacement downward. A value equal to 1 will result in a displacement of 1 cell per timestamp, a value of 0.5 will result in a displacement of 1 cell every 2 timesteps, and so on. 
 
 ### `person_initial_position`:
 
@@ -122,7 +130,9 @@ The `disperse_constant` is a float that defines the dispersion of the probabilit
 
 Each value of the list represents the `[x, y]` initial position of each drone. Make sure that the list has the same number of positions as the number of drones defined in the environment. 
 
-In the case of no argument `env.reset()` will simply allocate the drones from left to right each in the next adjacent cell. Once there are no more available cells in the row  it will go to the next row and to the same from left to right. 
+Additionally, to change the vector, a tuple (representing the vector) can be sent as an argument. This can be done using the following syntax: `env.reset(vector=(0.3, 0.3))`. This way, the person's movement will change according to the new vector. 
+
+In the case of no argument `env.reset()` will simply allocate the drones from left to right each in the next adjacent cell. Once there are no more available cells in the row it will go to the next row and do the same from left to right. The vector will also remain the same as before, when there is no argument in the reset function.
 
 The method will also return a observation dictionary with the observations of all drones. 
 
@@ -131,6 +141,10 @@ The method will also return a observation dictionary with the observations of al
 The `env.step()` method defines the drone's next movement. When called upon, the method receives  a dictionary with all the drones names as keys and the action as values. For example, in an environment initialized with 10 drones: `env.step({'drone0': 2, 'drone1': 3, 'drone2': 2, 'drone3': 5:, 'drone4’: 1, 'drone5': 0, 'drone6': 2, 'drone7': 5, 'drone8': 0, 'drone9': 1})`. All drones must be in the dictionary and have an action value associated with it, every drone receives an action in every step, otherwise an error will be raised.
 
 The method returns the **observation**, the **reward**, the **termination** state, the **truncation** state and **info**, in the respectful order.
+
+### Person movement:
+
+The person's movement is done using the probability matrix and the vector. The vector essentially dislocates the probabilities, which in turn defines the position of the person. The chances of a person being in a cell is determined by the probability of each cell. Moreover, the person can only move one cell at a time. This means that in every step, the person can only move to one of the cells adjacent to the one he is currently at. This was done in order to create a more realistic movement for the shipwrecked person.
 
 #### Observation:
 
@@ -201,6 +215,10 @@ The termination and truncation variables return a dictionary with all drones as 
 - If one of the drones leave the grid 
 - If more than 500 steps occur
 - If a drone searches the cell in which the person is located
+
+#### Info:
+
+Info is a dictionary that contains a key called "Found" that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The info section is to be used as an indicator to see if the person was found. 
 
 ### `env.get_agents`:
 
