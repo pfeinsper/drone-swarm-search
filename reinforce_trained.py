@@ -40,9 +40,8 @@ env = DroneSwarmSearch(
 state = env.reset(drones_positions=config.drones_initial_positions)
 obs_list = flatten_state(state, len(env.possible_agents))
 done = False
-
 rewards = 0
-done = False
+
 
 while not done:
     episode_actions = {}

@@ -44,8 +44,8 @@ def get_config(config_number: int) -> EnvConfig:
                 grid_size=10,
                 n_drones=2,
                 vector=[0.1, 0.1],
-                drones_initial_positions=[[0, 0], [9, 9]],
-                person_initial_position=[9, 0],
-                disperse_constant=5,
+                drones_initial_positions=[[0, 0], [0, 1]],
+                person_initial_position=[5, 5],
+                disperse_constant=1,
                 time_limit=100,
             )

@@ -139,8 +139,17 @@ class DroneSwarmSearch(ParallelEnv):
             for line in probability_matrix[self.person_y - 1 : self.person_y + 2]
         ]
 
-        prev_person_x = self.person_x
-        prev_person_y = self.person_y
+        if self.person_y == 0:
+            pass
+
+        if temp_map == []:
+            pass
+
+        if all([e == [] for e in temp_map]):
+            pass
+
+        prev_person_x, prev_person_y = self.person_x, self.person_y
+
         self.map, self.person_x, self.person_y = generate_map(np.array(temp_map))
         self.person_x = (
             prev_person_x - 1
