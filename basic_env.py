@@ -2,13 +2,14 @@ from core.environment.env import DroneSwarmSearch
 import numpy as np
 
 env = DroneSwarmSearch(
-    grid_size=50,
+    grid_size=20,
     render_mode="human",
     render_grid=True,
     render_gradient=True,
     n_drones=1,
-    person_initial_position=[2, 2],
-    disperse_constant=1,
+    vector=[0.1, 0.1],
+    person_initial_position=[0, 0],
+    disperse_constant=3,
 )
 
 
@@ -20,7 +21,7 @@ def policy(obs, agent):
     return actions
 
 
-observations = env.reset(drones_positions=[[25, 25]])
+observations = env.reset(drones_positions=[[10, 10]])
 
 rewards = 0
 done = False

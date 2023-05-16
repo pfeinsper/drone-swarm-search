@@ -108,6 +108,10 @@ class DroneSwarmSearch(ParallelEnv):
         drones_positions=None,
         vector=None,
     ):
+        for i in drones_positions:
+            if max(i) > self.grid_size:
+                raise Exception("You are trying to place the drone outside the grid")
+        
         self.agents = copy(self.possible_agents)
         self.timestep = 0
         self.vector = vector if vector else self.vector
@@ -133,11 +137,27 @@ class DroneSwarmSearch(ParallelEnv):
         self.probability_matrix.step()
 
         probability_matrix = self.probability_matrix.get_matrix()
+        
+        leftX = self.person_x -1 if self.person_x > 0 else 0
+        rightX = self.person_x + 2 if self.person_x < self.grid_size - 1 else self.grid_size
+        leftY = self.person_y - 1 if self.person_y > 0 else 0
+        rightY = self.person_y + 2 if self.person_y < self.grid_size - 1 else self.grid_size
 
         temp_map = [
-            line[self.person_x - 1 : self.person_x + 2]
-            for line in probability_matrix[self.person_y - 1 : self.person_y + 2]
+            line[leftX : rightX]
+            for line in probability_matrix[leftY: rightY]
         ]
+        
+        if self.person_x == 0:
+            for i in range(rightY  - leftY):
+                temp_map[i] = np.insert(temp_map[i], 0, 0)
+        elif self.person_x == self.grid_size-1:
+            for i in range(rightY  - leftY):
+                temp_map[i] = np.insert(temp_map[i], 2, 0)
+        if self.person_y == 0:
+            temp_map = np.insert(temp_map, 0, np.array([0,0,0]), axis=0)
+        elif self.person_y == self.grid_size -1:
+            temp_map = np.insert(temp_map, 2, np.array([0,0,0]), axis=0)
 
         if self.person_y == 0:
             pass
