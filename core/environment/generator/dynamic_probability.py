@@ -79,11 +79,15 @@ class probability_matrix:
         if self.initial_position[0] + int(self.y) < len(
             self.map
         ) and self.initial_position[1] + int(self.x) < len(self.map[0]):
-            map_copy[self.initial_position[0] + int(self.y)][
-                self.initial_position[1] + int(self.x)
-            ] += self.map[self.initial_position[0]][self.initial_position[1]]
-            self.initial_position[0] += int(self.y)
-            self.initial_position[1] += int(self.x)
+            if (
+                self.initial_position[0] + int(self.y) >= 0
+                and self.initial_position[1] + int(self.x) >= 0
+            ):
+                map_copy[self.initial_position[0] + int(self.y)][
+                    self.initial_position[1] + int(self.x)
+                ] += self.map[self.initial_position[0]][self.initial_position[1]]
+                self.initial_position[0] += int(self.y)
+                self.initial_position[1] += int(self.x)
         self.diffuse_probability(map_copy)
 
     def step(self):
