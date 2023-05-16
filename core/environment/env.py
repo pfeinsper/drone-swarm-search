@@ -112,6 +112,10 @@ class DroneSwarmSearch(ParallelEnv):
             if max(i) > self.grid_size:
                 raise Exception("You are trying to place the drone outside the grid")
 
+        # reset target position
+        self.person_y = self.person_initial_position[1]
+        self.person_x = self.person_initial_position[0]
+
         self.agents = copy(self.possible_agents)
         self.timestep = 0
         self.vector = vector if vector else self.vector
@@ -180,16 +184,6 @@ class DroneSwarmSearch(ParallelEnv):
             if self.person_y == 1
             else prev_person_y + 1
         )
-
-        if self.person_y < 0:
-            self.person_y = 0
-        elif self.person_y >= self.grid_size:
-            self.person_y = self.grid_size - 1
-
-        if self.person_x < 0:
-            self.person_x = 0
-        elif self.person_x >= self.grid_size:
-            self.person_x = self.grid_size - 1
 
         for i in self.possible_agents:
             observation = (

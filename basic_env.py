@@ -7,9 +7,9 @@ env = DroneSwarmSearch(
     render_grid=True,
     render_gradient=True,
     n_drones=1,
-    vector=[0.1, 0.1],
-    person_initial_position=[0, 0],
-    disperse_constant=3,
+    vector=[-0.2, 0],
+    person_initial_position=[19, 19],
+    disperse_constant=1,
 )
 
 
