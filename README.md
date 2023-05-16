@@ -75,16 +75,17 @@ In order to use the environment download the dependencies using the following co
 | 5             | Idle          |
 
 ### Inputs
-| Inputs                    | Possible Values       |
-| -------------             | -------------         |
-| `grid_size`               | `int(N)`              |
-| `render_mode`             | `"ansi" or "human"`   |  
-| `render_grid`             | `bool`                |
-| `render_gradient`         | `bool`                |
-| `n_drones`                | `int(N)`              |
-| `vector`                  | `[float(x), float(y)` |
-| `person_initial_position` | `[int(x), int(y)]`    |
-| `disperse_constant`       | `float`               |
+| Inputs                    | Possible Values       | Default Values            |
+| -------------             | -------------         | -------------             |
+| `grid_size`               | `int(N)`              | `7`                       |
+| `render_mode`             | `"ansi" or "human"`   | `"ansi"`                  |
+| `render_grid`             | `bool`                | `False`                   |
+| `render_gradient`         | `bool`                | `True`                    |
+| `n_drones`                | `int(N)`              | `1`                       |
+| `vector`                  | `[float(x), float(y)` | `(-0.5, -0.5)`            |
+| `person_initial_position` | `[int(x), int(y)]`    | `[0, 0]`                  |
+| `disperse_constant`       | `float`               | `10`                      |
+| `timestep_limit`          | `int`                 | `100`                     |
 
 ### `grid_size`:
 
@@ -121,6 +122,10 @@ The `person_initial_position` defines the starting point of the target, it shoul
 ### `disperse_constant`:
 
 The `disperse_constant` is a float that defines the dispersion of the probability matrix. The greater the number the quicker the probability matrix will disperse.
+
+### `timestep_limit`:
+
+The `timestep_limit` is an integer that defines the length of an episode. This means that the `timestep_limit` is essentially the amount of steps that can be done without resetting or ending the environment.
 
 ## Built in Functions:
 
@@ -196,16 +201,16 @@ The observation is a dictionary with all the drones as keys. Each drone has a va
 
 #### Reward:
 
-The reward returns a dictionary with the drones names as keys and their respectful rewards as values, as well as a total reward which is the sum of all agents rewards. For example `{'drone0': -1, 'drone1': -100.0, 'drone2': -1, 'total_reward': -102.0}`
+The reward returns a dictionary with the drones names as keys and their respectful rewards as values, as well as a total reward which is the sum of all agents rewards. For example `{'drone0': 1, 'drone1': 89.0, 'drone2': 1, 'total_reward': 91.0}`
 
 The rewards values goes as follows:
 
-- **-1** for every action by default
-- **-1000** if the drone leaves the grid 
-- **-1000** if the drone does not find the person in 500 steps
+- **1** for every action by default
+- **-100000** if the drone leaves the grid 
+- **-1000** if the drone does not find the person after timestep exceeds timestep_limit
 - **-2000** if the drones collide 
-- ***probability of cell* - 100** for searching a cell
-- **0** if the drone searches the cell in which the person is located
+- ***probability of cell*** for searching a cell
+- ***(timestep_limit - timestep) x 10*** if the drone searches the cell in which the person is located
 
 #### Termination & Truncation:
 
@@ -218,7 +223,7 @@ The termination and truncation variables return a dictionary with all drones as 
 
 #### Info:
 
-Info is a dictionary that contains a key called "Found" that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The info section is to be used as an indicator to see if the person was found. 
+Info is a dictionary that contains a key called "Found" that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The info section is to be used as an indicator to see if the person was found. For example, before finding the shipwrecked person, the dictionary will be `{"Found": False}`. Once the person is found, the dictionary will be `{"Found": True}`.
 
 ### `env.get_agents`:
 
