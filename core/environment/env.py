@@ -76,7 +76,7 @@ class DroneSwarmSearch(ParallelEnv):
             "exceed_timestep": -100,
             "drones_collision": -200,
             "search_cell": 1,
-            "search_and_find": 100,
+            "search_and_find": 10000,
         }
 
     def default_drones_positions(self):
