@@ -93,8 +93,8 @@ class RLAgent:
     def get_random_speed_vector(self):
         """Returns a random speed vector for the environment, from -0.5 to 0.5, 0.1 step"""
         return [
-            round(np.random.uniform(0.1, 0.5), 1),
-            round(np.random.uniform(0.1, 0.5), 1),
+            round(np.random.uniform(-0.2, 0.2), 1),
+            round(np.random.uniform(-0.2, 0.2), 1),
         ]
 
     def train(self):

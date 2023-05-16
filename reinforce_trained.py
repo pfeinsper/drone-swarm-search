@@ -41,7 +41,7 @@ state = env.reset(drones_positions=config.drones_initial_positions)
 obs_list = flatten_state(state, len(env.possible_agents))
 done = False
 rewards = 0
-
+steps_count = 0
 
 while not done:
     episode_actions = {}
@@ -52,9 +52,10 @@ while not done:
         episode_actions[f"drone{drone_index}"] = dist.sample().item()
 
     obs_list_, reward_dict, _, done, _ = env.step(episode_actions)
+    steps_count += 1
 
     rewards += reward_dict["total_reward"]
     done = True if True in [e for e in done.values()] else False
     obs_list = flatten_state(obs_list_, len(env.possible_agents))
 
-print(rewards)
+print(rewards, steps_count)

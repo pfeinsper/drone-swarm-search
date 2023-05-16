@@ -11,16 +11,16 @@ from core.environment.generator.dynamic_probability import probability_matrix
 
 class DroneSwarmSearch(ParallelEnv):
     def __init__(
-        self,
-        grid_size=7,
-        render_mode="ansi",
-        render_grid=False,
-        render_gradient=True,
-        n_drones=1,
-        vector=(-0.5, -0.5),
-        person_initial_position=[0, 0],
-        disperse_constant=10,
-        timestep_limit=100,
+            self,
+            grid_size=7,
+            render_mode="ansi",
+            render_grid=False,
+            render_gradient=True,
+            n_drones=1,
+            vector=(-0.5, -0.5),
+            person_initial_position=[0, 0],
+            disperse_constant=10,
+            timestep_limit=100,
     ):
         # Error Checking
         if n_drones > grid_size * grid_size:
@@ -72,11 +72,11 @@ class DroneSwarmSearch(ParallelEnv):
         # Reward Function
         self.reward_scheme = {
             "default": 1,
-            "leave_grid": -100000,
-            "exceed_timestep": -100000,
-            "drones_collision": -200000,
-            "search_cell": 100,
-            "search_and_find": 100000,
+            "leave_grid": -100,
+            "exceed_timestep": -100,
+            "drones_collision": -200,
+            "search_cell": 1,
+            "search_and_find": 100,
         }
 
     def default_drones_positions(self):
@@ -101,12 +101,12 @@ class DroneSwarmSearch(ParallelEnv):
             self.agents_positions[self.possible_agents[i]] = [x, y]
 
     def reset(
-        self,
-        seed=None,
-        return_info=False,
-        options=None,
-        drones_positions=None,
-        vector=None,
+            self,
+            seed=None,
+            return_info=False,
+            options=None,
+            drones_positions=None,
+            vector=None,
     ):
         for i in drones_positions:
             if max(i) > self.grid_size:
@@ -208,10 +208,10 @@ class DroneSwarmSearch(ParallelEnv):
                 new_position = (position[0], position[1] + 1)
 
         if (
-            new_position[0] < 0
-            or new_position[0] >= self.grid_size
-            or new_position[1] < 0
-            or new_position[1] >= self.grid_size
+                new_position[0] < 0
+                or new_position[0] >= self.grid_size
+                or new_position[1] < 0
+                or new_position[1] >= self.grid_size
         ):
             return True, new_position, self.reward_scheme["leave_grid"]
 
@@ -247,8 +247,8 @@ class DroneSwarmSearch(ParallelEnv):
             if drone_x == self.person_x and drone_y == self.person_y and isSearching:
                 rewards = {
                     a: self.reward_scheme["search_and_find"]
-                    + self.reward_scheme["search_and_find"]
-                    * (1 - self.timestep / self.timestep_limit)
+                       + self.reward_scheme["search_and_find"]
+                       * (1 - self.timestep / self.timestep_limit)
                     for a in self.agents
                 }
                 terminations = {a: True for a in self.agents}
@@ -258,9 +258,7 @@ class DroneSwarmSearch(ParallelEnv):
 
             elif isSearching:
                 prob_matrix = self.probability_matrix.get_matrix()
-                rewards[i] = (prob_matrix[drone_y][drone_x] * 100) + self.reward_scheme[
-                    "search_cell"
-                ]
+                rewards[i] = prob_matrix[drone_y][drone_x] * 100 if prob_matrix[drone_y][drone_x] * 100 > 1 else -100
 
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep > self.timestep_limit:
