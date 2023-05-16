@@ -10,28 +10,34 @@ from core.environment.generator.dynamic_probability import probability_matrix
 
 
 class DroneSwarmSearch(ParallelEnv):
-    def __init__(self, grid_size=7, 
-                 render_mode="ansi", 
-                 render_grid = False,
-                 render_gradient = True,
-                 n_drones=1, 
-                 vector = (-0.5, -0.5), 
-                 person_initial_position = [0, 0],
-                 disperse_constant = 10,
-                 timestep_limit = 100):
-        
-        #Error Checking 
-        if n_drones > grid_size*grid_size:
-            raise Exception("There are more drones than grid spots. Reduce number of drones or increase grid size.")
+    def __init__(
+        self,
+        grid_size=7,
+        render_mode="ansi",
+        render_grid=False,
+        render_gradient=True,
+        n_drones=1,
+        vector=(-0.5, -0.5),
+        person_initial_position=[0, 0],
+        disperse_constant=10,
+        timestep_limit=100,
+    ):
+        # Error Checking
+        if n_drones > grid_size * grid_size:
+            raise Exception(
+                "There are more drones than grid spots. Reduce number of drones or increase grid size."
+            )
 
         if render_mode != "ansi" and render_mode != "human":
             raise Exception("Render mode not recognized")
 
         self.grid_size = grid_size
-        self.person_y = None
-        self.person_x = None
+        self.person_initial_position = person_initial_position
+        self.person_y = person_initial_position[1]
+        self.person_x = person_initial_position[0]
         self.timestep = None
         self.timestep_limit = timestep_limit
+        self.disperse_constant = disperse_constant
         self.vector = vector
         self.possible_agents = []
         self.agents_positions = {}
@@ -42,10 +48,12 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.render_mode = render_mode
         self.probability_matrix = probability_matrix(
-            40, disperse_constant, disperse_constant, self.vector, [person_initial_position[1], person_initial_position[0]], self.grid_size
-        )
-        self.map, self.person_x, self.person_y = generate_map(
-            self.probability_matrix.get_matrix()
+            40,
+            disperse_constant,
+            disperse_constant,
+            self.vector,
+            [person_initial_position[1], person_initial_position[0]],
+            self.grid_size,
         )
 
         # Initializing render
@@ -61,17 +69,15 @@ class DroneSwarmSearch(ParallelEnv):
         self.render_gradient = render_gradient
         self.render_grid = render_grid
 
-
-        #Reward Function
+        # Reward Function
         self.reward_scheme = {
-            "default" : 1,
+            "default": 1,
             "leave_grid": -100000,
             "exceed_timestep": -1000,
             "drones_collision": -2000,
             "search_cell": 0,
-            "search_and_find": 0
+            "search_and_find": 0,
         }
-
 
     def default_drones_positions(self):
         counter_x = 0
@@ -85,14 +91,32 @@ class DroneSwarmSearch(ParallelEnv):
 
     def required_drone_positions(self, drones_positions: list):
         if len(drones_positions) != len(self.possible_agents):
-            raise Exception("There are more or less initial positions than drones, please make sure there are the same number of initial possitions and number of drones.")
+            raise Exception(
+                "There are more or less initial positions than drones, please make sure there are the same number of initial possitions and number of drones."
+            )
         for i in range(len(drones_positions)):
             x, y = drones_positions[i]
             self.agents_positions[self.possible_agents[i]] = [x, y]
 
-    def reset(self, seed=None, return_info=False, options=None, drones_positions=None):
+    def reset(
+        self,
+        seed=None,
+        return_info=False,
+        options=None,
+        drones_positions=None,
+        vector=None,
+    ):
         self.agents = copy(self.possible_agents)
         self.timestep = 0
+        self.vector = vector if vector else self.vector
+        self.probability_matrix = probability_matrix(
+            40,
+            self.disperse_constant,
+            self.disperse_constant,
+            self.vector,
+            [self.person_initial_position[1], self.person_initial_position[0]],
+            self.grid_size,
+        )
         self.default_drones_positions() if drones_positions is None else self.required_drone_positions(
             drones_positions
         )
@@ -105,10 +129,31 @@ class DroneSwarmSearch(ParallelEnv):
     def create_observations(self):
         observations = {}
         self.probability_matrix.step()
-        self.map, self.person_x, self.person_y = generate_map(
-            self.probability_matrix.get_matrix()
-        )
 
+        probability_matrix = self.probability_matrix.get_matrix()
+
+        temp_map = [
+            line[self.person_x - 1 : self.person_x + 2]
+            for line in probability_matrix[self.person_y - 1 : self.person_y + 2]
+        ]
+
+        prev_person_x = self.person_x
+        prev_person_y = self.person_y
+        self.map, self.person_x, self.person_y = generate_map(np.array(temp_map))
+        self.person_x = (
+            prev_person_x - 1
+            if self.person_x == 0
+            else prev_person_x
+            if self.person_x == 1
+            else prev_person_x + 1
+        )
+        self.person_y = (
+            prev_person_y - 1
+            if self.person_y == 0
+            else prev_person_y
+            if self.person_y == 1
+            else prev_person_y + 1
+        )
         for i in self.possible_agents:
             observation = (
                 (self.agents_positions[i][0], self.agents_positions[i][1]),
@@ -171,7 +216,11 @@ class DroneSwarmSearch(ParallelEnv):
                 pass
 
             if drone_x == self.person_x and drone_y == self.person_y and isSearching:
-                rewards = {a: self.reward_scheme["search_and_find"] for a in self.agents}
+                rewards = {
+                    a: self.reward_scheme["search_and_find"]
+                    + (self.timestep_limit - self.timestep) * 10
+                    for a in self.agents
+                }
                 terminations = {a: True for a in self.agents}
                 truncations = {a: True for a in self.agents}
                 self.agents = []
@@ -179,7 +228,9 @@ class DroneSwarmSearch(ParallelEnv):
 
             elif isSearching:
                 prob_matrix = self.probability_matrix.get_matrix()
-                rewards[i] = (prob_matrix[drone_y][drone_x]*100) + self.reward_scheme["search_cell"]
+                rewards[i] = (prob_matrix[drone_y][drone_x] * 100) + self.reward_scheme[
+                    "search_cell"
+                ]
 
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep > self.timestep_limit:
@@ -193,7 +244,7 @@ class DroneSwarmSearch(ParallelEnv):
         observations = self.create_observations()
 
         # Get dummy infos
-        infos = {e: {} for e in self.agents}
+        infos = {"Found": person_found}
 
         # CHECK COLISION
         for ki, i in self.agents_positions.items():
@@ -291,35 +342,37 @@ class DroneSwarmSearch(ParallelEnv):
                     self.screen.blit(self.person_img, rect)
                 counter_y += 1
             counter_x += 1
-    
+
     def failure_render(self):
         done = False
         font = pygame.font.SysFont(None, 50)
-        motd = 'The target was not found.'
-        text = font.render(motd, True, (0,0,0))
-        text_rect = text.get_rect(center=(self.window_size//2, self.window_size//2))
-        while not done:  
-            for event in pygame.event.get():  
-                if event.type == pygame.QUIT:  
-                    done = True  
-            self.screen.fill((255,0,0)) 
-            self.screen.blit(text, text_rect) 
-            pygame.display.flip()  
+        motd = "The target was not found."
+        text = font.render(motd, True, (0, 0, 0))
+        text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
+        while not done:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    done = True
+            self.screen.fill((255, 0, 0))
+            self.screen.blit(text, text_rect)
+            pygame.display.flip()
         self.close()
+
     def victory_render(self):
         done = False
         font = pygame.font.SysFont(None, 50)
-        motd = 'The target was found in {0} moves.'.format(self.timestep)
-        text = font.render(motd, True, (0,0,0))
-        text_rect = text.get_rect(center=(self.window_size//2, self.window_size//2))
-        while not done:  
-            for event in pygame.event.get():  
-                if event.type == pygame.QUIT:  
-                    done = True  
-            self.screen.fill((0,255,0)) 
-            self.screen.blit(text, text_rect) 
-            pygame.display.flip()  
+        motd = "The target was found in {0} moves.".format(self.timestep)
+        text = font.render(motd, True, (0, 0, 0))
+        text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
+        while not done:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    done = True
+            self.screen.fill((0, 255, 0))
+            self.screen.blit(text, text_rect)
+            pygame.display.flip()
         self.close()
+
     def close(self):
         if self.renderOn:
             pygame.event.pump()
