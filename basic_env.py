@@ -2,14 +2,14 @@ from core.environment.env import DroneSwarmSearch
 import numpy as np
 
 env = DroneSwarmSearch(
-    grid_size=50,
+    grid_size=20,
     render_mode="human",
     render_grid=True,
     render_gradient=True,
     n_drones=1,
-    vector=[0, 0.2],
-    person_initial_position=[2, 2],
-    disperse_constant=1,
+    vector=[0.1, 0.1],
+    person_initial_position=[0, 0],
+    disperse_constant=3,
 )
 
 
