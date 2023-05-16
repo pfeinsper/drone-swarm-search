@@ -73,9 +73,9 @@ class DroneSwarmSearch(ParallelEnv):
         self.reward_scheme = {
             "default": 1,
             "leave_grid": -100000,
-            "exceed_timestep": -1000,
-            "drones_collision": -2000,
-            "search_cell": 0,
+            "exceed_timestep": -100000,
+            "drones_collision": -200000,
+            "search_cell": 100,
             "search_and_find": 100000,
         }
 
@@ -267,7 +267,6 @@ class DroneSwarmSearch(ParallelEnv):
                 rewards[i] = self.reward_scheme["exceed_timestep"]
                 truncations[i] = True
                 terminations[i] = True
-                self.agents = []
 
         self.timestep += 1
         # Get observations
@@ -284,6 +283,9 @@ class DroneSwarmSearch(ParallelEnv):
                         terminations[ki] = True
                         rewards[ki] = self.reward_scheme["drones_collision"]
         rewards["total_reward"] = sum([e for e in rewards.values()])
+
+        if True in terminations.values():
+            self.agents = []
 
         if self.render_mode == "human":
             self.render()

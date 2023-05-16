@@ -162,15 +162,24 @@ class RLAgent:
 
             statistics.append([i, count_actions, total_reward])
 
+            if len(rewards) > 100:
+                pass
+
             discounted_returns = []
             for t in range(len(rewards)):
                 G_list = []
 
                 for drone_index in range(self.num_agents):
-                    agent_rewards = [r[drone_index] for r in rewards]
-                    G_list.append(
-                        sum((self.y**k) * r for k, r in enumerate(agent_rewards[t:]))
-                    )
+                    try:
+                        agent_rewards = [r[drone_index] for r in rewards]
+                        G_list.append(
+                            sum(
+                                (self.y**k) * r
+                                for k, r in enumerate(agent_rewards[t:])
+                            )
+                        )
+                    except IndexError:
+                        pass
 
                 discounted_returns.append(G_list)
 
@@ -201,6 +210,7 @@ env = DroneSwarmSearch(
     n_drones=config.n_drones,
     person_initial_position=config.person_initial_position,
     disperse_constant=config.disperse_constant,
+    timestep_limit=100,
 )
 
 rl_agent = RLAgent(
