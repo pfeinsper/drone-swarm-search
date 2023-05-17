@@ -280,13 +280,14 @@ class DroneSwarmSearch(ParallelEnv):
                         rewards[ki] = self.reward_scheme["drones_collision"]
         rewards["total_reward"] = sum([e for e in rewards.values()])
 
-        if True in terminations.values():
-            if person_found:
-                self.victory_render()
+        if self.render_mode == "human":
+            if True in terminations.values():
+                if person_found:
+                    self.victory_render()
+                else:
+                    self.failure_render()
             else:
-                self.failure_render()
-        elif self.render_mode == "human":
-            self.render()
+                self.render()
 
         return observations, rewards, terminations, truncations, infos
 
