@@ -59,24 +59,17 @@ class RLAgent:
                 case 3:  # DOWN
                     previous_position = (drone_position[0], drone_position[1] - 1)
 
-            max_value_index = np.argmax(probability_matrix)
-            max_row_index, max_col_index = np.unravel_index(
-                max_value_index, probability_matrix.shape
-            )
+            previous_probability = probability_matrix[previous_position[0]][
+                previous_position[1]
+            ]
+            current_probability = probability_matrix[drone_position[0]][
+                drone_position[1]
+            ]
 
-            current_distance = np.sqrt(
-                (drone_position[0] - max_row_index) ** 2
-                + (drone_position[1] - max_col_index) ** 2
-            )
-            previous_distance = np.sqrt(
-                (previous_position[0] - max_row_index) ** 2
-                + (previous_position[1] - max_col_index) ** 2
-            )
-
-            if previous_distance < current_distance:
-                return -100
-
-            return 100
+            if current_probability > previous_probability:
+                return 100
+            
+            return -100
 
         return 0
 
