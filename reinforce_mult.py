@@ -222,6 +222,6 @@ rl_agent = RLAgent(
 )
 nn, statistics = rl_agent.train()
 
-torch.save(nn, f"data/nn_{config.grid_size}_{config.grid_size}.pt")
+torch.save(nn, f"data/nn_{config.grid_size}_{config.grid_size}_{config.n_drones}.pt")
 df = pd.DataFrame(statistics, columns=["episode", "actions", "rewards"])
-df.to_csv(f"data/statistics_{config.grid_size}_{config.grid_size}.csv", index=False)
+df.to_csv(f"data/statistics_{config.grid_size}_{config.grid_size}_{config.n_drones}.csv", index=False)

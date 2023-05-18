@@ -23,7 +23,7 @@ def flatten_state(observations, num_agents):
     return flatten_all
 
 
-nn = torch.load(f"data/nn_{config.grid_size}_{config.grid_size}.pt")
+nn = torch.load(f"data/nn_{config.grid_size}_{config.grid_size}_{config.n_drones}.pt")
 nn = nn.float()
 
 env = DroneSwarmSearch(
