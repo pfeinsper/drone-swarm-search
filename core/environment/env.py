@@ -68,12 +68,14 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.render_gradient = render_gradient
         self.render_grid = render_grid
+        self.rewards_sum = {a: 0 for a in self.possible_agents}
+        self.rewards_sum["total"] = 0
 
         # Reward Function
         self.reward_scheme = {
             "default": 1,
-            "leave_grid": -100,
-            "exceed_timestep": -100,
+            "leave_grid": -100000,
+            "exceed_timestep": 0,
             "drones_collision": -200,
             "search_cell": 1,
             "search_and_find": 10000,
@@ -119,6 +121,8 @@ class DroneSwarmSearch(ParallelEnv):
         self.agents = copy(self.possible_agents)
         self.timestep = 0
         self.vector = vector if vector else self.vector
+        self.rewards_sum = {a: 0 for a in self.agents}
+        self.rewards_sum["total"] = 0
         self.probability_matrix = probability_matrix(
             40,
             self.disperse_constant,
@@ -258,13 +262,15 @@ class DroneSwarmSearch(ParallelEnv):
 
             elif isSearching:
                 prob_matrix = self.probability_matrix.get_matrix()
-                rewards[i] = prob_matrix[drone_y][drone_x] * 100 if prob_matrix[drone_y][drone_x] * 100 > 1 else -100
+                rewards[i] = prob_matrix[drone_y][drone_x] * 10000 if prob_matrix[drone_y][drone_x] * 100 > 1 else -100
 
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep > self.timestep_limit:
-                rewards[i] = self.reward_scheme["exceed_timestep"]
+                rewards[i] = self.rewards_sum[i]*-1
                 truncations[i] = True
                 terminations[i] = True
+
+            self.rewards_sum[i] += rewards[i]
 
         self.timestep += 1
         # Get observations
@@ -281,6 +287,7 @@ class DroneSwarmSearch(ParallelEnv):
                         terminations[ki] = True
                         rewards[ki] = self.reward_scheme["drones_collision"]
         rewards["total_reward"] = sum([e for e in rewards.values()])
+        self.rewards_sum["total"] += rewards["total_reward"]
 
         if self.render_mode == "human":
             if True in terminations.values():
