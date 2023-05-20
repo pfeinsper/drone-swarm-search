@@ -75,10 +75,10 @@ class DroneSwarmSearch(ParallelEnv):
         self.reward_scheme = {
             "default": 1,
             "leave_grid": -100000,
-            "exceed_timestep": 0,
-            "drones_collision": -200,
+            "exceed_timestep": -100000,
+            "drones_collision": -100000,
             "search_cell": 1,
-            "search_and_find": 10000,
+            "search_and_find": 100000,
         }
 
     def default_drones_positions(self):
@@ -266,7 +266,7 @@ class DroneSwarmSearch(ParallelEnv):
 
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep > self.timestep_limit:
-                rewards[i] = self.rewards_sum[i]*-1
+                rewards[i] = self.rewards_sum[i] * -1 + self.reward_scheme["exceed_timestep"]
                 truncations[i] = True
                 terminations[i] = True
 
@@ -448,4 +448,4 @@ class DroneSwarmSearch(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return [0, 1, 2, 3, 4, 5]
+        return [0, 1, 2, 3, 4]

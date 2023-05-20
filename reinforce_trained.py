@@ -2,7 +2,7 @@ import torch
 from config import get_config
 from core.environment.env import DroneSwarmSearch
 
-config = get_config(3)
+config = get_config(1)
 
 
 def flatten_state(observations, num_agents):

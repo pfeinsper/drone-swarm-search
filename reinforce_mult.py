@@ -15,9 +15,9 @@ class RLAgent:
 
         self.num_agents = len(env.possible_agents)
         self.num_obs = (
-            2 * self.num_agents
-            + env.observation_space("drone0").nvec[0]
-            * env.observation_space("drone0").nvec[1]
+                2 * self.num_agents
+                + env.observation_space("drone0").nvec[0]
+                * env.observation_space("drone0").nvec[1]
         )
         self.num_actions = len(env.action_space("drone0"))
 
@@ -48,12 +48,14 @@ class RLAgent:
         return flatten_all
 
     def enhance_reward(self, drone_position, probability_matrix, action):
-        if action in {0, 1, 2, 3}:
+        if action in {0, 1, 2, 3} and (drone_position[0] >= 0 and drone_position[0] < len(probability_matrix)) and (
+                drone_position[1] >= 0 and drone_position[1] < len(probability_matrix[0])):
             match action:
                 case 0:  # LEFT
                     previous_position = (drone_position[0] + 1, drone_position[1])
                 case 1:  # RIGHT
                     previous_position = (drone_position[0] - 1, drone_position[1])
+
                 case 2:  # UP
                     previous_position = (drone_position[0], drone_position[1] + 1)
                 case 3:  # DOWN
@@ -67,27 +69,31 @@ class RLAgent:
             ]
 
             if current_probability > previous_probability:
-                return 100
-            
-            return -100
+                return 500
+
+            return -500
 
         return 0
 
     def get_reward_enhanced(self, observations, actions_dict, current_reward):
-        reward = current_reward
+        reward = current_reward["total_reward"]
+        new_rewards = {}
 
         for drone, action in actions_dict.items():
             drone_position = observations[drone]["observation"][0]
             probability_matrix = observations[drone]["observation"][1]
-            reward += self.enhance_reward(drone_position, probability_matrix, action)
+            new_reward = self.enhance_reward(drone_position, probability_matrix, action)
+            new_rewards[drone] = new_reward if new_reward != 0 else current_reward[drone]
+            reward += new_reward if new_reward != 0 else 0
 
-        return reward
+        new_rewards["total_reward"] = reward
+        return reward, new_rewards
 
     def get_random_speed_vector(self):
         """Returns a random speed vector for the environment, from -0.5 to 0.5, 0.1 step"""
         return [
-            round(np.random.uniform(-0.2, 0.2), 1),
-            round(np.random.uniform(-0.2, 0.2), 1),
+            round(np.random.uniform(-0.1, 0.1), 1),
+            round(np.random.uniform(-0.1, 0.1), 1),
         ]
 
     def train(self):
@@ -100,18 +106,22 @@ class RLAgent:
             torch.nn.Softmax(dim=-1),
         )
         optim = torch.optim.Adam(nn.parameters(), lr=self.lr)
-        statistics = []
+        statistics, show_rewards, show_actions, all_rewards = [], [], [], []
 
         nn = nn.float()
+        stop = False
 
         for i in range(self.episodes + 1):
+            if stop:
+                break
+
             vector = self.get_random_speed_vector()
             state = self.env.reset(
                 drones_positions=self.drones_initial_positions, vector=vector
             )
             obs_list = self.flatten_state(state)
             done = False
-            actions, states, rewards, show_rewards = [], [], [], []
+            actions, states, rewards = [], [], []
             count_actions, total_reward = 0, 0
 
             while not done:
@@ -124,13 +134,14 @@ class RLAgent:
 
                 obs_list_, reward_dict, _, done, _ = self.env.step(episode_actions)
 
-                reward = self.get_reward_enhanced(
-                    obs_list_, episode_actions, reward_dict["total_reward"]
+                reward, reward_dict = self.get_reward_enhanced(
+                    obs_list_, episode_actions, reward_dict
                 )
 
                 actions.append(
                     torch.tensor(list(episode_actions.values()), dtype=torch.int)
                 )
+
                 states.append(obs_list)
                 rewards.append(
                     [
@@ -146,38 +157,41 @@ class RLAgent:
                 done = any(done.values())
 
             show_rewards.append(total_reward)
+            all_rewards.append(total_reward)
+            show_actions.append(count_actions)
+
+            if len(all_rewards) > 100:
+                if all([r >= 100000 for r in all_rewards[-20:]]):
+                    stop = True
+                    print("Acabou mais cedo")
+
             if i % 100 == 0:
                 print(
-                    f"Up to episode = {i}, Actions (last) = {count_actions}, "
+                    f"Up to episode = {i}, Actions (mean) = {sum(show_actions)/ len(show_actions)}, "
                     f"Reward (mean) = {sum(show_rewards) / len(show_rewards)}"
                 )
-                show_rewards = []
+
+                show_rewards, show_actions = [], []
 
             statistics.append([i, count_actions, total_reward])
-
-            if len(rewards) > 100:
-                pass
 
             discounted_returns = []
             for t in range(len(rewards)):
                 G_list = []
 
                 for drone_index in range(self.num_agents):
-                    try:
-                        agent_rewards = [r[drone_index] for r in rewards]
-                        G_list.append(
-                            sum(
-                                (self.y**k) * r
-                                for k, r in enumerate(agent_rewards[t:])
-                            )
+                    agent_rewards = [r[drone_index] for r in rewards]
+                    G_list.append(
+                        sum(
+                            (self.y ** k) * r
+                            for k, r in enumerate(agent_rewards[t:])
                         )
-                    except IndexError:
-                        pass
+                    )
 
                 discounted_returns.append(G_list)
 
             for state_list, action_list, G_list in zip(
-                states, actions, discounted_returns
+                    states, actions, discounted_returns
             ):
                 for drone_index in range(self.num_agents):
                     probs = nn(state_list[drone_index].float())
@@ -190,10 +204,11 @@ class RLAgent:
                     loss.backward()
                     optim.step()
 
+
         return nn, statistics
 
 
-config = get_config(3)
+config = get_config(1)
 
 env = DroneSwarmSearch(
     grid_size=config.grid_size,
@@ -208,9 +223,9 @@ env = DroneSwarmSearch(
 
 rl_agent = RLAgent(
     env,
-    y=0.99999,
-    lr=0.00001,
-    episodes=10_000,
+    y=0.999999,
+    lr=0.00002,
+    episodes=20_000,
     drones_initial_positions=config.drones_initial_positions,
 )
 nn, statistics = rl_agent.train()

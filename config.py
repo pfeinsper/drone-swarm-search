@@ -22,7 +22,7 @@ def get_config(config_number: int) -> EnvConfig:
             return EnvConfig(
                 grid_size=10,
                 n_drones=1,
-                vector=[0.1, 0.1],
+                vector=[0.1, -0.1],
                 drones_initial_positions=[[0, 0]],
                 person_initial_position=[5, 5],
                 disperse_constant=3,
