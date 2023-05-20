@@ -26,7 +26,7 @@ def get_config(config_number: int) -> EnvConfig:
                 drones_initial_positions=[[0, 0]],
                 person_initial_position=[5, 5],
                 disperse_constant=3,
-                time_limit=100,
+                time_limit=200,
             )
         case 2:
             return EnvConfig(
@@ -34,9 +34,9 @@ def get_config(config_number: int) -> EnvConfig:
                 n_drones=1,
                 vector=[0.1, 0.1],
                 drones_initial_positions=[[0, 0]],
-                person_initial_position=[10, 10],
-                disperse_constant=5,
-                time_limit=100,
+                person_initial_position=[9, 9],
+                disperse_constant=3,
+                time_limit=200,
             )
 
         case 3:

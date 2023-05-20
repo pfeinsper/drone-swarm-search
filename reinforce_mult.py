@@ -150,7 +150,10 @@ class RLAgent:
 
             while not done:
                 episode_actions = self.select_actions(obs_list)
-                obs_list_, reward_dict, _, done, _ = self.env.step(episode_actions)
+                obs_list_, reward_dict, _, done, infos = self.env.step(episode_actions)
+
+                if infos["Found"]:
+                    pass
 
                 actions.append(
                     torch.tensor(list(episode_actions.values()), dtype=torch.int)
@@ -183,7 +186,7 @@ class RLAgent:
         return self.nn, statistics
 
 
-config = get_config(1)
+config = get_config(2)
 
 env = DroneSwarmSearch(
     grid_size=config.grid_size,
@@ -200,7 +203,7 @@ rl_agent = RLAgent(
     env,
     y=0.999999,
     lr=0.000001,
-    episodes=20_000,
+    episodes=30_000,
     drones_initial_positions=config.drones_initial_positions,
 )
 nn, statistics = rl_agent.train()
