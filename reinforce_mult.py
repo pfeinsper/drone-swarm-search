@@ -5,35 +5,12 @@ from config import get_config
 from core.environment.env import DroneSwarmSearch
 
 
-class RLAgent:
-    def __init__(self, env, y, lr, episodes, drones_initial_positions):
+class Reinforce:
+    def __init__(self, env):
         self.env = env
-        self.y = y
-        self.lr = lr
-        self.episodes = episodes
-        self.drones_initial_positions = drones_initial_positions
 
+        self.num_top_positions = 10
         self.num_agents = len(env.possible_agents)
-        self.num_entries = (self.num_agents + self.env.grid_size) * 2
-        self.num_actions = len(env.action_space("drone0"))
-
-        self.nn = self.create_neural_network()
-        self.optimizer = self.create_optimizer(self.nn.parameters())
-
-    def create_neural_network(self):
-        nn = torch.nn.Sequential(
-            torch.nn.Linear(self.num_entries, 512),
-            torch.nn.ReLU(),
-            torch.nn.Linear(512, 256),
-            torch.nn.ReLU(),
-            torch.nn.Linear(256, self.num_actions),
-            torch.nn.Softmax(dim=-1),
-        )
-        return nn.float()
-
-    def create_optimizer(self, parameters):
-        optimizer = torch.optim.Adam(parameters, lr=self.lr)
-        return optimizer
 
     def flatten_positions(self, positions):
         flattened = [pos for sublist in positions for pos in sublist]
@@ -41,28 +18,13 @@ class RLAgent:
 
     def get_flatten_top_probabilities_positions(self, probability_matrix):
         flattened_probs = probability_matrix.flatten()
-        indices = flattened_probs.argsort()[-self.env.grid_size :][::-1]
+        indices = flattened_probs.argsort()[-self.num_top_positions :][::-1]
         positions = [
             (idx // len(probability_matrix), idx % len(probability_matrix))
             for idx in indices
         ]
 
         return self.flatten_positions(positions)
-
-    def get_random_speed_vector(self):
-        return [
-            round(np.random.uniform(-0.1, 0.1), 1),
-            round(np.random.uniform(-0.1, 0.1), 1),
-        ]
-
-    def select_actions(self, obs_list):
-        episode_actions = {}
-        for drone_index in range(self.num_agents):
-            probs = self.nn(obs_list[drone_index].float())
-            distribution = torch.distributions.Categorical(probs)
-            episode_actions[f"drone{drone_index}"] = distribution.sample().item()
-
-        return episode_actions
 
     def flatten_state(self, observations):
         flatten_all = []
@@ -92,6 +54,52 @@ class RLAgent:
             )
 
         return flatten_all
+
+    def get_random_speed_vector(self):
+        return [
+            round(np.random.uniform(-0.1, 0.1), 1),
+            round(np.random.uniform(-0.1, 0.1), 1),
+        ]
+
+
+class ReinforceAgent(Reinforce):
+    def __init__(self, env, y, lr, episodes, drones_initial_positions):
+        super().__init__(env)
+        self.y = y
+        self.lr = lr
+        self.episodes = episodes
+        self.drones_initial_positions = drones_initial_positions
+
+        self.num_agents = len(env.possible_agents)
+        self.num_entries = (self.num_agents + self.num_top_positions) * 2
+        self.num_actions = len(env.action_space("drone0"))
+
+        self.nn = self.create_neural_network()
+        self.optimizer = self.create_optimizer(self.nn.parameters())
+
+    def create_neural_network(self):
+        nn = torch.nn.Sequential(
+            torch.nn.Linear(self.num_entries, 512),
+            torch.nn.ReLU(),
+            torch.nn.Linear(512, 256),
+            torch.nn.ReLU(),
+            torch.nn.Linear(256, self.num_actions),
+            torch.nn.Softmax(dim=-1),
+        )
+        return nn.float()
+
+    def create_optimizer(self, parameters):
+        optimizer = torch.optim.Adam(parameters, lr=self.lr)
+        return optimizer
+
+    def select_actions(self, obs_list):
+        episode_actions = {}
+        for drone_index in range(self.num_agents):
+            probs = self.nn(obs_list[drone_index].float())
+            distribution = torch.distributions.Categorical(probs)
+            episode_actions[f"drone{drone_index}"] = distribution.sample().item()
+
+        return episode_actions
 
     def extract_rewards(self, reward_dict):
         rewards = [
@@ -170,7 +178,7 @@ class RLAgent:
             show_actions.append(count_actions)
 
             if len(all_rewards) > 100:
-                if all([r >= 100000 for r in all_rewards[-20:]]):
+                if all([r >= 100000 for r in all_rewards[-80:]]):
                     stop = True
                     print("Acabou mais cedo")
 
@@ -180,37 +188,39 @@ class RLAgent:
 
             statistics.append([i, count_actions, total_reward])
             discounted_returns = self.calculate_discounted_returns(rewards)
-
             self.update_neural_network(states, actions, discounted_returns)
 
         return self.nn, statistics
 
 
-config = get_config(2)
+if __name__ == "__main__":
+    config = get_config(2)
 
-env = DroneSwarmSearch(
-    grid_size=config.grid_size,
-    render_mode="ansi",
-    render_grid=False,
-    render_gradient=False,
-    n_drones=config.n_drones,
-    person_initial_position=config.person_initial_position,
-    disperse_constant=config.disperse_constant,
-    timestep_limit=100,
-)
+    env = DroneSwarmSearch(
+        grid_size=config.grid_size,
+        render_mode="ansi",
+        render_grid=False,
+        render_gradient=False,
+        n_drones=config.n_drones,
+        person_initial_position=config.person_initial_position,
+        disperse_constant=config.disperse_constant,
+        timestep_limit=100,
+    )
 
-rl_agent = RLAgent(
-    env,
-    y=0.999999,
-    lr=0.000001,
-    episodes=30_000,
-    drones_initial_positions=config.drones_initial_positions,
-)
-nn, statistics = rl_agent.train()
+    rl_agent = ReinforceAgent(
+        env,
+        y=0.999999,
+        lr=0.000001,
+        episodes=100_000,
+        drones_initial_positions=config.drones_initial_positions,
+    )
+    nn, statistics = rl_agent.train()
 
-torch.save(nn, f"data/nn_{config.grid_size}_{config.grid_size}_{config.n_drones}.pt")
-df = pd.DataFrame(statistics, columns=["episode", "actions", "rewards"])
-df.to_csv(
-    f"data/statistics_{config.grid_size}_{config.grid_size}_{config.n_drones}.csv",
-    index=False,
-)
+    torch.save(
+        nn, f"data/nn_{config.grid_size}_{config.grid_size}_{config.n_drones}.pt"
+    )
+    df = pd.DataFrame(statistics, columns=["episode", "actions", "rewards"])
+    df.to_csv(
+        f"data/statistics_{config.grid_size}_{config.grid_size}_{config.n_drones}.csv",
+        index=False,
+    )
