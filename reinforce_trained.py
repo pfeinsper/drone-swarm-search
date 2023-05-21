@@ -13,7 +13,7 @@ def flatten_positions(positions):
 
 def get_flatten_top_probabilities_positions(probability_matrix):
     flattened_probs = probability_matrix.flatten()
-    indices = flattened_probs.argsort()[-config.grid_size :][::-1]
+    indices = flattened_probs.argsort()[-10:][::-1]
     positions = [
         (idx // len(probability_matrix), idx % len(probability_matrix))
         for idx in indices
@@ -98,7 +98,7 @@ def test_100_times():
     return total_success
 
 
-nn = torch.load(f"data/nn_{config.grid_size}_{config.grid_size}_{config.n_drones}.pt")
+nn = torch.load(f"data/nn_10_10_{config.n_drones}.pt")
 nn = nn.float()
 
 env = DroneSwarmSearch(
