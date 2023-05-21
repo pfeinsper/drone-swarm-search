@@ -167,7 +167,7 @@ class RLAgent:
             show_actions.append(count_actions)
 
             if len(all_rewards) > 100:
-                if all([r >= 100000 for r in all_rewards[-20:]]):
+                if all([r >= 100000 for r in all_rewards[-50:]]):
                     stop = True
                     print("Acabou mais cedo")
 
@@ -200,7 +200,7 @@ rl_agent = RLAgent(
     env,
     y=0.999999,
     lr=0.000001,
-    episodes=20_000,
+    episodes=50_000,
     drones_initial_positions=config.drones_initial_positions,
 )
 nn, statistics = rl_agent.train()
