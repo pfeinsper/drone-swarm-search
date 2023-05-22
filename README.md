@@ -3,7 +3,7 @@
 ## Quick Start
 
 #### Install
-`pip install -i https://test.pypi.org/simple/ DroneSwarmSearchEnvironment`
+`pip install DroneSwarmSearchEnvironment`
 
 #### Use
 `from DroneSwarmSearchEnvironment.env import DroneSwarmSearch`
