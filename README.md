@@ -3,10 +3,10 @@
 ## Quick Start
 
 #### Install
-`pip install DroneSwarmSearchEnvironment`
+`pip install DSSE`
 
 #### Use
-`from DroneSwarmSearchEnvironment.env import DroneSwarmSearch`
+`from DSSE.env import DroneSwarmSearch`
 
 ## About
 
@@ -26,7 +26,7 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
 
 ## Basic Usage
 ```python
-from DroneSwarmSearchEnvironment.env import DroneSwarmSearch
+from DSSE.env import DroneSwarmSearch
 
 env = DroneSwarmSearch(
     grid_size=50, 
