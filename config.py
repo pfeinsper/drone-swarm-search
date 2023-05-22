@@ -49,3 +49,14 @@ def get_config(config_number: int) -> EnvConfig:
                 disperse_constant=1,
                 time_limit=100,
             )
+
+        case 4:
+            return EnvConfig(
+                grid_size=20,
+                n_drones=2,
+                vector=[0.1, 0.1],
+                drones_initial_positions=[[0, 0], [0, 1]],
+                person_initial_position=[10, 10],
+                disperse_constant=3,
+                time_limit=100,
+                )
