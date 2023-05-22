@@ -219,10 +219,10 @@ The rewards values goes as follows:
 
 - **1** for every action by default
 - **-100000** if the drone leaves the grid 
-- **-1000** if the drone does not find the person after timestep exceeds timestep_limit
-- **-2000** if the drones collide 
-- ***probability of cell*** for searching a cell
-- ***(timestep_limit - timestep) x 10*** if the drone searches the cell in which the person is located
+- **(*sum_of_rewards* * -1) -100000** if the drone does not find the person after timestep exceeds timestep_limit
+- **-100000** if the drones collide 
+- ***(probability of cell * 10000) if (probability of cell * 100 > 1) else -100*** for searching a cell
+- ***10000 + 10000 * (1 - timestep / timestep_limit)*** if the drone searches the cell in which the person is located
 
 #### Termination & Truncation:
 
@@ -230,7 +230,7 @@ The termination and truncation variables return a dictionary with all drones as 
 
 - If two or more drones collide
 - If one of the drones leave the grid 
-- If more than 500 steps occur
+- If timestep exceeds timestep_limit
 - If a drone searches the cell in which the person is located
 
 #### Info:
