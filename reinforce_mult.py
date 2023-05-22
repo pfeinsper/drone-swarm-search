@@ -17,16 +17,21 @@ class RLAgent:
         self.num_entries = (self.num_agents + self.env.grid_size) * 2
         self.num_actions = len(env.action_space("drone0"))
 
+        self.device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.backends.cuda.is_available() else "cpu")
         self.nn = self.create_neural_network()
+        self.nn.to(self.device)
         self.optimizer = self.create_optimizer(self.nn.parameters())
 
     def create_neural_network(self):
+
+        dtype = torch.float
+
         nn = torch.nn.Sequential(
-            torch.nn.Linear(self.num_entries, 512),
+            torch.nn.Linear(self.num_entries, 512, device=self.device, dtype=dtype),
             torch.nn.ReLU(),
-            torch.nn.Linear(512, 256),
+            torch.nn.Linear(512, 256, device=self.device, dtype=dtype),
             torch.nn.ReLU(),
-            torch.nn.Linear(256, self.num_actions),
+            torch.nn.Linear(256, self.num_actions, device=self.device, dtype=dtype),
             torch.nn.Softmax(dim=-1),
         )
         return nn.float()
@@ -58,7 +63,7 @@ class RLAgent:
     def select_actions(self, obs_list):
         episode_actions = {}
         for drone_index in range(self.num_agents):
-            probs = self.nn(obs_list[drone_index].float())
+            probs = self.nn(obs_list[drone_index].float().to(self.device))
             distribution = torch.distributions.Categorical(probs)
             episode_actions[f"drone{drone_index}"] = distribution.sample().item()
 
@@ -121,9 +126,9 @@ class RLAgent:
     def update_neural_network(self, states, actions, discounted_returns):
         for state_list, action_list, G_list in zip(states, actions, discounted_returns):
             for drone_index in range(self.num_agents):
-                probs = self.nn(state_list[drone_index].float())
-                distribution = torch.distributions.Categorical(probs=probs)
-                log_prob = distribution.log_prob(action_list[drone_index])
+                probs = self.nn(state_list[drone_index].float().to(self.device))
+                distribution = torch.distributions.Categorical(probs)
+                log_prob = distribution.log_prob(action_list[drone_index].to(self.device))
 
                 loss = -log_prob * G_list[drone_index]
 
