@@ -72,7 +72,7 @@ In order to use the environment download the dependencies using the following co
 | Import            | from core.environment.env import DroneSwarmSearch  |
 | -------------     | -------------                                      |
 | Action Space      | Discrete (5)                                       |
-| Action Values     | [0,1,2,3,4,5]                                      |  
+| Action Values     | [0,1,2,3,4]                                      |  
 | Agents            | N                                                  |
 | Observation Space | {droneN: {observation: ((x, y), probability_matrix}|
 
@@ -84,7 +84,6 @@ In order to use the environment download the dependencies using the following co
 | 2             | Move Up       |
 | 3             | Move Down     |
 | 4             | Search Cell   |
-| 5             | Idle          |
 
 ### Inputs
 | Inputs                    | Possible Values       | Default Values            |
