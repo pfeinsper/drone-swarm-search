@@ -249,15 +249,9 @@ class DroneSwarmSearch(ParallelEnv):
                 isSearching = True
 
             if drone_x == self.person_x and drone_y == self.person_y and isSearching:
-                rewards = {
-                    a: self.reward_scheme["search_and_find"]
-                       + self.reward_scheme["search_and_find"]
-                       * (1 - self.timestep / self.timestep_limit)
-                    for a in self.agents
-                }
+                rewards[i] = self.reward_scheme["search_and_find"] + self.reward_scheme["search_and_find"] * (1 - self.timestep / self.timestep_limit)
                 terminations = {a: True for a in self.agents}
                 truncations = {a: True for a in self.agents}
-                self.agents = []
                 person_found = True
 
             elif isSearching:
