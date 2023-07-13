@@ -244,3 +244,19 @@ Info is a dictionary that contains a key called "Found" that contains a boolean 
 ### `env.close`:
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
+
+## How to cite this work
+
+If you use this package, please consider citing it with this piece of BibTeX:
+
+```
+@misc{castanares2023dsse,
+      title={DSSE: a drone swarm search environment}, 
+      author={Manuel Castanares and Luis F. S. Carrete and Enrico F. Damiani and Leonardo D. M. de Abreu and José Fernando B. Brancalion and Fabrício J. Barth},
+      year={2023},
+      eprint={2307.06240},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      doi={https://doi.org/10.48550/arXiv.2307.06240}
+}
+```
