@@ -3,10 +3,14 @@
 ## Quick Start
 
 #### Install
-`pip install -i https://test.pypi.org/simple/ DroneSwarmSearchEnvironment`
+`pip install DSSE`
 
 #### Use
-`from DroneSwarmSearchEnvironment.env import DroneSwarmSearch`
+`from DSSE.env import DroneSwarmSearch`
+
+#### PyPi Package Page
+
+https://pypi.org/project/DSSE/
 
 ## About
 
@@ -26,7 +30,7 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
 
 ## Basic Usage
 ```python
-from DroneSwarmSearchEnvironment.env import DroneSwarmSearch
+from DSSE.env import DroneSwarmSearch
 
 env = DroneSwarmSearch(
     grid_size=50, 
@@ -72,7 +76,7 @@ In order to use the environment download the dependencies using the following co
 | Import            | from core.environment.env import DroneSwarmSearch  |
 | -------------     | -------------                                      |
 | Action Space      | Discrete (5)                                       |
-| Action Values     | [0,1,2,3,4,5]                                      |  
+| Action Values     | [0,1,2,3,4]                                      |  
 | Agents            | N                                                  |
 | Observation Space | {droneN: {observation: ((x, y), probability_matrix}|
 
@@ -84,7 +88,6 @@ In order to use the environment download the dependencies using the following co
 | 2             | Move Up       |
 | 3             | Move Down     |
 | 4             | Search Cell   |
-| 5             | Idle          |
 
 ### Inputs
 | Inputs                    | Possible Values       | Default Values            |
