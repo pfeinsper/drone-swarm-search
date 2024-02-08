@@ -7,6 +7,7 @@ from pettingzoo.utils.env import ParallelEnv
 import time
 from core.environment.generator.map import generate_map
 from core.environment.generator.dynamic_probability import probability_matrix
+from constants import *
 
 
 class DroneSwarmSearch(ParallelEnv):
@@ -284,17 +285,11 @@ class DroneSwarmSearch(ParallelEnv):
         if self.render_mode == "human":
             if True in terminations.values():
                 if person_found:
-                    self.victory_render()
+                    self.render_episode_end_screen(f"The target was found in {self.timestep} moves", GREEN)
                 else:
-                    self.failure_render()
+                    self.render_episode_end_screen("The target was not found.", RED)
             else:
                 self.render()
-
-            if True in terminations.values():
-                if person_found:
-                    self.victory_render()
-                else:
-                    self.failure_render()
 
         return observations, rewards, terminations, truncations, infos
 
@@ -377,37 +372,14 @@ class DroneSwarmSearch(ParallelEnv):
                 counter_y += 1
             counter_x += 1
 
-    def failure_render(self):
-        done = False
+    def render_episode_end_screen(self, message: str, color: tuple):
         font = pygame.font.SysFont(None, 50)
-        motd = "The target was not found."
-        text = font.render(motd, True, (0, 0, 0))
+        text = font.render(message, True, (0, 0, 0))
         text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
-        # while not done:
-        #     for event in pygame.event.get():
-        #         if event.type == pygame.QUIT:
-        #             done = True
-        self.screen.fill((255, 0, 0))
+        self.screen.fill(color)
         self.screen.blit(text, text_rect)
         pygame.display.flip()
         time.sleep(1)
-        # self.close()
-
-    def victory_render(self):
-        done = False
-        font = pygame.font.SysFont(None, 50)
-        motd = "The target was found in {0} moves.".format(self.timestep)
-        text = font.render(motd, True, (0, 0, 0))
-        text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
-        # while not done:
-        #     for event in pygame.event.get():
-        #         if event.type == pygame.QUIT:
-        #             done = True
-        self.screen.fill((0, 255, 0))
-        self.screen.blit(text, text_rect)
-        pygame.display.flip()
-        time.sleep(1)
-        # self.close()
 
     def close(self):
         if self.renderOn:
