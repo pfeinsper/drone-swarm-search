@@ -7,7 +7,7 @@ from pettingzoo.utils.env import ParallelEnv
 import time
 from core.environment.generator.map import generate_map
 from core.environment.generator.dynamic_probability import probability_matrix
-from constants import *
+from .constants import *
 
 
 class DroneSwarmSearch(ParallelEnv):
