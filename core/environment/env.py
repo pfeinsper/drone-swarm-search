@@ -110,9 +110,10 @@ class DroneSwarmSearch(ParallelEnv):
             drones_positions=None,
             vector=None,
     ):
-        for i in drones_positions:
-            if max(i) > self.grid_size:
-                raise Exception("You are trying to place the drone outside the grid")
+        if drones_positions is not None:
+            for i in drones_positions:
+                if max(i) > self.grid_size:
+                    raise Exception("You are trying to place the drone outside the grid")
 
         # reset target position
         self.person_y = self.person_initial_position[1]
@@ -167,9 +168,6 @@ class DroneSwarmSearch(ParallelEnv):
             temp_map = np.insert(temp_map, 0, np.array([0, 0, 0]), axis=0)
         elif self.person_y == self.grid_size - 1:
             temp_map = np.insert(temp_map, 2, np.array([0, 0, 0]), axis=0)
-
-        if all([e == [] for e in temp_map]) or temp_map == []:
-            pass
 
         prev_person_x, prev_person_y = self.person_x, self.person_y
 
@@ -342,7 +340,10 @@ class DroneSwarmSearch(ParallelEnv):
             for y in np.arange(10, self.window_size + 10, self.block_size):
                 rect = pygame.Rect(x, y, self.block_size, self.block_size)
                 prob = matrix[counter_y][counter_x]
+                
+                #TODO: Arrumar esse warning
                 normalizedProb = prob / max_matrix
+
                 if self.render_gradient:
                     if prob == 0:
                         r, g = 255, 0
