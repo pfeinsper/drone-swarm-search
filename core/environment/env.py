@@ -6,7 +6,7 @@ import pygame
 from pettingzoo.utils.env import ParallelEnv
 import time
 from core.environment.generator.map import generate_map
-from core.environment.generator.dynamic_probability import probability_matrix
+from core.environment.generator.dynamic_probability import ProbabilityMatrix
 from .constants import *
 
 
@@ -48,7 +48,7 @@ class DroneSwarmSearch(ParallelEnv):
             self.agents_positions["drone" + str(i)] = [None, None]
 
         self.render_mode = render_mode
-        self.probability_matrix = probability_matrix(
+        self.probability_matrix = ProbabilityMatrix(
             40,
             disperse_constant,
             disperse_constant,
@@ -125,7 +125,7 @@ class DroneSwarmSearch(ParallelEnv):
         self.vector = vector if vector else self.vector
         self.rewards_sum = {a: 0 for a in self.agents}
         self.rewards_sum["total"] = 0
-        self.probability_matrix = probability_matrix(
+        self.probability_matrix = ProbabilityMatrix(
             40,
             self.disperse_constant,
             self.disperse_constant,
@@ -141,6 +141,17 @@ class DroneSwarmSearch(ParallelEnv):
 
         observations = self.create_observations()
         return observations
+        
+    
+    def get_new_person_position(self, previous_position: int, updated_position: int):
+        match updated_position:
+            case 0:
+                return previous_position - 1
+            case 1:
+                return previous_position
+            case _:
+                return previous_position + 1
+        
 
     def create_observations(self):
         observations = {}
@@ -173,20 +184,8 @@ class DroneSwarmSearch(ParallelEnv):
         prev_person_x, prev_person_y = self.person_x, self.person_y
 
         self.map, self.person_x, self.person_y = generate_map(np.array(temp_map))
-        self.person_x = (
-            prev_person_x - 1
-            if self.person_x == 0
-            else prev_person_x
-            if self.person_x == 1
-            else prev_person_x + 1
-        )
-        self.person_y = (
-            prev_person_y - 1
-            if self.person_y == 0
-            else prev_person_y
-            if self.person_y == 1
-            else prev_person_y + 1
-        )
+        self.person_x = self.get_new_person_position(prev_person_x, self.person_x)
+        self.person_y = self.get_new_person_position(prev_person_y, self.person_y)
 
         for i in self.possible_agents:
             observation = (
@@ -271,7 +270,7 @@ class DroneSwarmSearch(ParallelEnv):
         # Get dummy infos
         infos = {"Found": person_found}
 
-        # CHECK COLISION
+        # CHECK COLISION - Drone
         for ki, i in self.agents_positions.items():
             for ke, e in self.agents_positions.items():
                 if ki is not ke:
