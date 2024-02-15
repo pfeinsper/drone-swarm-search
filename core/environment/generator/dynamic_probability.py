@@ -6,7 +6,7 @@ from matplotlib.widgets import Slider
 import math
 
 
-class probability_matrix:
+class ProbabilityMatrix:
     def __init__(
         self, amplitude, spacement_x, spacement_y, vector, initial_position, size
     ):
