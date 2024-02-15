@@ -143,17 +143,6 @@ class DroneSwarmSearch(ParallelEnv):
         return observations
 
     
-    def get_new_person_position(self, previous_position: int, updated_position: int):
-        match updated_position:
-            case 0:
-                return previous_position - 1
-            case 1:
-                return previous_position
-            case _:
-                return previous_position + 1
-    
-       
-
     def create_observations(self):
         observations = {}
         self.probability_matrix.step()
@@ -185,9 +174,6 @@ class DroneSwarmSearch(ParallelEnv):
 
         prev_person_x, prev_person_y = self.person_x, self.person_y
 
-        # self.map, self.person_x, self.person_y = generate_map(np.array(temp_map))
-        # self.person_x = self.get_new_person_position(prev_person_x, self.person_x)
-        # self.person_y = self.get_new_person_position(prev_person_y, self.person_y)
         movement = update_shipwrecked_position(np.array(temp_map))
         actual_movement = noise_person_movement(movement, self.vector, epsilon=0.8)
         
@@ -355,6 +341,8 @@ class DroneSwarmSearch(ParallelEnv):
         matrix = self.probability_matrix.get_matrix()
 
         max_matrix = matrix.max()
+        if max_matrix == 0.0:
+            max_matrix = 1.0
         counter_x = 0
         for x in np.arange(10, self.window_size + 10, self.block_size):
             counter_y = 0
