@@ -1,13 +1,13 @@
 import functools
 from copy import copy
+import time
 import numpy as np
 from gymnasium.spaces import MultiDiscrete
 import pygame
 from pettingzoo.utils.env import ParallelEnv
-import time
-from core.environment.generator.map import generate_map
+from core.environment.generator.map import update_shipwrecked_position, noise_person_movement
 from core.environment.generator.dynamic_probability import ProbabilityMatrix
-from .constants import *
+from core.environment.constants import RED, GREEN
 
 
 class DroneSwarmSearch(ParallelEnv):
@@ -141,7 +141,7 @@ class DroneSwarmSearch(ParallelEnv):
 
         observations = self.create_observations()
         return observations
-        
+
     
     def get_new_person_position(self, previous_position: int, updated_position: int):
         match updated_position:
@@ -151,7 +151,8 @@ class DroneSwarmSearch(ParallelEnv):
                 return previous_position
             case _:
                 return previous_position + 1
-        
+    
+       
 
     def create_observations(self):
         observations = {}
@@ -159,6 +160,7 @@ class DroneSwarmSearch(ParallelEnv):
 
         probability_matrix = self.probability_matrix.get_matrix()
 
+        # WARNING: There is a bug in this section if the grid size is small
         leftX = self.person_x - 1 if self.person_x > 0 else 0
         rightX = (
             self.person_x + 2 if self.person_x < self.grid_size - 1 else self.grid_size
@@ -183,9 +185,14 @@ class DroneSwarmSearch(ParallelEnv):
 
         prev_person_x, prev_person_y = self.person_x, self.person_y
 
-        self.map, self.person_x, self.person_y = generate_map(np.array(temp_map))
-        self.person_x = self.get_new_person_position(prev_person_x, self.person_x)
-        self.person_y = self.get_new_person_position(prev_person_y, self.person_y)
+        # self.map, self.person_x, self.person_y = generate_map(np.array(temp_map))
+        # self.person_x = self.get_new_person_position(prev_person_x, self.person_x)
+        # self.person_y = self.get_new_person_position(prev_person_y, self.person_y)
+        movement = update_shipwrecked_position(np.array(temp_map))
+        actual_movement = noise_person_movement(movement, self.vector, epsilon=0.8)
+        
+        self.person_x = self.safe_1d_position_update(prev_person_x, actual_movement[0])
+        self.person_y = self.safe_1d_position_update(prev_person_y, actual_movement[1])
 
         for i in self.possible_agents:
             observation = (
@@ -196,6 +203,20 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.render_probability_matrix(self.render_mode_matrix)
         return observations
+
+
+    def safe_1d_position_update(self, previous: int, movement: int) -> int:
+        """
+        Updates the shipwrecked person position on a given axis, checking for edge cases first.
+
+        Output:
+            new position: int
+        """
+        new_position_on_axis = previous + movement
+        if new_position_on_axis >= 0 and new_position_on_axis < self.grid_size:
+            return new_position_on_axis
+        return previous
+ 
 
     def move(self, position, action):
         """Returns a tuple with (is_terminal, new_position, reward)"""
@@ -226,7 +247,7 @@ class DroneSwarmSearch(ParallelEnv):
         truncations = {a: False for a in self.agents}
         person_found = False
         for i in self.agents:
-            if not i in actions:
+            if i not in actions:
                 raise Exception("Missing action for " + i)
 
             drone_action = actions[i]
@@ -242,7 +263,6 @@ class DroneSwarmSearch(ParallelEnv):
                 rewards[i] = reward
                 terminations[i] = is_terminal
                 truncations[i] = is_terminal
-
             elif drone_action == 4:  # search
                 isSearching = True
 
@@ -251,7 +271,6 @@ class DroneSwarmSearch(ParallelEnv):
                 terminations = {a: True for a in self.agents}
                 truncations = {a: True for a in self.agents}
                 person_found = True
-
             elif isSearching:
                 prob_matrix = self.probability_matrix.get_matrix()
                 rewards[i] = prob_matrix[drone_y][drone_x] * 10000 if prob_matrix[drone_y][drone_x] * 100 > 1 else -100
@@ -271,13 +290,7 @@ class DroneSwarmSearch(ParallelEnv):
         infos = {"Found": person_found}
 
         # CHECK COLISION - Drone
-        for ki, i in self.agents_positions.items():
-            for ke, e in self.agents_positions.items():
-                if ki is not ke:
-                    if i[0] == e[0] and i[1] == e[1]:
-                        truncations[ki] = True
-                        terminations[ki] = True
-                        rewards[ki] = self.reward_scheme["drones_collision"]
+        self.compute_drone_collision(terminations, rewards, truncations)
         rewards["total_reward"] = sum([e for e in rewards.values()])
         self.rewards_sum["total"] += rewards["total_reward"]
 
@@ -291,6 +304,20 @@ class DroneSwarmSearch(ParallelEnv):
                 self.render()
 
         return observations, rewards, terminations, truncations, infos
+
+    def compute_drone_collision(self, terminations, rewards, truncations):
+        """
+        Check for drone collision and compute terminations, rewards and truncations.
+        """
+        for drone_1_id, drone_1_position in self.agents_positions.items():
+            for drone_2_id, drone_2_position in self.agents_positions.items():
+                if drone_1_id == drone_2_id:
+                    continue
+            
+                if drone_1_position[0] == drone_2_position[0] and drone_1_position[1] == drone_2_position[1]:
+                    truncations[drone_1_id] = True
+                    terminations[drone_1_id] = True
+                    rewards[drone_1_id] = self.reward_scheme["drones_collision"]
 
     def enable_render(self, mode="human"):
         if not self.renderOn and mode == "human":
