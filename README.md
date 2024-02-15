@@ -1,6 +1,6 @@
 # Drone Swarm Search
 
-# Workflow Status: Automated Testing with Pytest
+## Workflow Status: Automated Testing with Pytest
 
 [![Run Pytest](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml)
 
