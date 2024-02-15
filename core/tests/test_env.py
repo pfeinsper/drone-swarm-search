@@ -39,7 +39,7 @@ def test_drone_collision_termination():
         done = any([e for e in done.values()])
 
         assert reward["total_reward"] < 0
-        assert done is False
+        assert done is True
         assert any(terminations.values())
 
 def test_timeout_termination():
