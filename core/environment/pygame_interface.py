@@ -102,6 +102,7 @@ class PygameInterface:
             elif normalized_prob >= 0.25:
                 red = 255
                 green = 255
+        return (red, green, 0)
 
 
     def render_episode_end_screen(self, message: str, color: tuple):
