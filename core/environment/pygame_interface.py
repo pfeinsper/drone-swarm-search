@@ -60,7 +60,9 @@ class PygameInterface:
         self.clock.tick(self.FPS)
         self.screen.fill(BLACK)
 
-        max_matrix = max(matrix.max(), 0.1)
+        max_matrix = matrix.max()
+        if max_matrix == 0.0:
+            max_matrix = 1.0
             
         for counter_x, x in enumerate(np.arange(10, self.window_size + 10, self.block_size)):
             for counter_y, y in enumerate(np.arange(10, self.window_size + 10, self.block_size)):
@@ -80,21 +82,26 @@ class PygameInterface:
                     self.screen.blit(self.person_img, rectangle)
 
     def compute_cell_color(self, normalized_prob, prob):
-        if not self.render_gradient:
-            return (255, 0, 0) if normalized_prob >= 0.75 else (255, 255, 0)
-        
-        if prob == 0:
-            return (255, 0, 0)
-        elif prob > 0.99:
-            return (0, 255, 0)
-
-        green = normalized_prob * 255
-        red = (1 - normalized_prob) * 255
-        max_color = max(red, green)
-        green = (green * 255) / max_color
-        red = (red * 255) / max_color
-
-        return (red, green, 0)
+        if self.render_gradient:
+            if prob == 0:
+                red, green = 255, 0
+            elif prob > 0.99:
+                red, green = 0, 255
+            else:
+                green = normalized_prob * 255
+                red = (1 - normalized_prob) * 255
+                max_color = max(red, green)
+                green = (green * 255) / (max_color)
+                red = (red * 255) / (max_color)
+        else:
+            red = 255
+            green = 0
+            if normalized_prob >= 0.75:
+                red = 0
+                green = 255
+            elif normalized_prob >= 0.25:
+                red = 255
+                green = 255
 
 
     def render_episode_end_screen(self, message: str, color: tuple):
