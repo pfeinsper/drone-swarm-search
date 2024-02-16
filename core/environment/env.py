@@ -143,7 +143,7 @@ class DroneSwarmSearch(ParallelEnv):
 
         probability_matrix = self.probability_matrix.get_matrix()
 
-        # WARNING: There is a bug in this section if the grid size is small
+        # ! WARNING: There is a bug in this section if the grid size is small
         leftX = self.person_x - 1 if self.person_x > 0 else 0
         rightX = (
             self.person_x + 2 if self.person_x < self.grid_size - 1 else self.grid_size
@@ -198,8 +198,11 @@ class DroneSwarmSearch(ParallelEnv):
         return previous
  
 
-    def move(self, position, action):
-        """Returns a tuple with (is_terminal, new_position, reward)"""
+    def move_drone(self, position, action):
+        """
+        Returns a tuple with (is_terminal, new_position, reward)
+        """
+        
         match action:
             case 0:  # LEFT
                 new_position = (position[0] - 1, position[1])
@@ -236,7 +239,7 @@ class DroneSwarmSearch(ParallelEnv):
             isSearching = False
 
             if drone_action in {0, 1, 2, 3}:
-                is_terminal, new_position, reward = self.move(
+                is_terminal, new_position, reward = self.move_drone(
                     (drone_x, drone_y), drone_action
                 )
                 self.agents_positions[i] = new_position
