@@ -32,6 +32,11 @@ class PygameInterface:
             self.enable_render()
         self.draw(agents_positions, person_position, matrix)
         pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.close()
+        pygame.event.pump()
 
     def enable_render(self):
         self.screen = pygame.display.set_mode(self.screen.get_size())
@@ -55,20 +60,17 @@ class PygameInterface:
         self.clock.tick(self.FPS)
         self.screen.fill(BLACK)
 
-        max_matrix = matrix.max()
-        if max_matrix == 0.0:
-            max_matrix = 1.0
-        counter_x = 0
-        for x in np.arange(10, self.window_size + 10, self.block_size):
-            counter_y = 0
-            for y in np.arange(10, self.window_size + 10, self.block_size):
+        max_matrix = max(matrix.max(), 0.1)
+            
+        for counter_x, x in enumerate(np.arange(10, self.window_size + 10, self.block_size)):
+            for counter_y, y in enumerate(np.arange(10, self.window_size + 10, self.block_size)):
                 rectangle = pygame.Rect(x, y, self.block_size, self.block_size)
                 prob = matrix[counter_y][counter_x]
-
                 normalized_prob = prob / max_matrix
 
                 computed_prob_color = self.compute_cell_color(normalized_prob, prob)
                 pygame.draw.rect(self.screen, computed_prob_color, rectangle)
+
                 if self.render_grid:
                     pygame.draw.rect(self.screen, BLACK, rectangle, 2)
 
@@ -76,31 +78,24 @@ class PygameInterface:
                     self.screen.blit(self.drone_img, rectangle)
                 elif (counter_x, counter_y) == person_position:
                     self.screen.blit(self.person_img, rectangle)
-                counter_y += 1
-            counter_x += 1
 
     def compute_cell_color(self, normalized_prob, prob):
-        if self.render_gradient:
-            if prob == 0:
-                red, green = 255, 0
-            elif prob > 0.99:
-                red, green = 0, 255
-            else:
-                green = normalized_prob * 255
-                red = (1 - normalized_prob) * 255
-                max_color = max(red, green)
-                green = (green * 255) / (max_color)
-                red = (red * 255) / (max_color)
-        else:
-            red = 255
-            green = 0
-            if normalized_prob >= 0.75:
-                red = 0
-                green = 255
-            elif normalized_prob >= 0.25:
-                red = 255
-                green = 255
+        if not self.render_gradient:
+            return (255, 0, 0) if normalized_prob >= 0.75 else (255, 255, 0)
+        
+        if prob == 0:
+            return (255, 0, 0)
+        elif prob > 0.99:
+            return (0, 255, 0)
+
+        green = normalized_prob * 255
+        red = (1 - normalized_prob) * 255
+        max_color = max(red, green)
+        green = (green * 255) / max_color
+        red = (red * 255) / max_color
+
         return (red, green, 0)
+
 
     def render_episode_end_screen(self, message: str, color: tuple):
         font = pygame.font.SysFont(None, 50)
