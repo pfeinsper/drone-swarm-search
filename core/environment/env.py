@@ -8,6 +8,7 @@ from pettingzoo.utils.env import ParallelEnv
 from core.environment.generator.map import update_shipwrecked_position, noise_person_movement
 from core.environment.generator.dynamic_probability import ProbabilityMatrix
 from core.environment.constants import RED, GREEN
+from core.environment.pygame_interface import PygameInterface
 
 
 class DroneSwarmSearch(ParallelEnv):
@@ -25,12 +26,12 @@ class DroneSwarmSearch(ParallelEnv):
     ):
         # Error Checking
         if n_drones > grid_size * grid_size:
-            raise Exception(
+            raise ValueError(
                 "There are more drones than grid spots. Reduce number of drones or increase grid size."
             )
 
         if render_mode != "ansi" and render_mode != "human":
-            raise Exception("Render mode not recognized")
+            raise ValueError("Render mode not recognized")
 
         self.grid_size = grid_size
         self.person_initial_position = person_initial_position
@@ -45,7 +46,7 @@ class DroneSwarmSearch(ParallelEnv):
         self.render_mode_matrix = None
         for i in range(n_drones):
             self.possible_agents.append("drone" + str(i))
-            self.agents_positions["drone" + str(i)] = [None, None]
+            self.agents_positions["drone" + str(i)] = (None, None)
 
         self.render_mode = render_mode
         self.probability_matrix = ProbabilityMatrix(
@@ -58,17 +59,7 @@ class DroneSwarmSearch(ParallelEnv):
         )
 
         # Initializing render
-        pygame.init()
-        self.window_size = 700
-        self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
-        self.renderOn = False
-
-        self.block_size = self.window_size / self.grid_size
-        self.drone_img = None
-        self.person_img = None
-
-        self.render_gradient = render_gradient
-        self.render_grid = render_grid
+        self.pygame_renderer = PygameInterface(self.grid_size, render_gradient, render_grid)
         self.rewards_sum = {a: 0 for a in self.possible_agents}
         self.rewards_sum["total"] = 0
 
@@ -89,19 +80,19 @@ class DroneSwarmSearch(ParallelEnv):
             if counter_x >= self.grid_size:
                 counter_x = 0
                 counter_y += 1
-            self.agents_positions[i] = [counter_x, counter_y]
+            self.agents_positions[i] = (counter_x, counter_y)
             counter_x += 1
 
     def required_drone_positions(self, drones_positions: list):
         if len(drones_positions) != len(self.possible_agents):
-            raise Exception(
+            raise ValueError(
                 "There are more or less initial positions than drones,"
                 "please make sure there are the same number of initial possitions "
                 "and number of drones."
             )
         for i in range(len(drones_positions)):
             x, y = drones_positions[i]
-            self.agents_positions[self.possible_agents[i]] = [x, y]
+            self.agents_positions[self.possible_agents[i]] = (x, y)
 
     def reset(
             self,
@@ -114,7 +105,7 @@ class DroneSwarmSearch(ParallelEnv):
         if drones_positions is not None:
             for i in drones_positions:
                 if max(i) > self.grid_size:
-                    raise Exception("You are trying to place the drone outside the grid")
+                    raise ValueError("You are trying to place the drone outside the grid")
 
         # reset target position
         self.person_y = self.person_initial_position[1]
@@ -133,11 +124,14 @@ class DroneSwarmSearch(ParallelEnv):
             [self.person_initial_position[1], self.person_initial_position[0]],
             self.grid_size,
         )
-        self.default_drones_positions() if drones_positions is None else self.required_drone_positions(
-            drones_positions
-        )
+        
+        if drones_positions is None:
+            self.default_drones_positions()
+        else:
+            self.required_drone_positions(drones_positions)
+        
         if self.render_mode == "human":
-            self.render()
+            self.pygame_renderer.render(self.agents_positions.values(), (self.person_x, self.person_y), self.probability_matrix.get_matrix())
 
         observations = self.create_observations()
         return observations
@@ -175,7 +169,7 @@ class DroneSwarmSearch(ParallelEnv):
         prev_person_x, prev_person_y = self.person_x, self.person_y
 
         movement = update_shipwrecked_position(np.array(temp_map))
-        actual_movement = noise_person_movement(movement, self.vector, epsilon=0.8)
+        actual_movement = noise_person_movement(movement, self.vector, epsilon=0.0)
         
         self.person_x = self.safe_1d_position_update(prev_person_x, actual_movement[0])
         self.person_y = self.safe_1d_position_update(prev_person_y, actual_movement[1])
@@ -234,7 +228,7 @@ class DroneSwarmSearch(ParallelEnv):
         person_found = False
         for i in self.agents:
             if i not in actions:
-                raise Exception("Missing action for " + i)
+                raise ValueError("Missing action for " + i)
 
             drone_action = actions[i]
             drone_x = self.agents_positions[i][0]
@@ -281,13 +275,13 @@ class DroneSwarmSearch(ParallelEnv):
         self.rewards_sum["total"] += rewards["total_reward"]
 
         if self.render_mode == "human":
-            if True in terminations.values():
+            if any(terminations.values()):
                 if person_found:
-                    self.render_episode_end_screen(f"The target was found in {self.timestep} moves", GREEN)
+                    self.pygame_renderer.render_episode_end_screen(f"The target was found in {self.timestep} moves", GREEN)
                 else:
-                    self.render_episode_end_screen("The target was not found.", RED)
+                    self.pygame_renderer.render_episode_end_screen("The target was not found.", RED)
             else:
-                self.render()
+                self.pygame_renderer.render(self.agents_positions.values(), (self.person_x, self.person_y), self.probability_matrix.get_matrix())
 
         return observations, rewards, terminations, truncations, infos
 
@@ -304,102 +298,6 @@ class DroneSwarmSearch(ParallelEnv):
                     truncations[drone_1_id] = True
                     terminations[drone_1_id] = True
                     rewards[drone_1_id] = self.reward_scheme["drones_collision"]
-
-    def enable_render(self, mode="human"):
-        if not self.renderOn and mode == "human":
-            self.screen = pygame.display.set_mode(self.screen.get_size())
-
-            self.drone_img = pygame.image.load(
-                "core/environment/imgs/drone.png"
-            ).convert()
-            self.drone_img = pygame.transform.scale(
-                self.drone_img, (self.block_size, self.block_size)
-            )
-
-            self.person_img = pygame.image.load(
-                "core/environment/imgs/person-swimming.png"
-            ).convert()
-            self.person_img = pygame.transform.scale(
-                self.person_img, (self.block_size, self.block_size)
-            )
-
-            self.renderOn = True
-
-    def render(self):
-        """Renders the environment."""
-        self.enable_render(self.render_mode)
-        self.draw()
-        if self.render_mode == "human":
-            pygame.display.flip()
-            return
-
-    def draw(self):
-        time.sleep(0.2)
-        self.screen.fill((0, 0, 0))
-        drone_positions = [[x, y] for x, y in self.agents_positions.values()]
-        person_position = [self.person_x, self.person_y]
-        matrix = self.probability_matrix.get_matrix()
-
-        max_matrix = matrix.max()
-        if max_matrix == 0.0:
-            max_matrix = 1.0
-        counter_x = 0
-        for x in np.arange(10, self.window_size + 10, self.block_size):
-            counter_y = 0
-            for y in np.arange(10, self.window_size + 10, self.block_size):
-                rect = pygame.Rect(x, y, self.block_size, self.block_size)
-                prob = matrix[counter_y][counter_x]
-                
-                #TODO: Arrumar esse warning
-                normalizedProb = prob / max_matrix
-
-                if self.render_gradient:
-                    if prob == 0:
-                        r, g = 255, 0
-                    elif prob > 0.99:
-                        r, g = 0, 255
-                    else:
-                        g = normalizedProb
-                        r = 1 - normalizedProb
-                        g = g * 255
-                        r = r * 255
-                        max_color = max(r, g)
-                        g = (g) * (255) / (max_color)
-                        r = (r) * (255) / (max_color)
-                else:
-                    r, g = (
-                        (0, 255)
-                        if normalizedProb >= 0.75
-                        else (255, 255)
-                        if normalizedProb >= 0.25
-                        else (255, 0)
-                    )
-
-                pygame.draw.rect(self.screen, (r, g, 0), rect)
-                if self.render_grid:
-                    pygame.draw.rect(self.screen, (0, 0, 0), rect, 2)
-
-                if [counter_x, counter_y] in drone_positions:
-                    self.screen.blit(self.drone_img, rect)
-                elif [counter_x, counter_y] == person_position:
-                    self.screen.blit(self.person_img, rect)
-                counter_y += 1
-            counter_x += 1
-
-    def render_episode_end_screen(self, message: str, color: tuple):
-        font = pygame.font.SysFont(None, 50)
-        text = font.render(message, True, (0, 0, 0))
-        text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
-        self.screen.fill(color)
-        self.screen.blit(text, text_rect)
-        pygame.display.flip()
-        time.sleep(1)
-
-    def close(self):
-        if self.renderOn:
-            pygame.event.pump()
-            pygame.display.quit()
-            self.renderOn = False
 
     def render_probability_matrix(self, mode="human-terminal"):
         if mode == "human-terminal":
