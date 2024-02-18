@@ -2,7 +2,7 @@ import pytest
 from core.environment.env import DroneSwarmSearch
 
 def test_wrong_drone_number():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         # More drones than spaces!
         DroneSwarmSearch(
             grid_size=5,
@@ -68,6 +68,7 @@ def test_timeout_termination():
             assert done is True
             assert any(terminations.values())
         timestep_counter += 1
+    assert timestep_counter > timestep_limit
     
 def test_leave_grid_termination():
     env = DroneSwarmSearch(
@@ -91,6 +92,22 @@ def test_leave_grid_termination():
             assert done is True
             assert reward["total_reward"] < 0
             assert any(terminations.values())
+    assert step_counter >= 15
+
+
+def test_should_raise_invalid_person_position():
+    with pytest.raises(ValueError):
+        DroneSwarmSearch(
+            grid_size=5,
+            render_mode="ansi",
+            render_grid=True,
+            render_gradient=True,
+            n_drones=1,
+            vector=[-0.2, 0],
+            person_initial_position=[19, 19],
+            disperse_constant=1,
+        )
+
             
 
 
