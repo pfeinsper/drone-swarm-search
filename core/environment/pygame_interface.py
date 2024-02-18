@@ -28,11 +28,9 @@ class PygameInterface:
         self.clock = None
 
     def render(self, agents_positions, person_position, matrix):
-        if not self.render_on:
-            self.enable_render()
         self.draw(agents_positions, person_position, matrix)
         pygame.display.flip()
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.close()
@@ -70,7 +68,7 @@ class PygameInterface:
                 prob = matrix[counter_y][counter_x]
                 normalized_prob = prob / max_matrix
 
-                computed_prob_color = self.compute_cell_color(normalized_prob, prob)
+                computed_prob_color = self.compute_cell_color(normalized_prob)
                 pygame.draw.rect(self.screen, computed_prob_color, rectangle)
 
                 if self.render_grid:
@@ -78,21 +76,16 @@ class PygameInterface:
 
                 if (counter_x, counter_y) in drones_positions:
                     self.screen.blit(self.drone_img, rectangle)
-                elif (counter_x, counter_y) == person_position:
+                if (counter_x, counter_y) == person_position:
                     self.screen.blit(self.person_img, rectangle)
 
-    def compute_cell_color(self, normalized_prob, prob):
+    def compute_cell_color(self, normalized_prob):
         if self.render_gradient:
-            if prob == 0:
-                red, green = 255, 0
-            elif prob > 0.99:
-                red, green = 0, 255
-            else:
-                green = normalized_prob * 255
-                red = (1 - normalized_prob) * 255
-                max_color = max(red, green)
-                green = (green * 255) / (max_color)
-                red = (red * 255) / (max_color)
+            green = normalized_prob * 255
+            red = (1 - normalized_prob) * 255
+            max_color = max(red, green)
+            green = (green * 255) / (max_color)
+            red = (red * 255) / (max_color)
         else:
             red = 255
             green = 0
@@ -107,7 +100,7 @@ class PygameInterface:
 
     def render_episode_end_screen(self, message: str, color: tuple):
         font = pygame.font.SysFont(None, 50)
-        text = font.render(message, True, (0, 0, 0))
+        text = font.render(message, True, BLACK)
         text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
         self.screen.fill(color)
         self.screen.blit(text, text_rect)
