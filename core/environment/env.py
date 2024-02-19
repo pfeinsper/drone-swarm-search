@@ -5,7 +5,7 @@ from gymnasium.spaces import MultiDiscrete
 from pettingzoo.utils.env import ParallelEnv
 from core.environment.generator.map import update_shipwrecked_position, noise_person_movement
 from core.environment.generator.dynamic_probability import ProbabilityMatrix
-from core.environment.constants import RED, GREEN
+from core.environment.constants import RED, GREEN, Actions
 from core.environment.pygame_interface import PygameInterface
 
 
@@ -49,6 +49,7 @@ class DroneSwarmSearch(ParallelEnv):
         self.possible_agents = []
         self.agents_positions = {}
         self.render_mode_matrix = None
+        
         for i in range(n_drones):
             self.possible_agents.append("drone" + str(i))
             self.agents_positions["drone" + str(i)] = (None, None)
@@ -200,10 +201,12 @@ class DroneSwarmSearch(ParallelEnv):
             movement_map = np.insert(movement_map, 0, 0, axis=1)
         elif self.person_x == self.grid_size - 1:
             movement_map = np.insert(movement_map, 2, 0, axis=1)
+        
         if self.person_y == 0:
             movement_map = np.insert(movement_map, 0, 0, axis=0)
         elif self.person_y == self.grid_size - 1:
             movement_map = np.insert(movement_map, 2, 0, axis=0)
+        
         return movement_map
 
 
@@ -227,14 +230,22 @@ class DroneSwarmSearch(ParallelEnv):
         """
         
         match action:
-            case 0:  # LEFT
+            case Actions.LEFT.value:  # LEFT
                 new_position = (position[0] - 1, position[1])
-            case 1:  # RIGHT
+            case Actions.RIGHT.value:  # RIGHT
                 new_position = (position[0] + 1, position[1])
-            case 2:  # UP
+            case Actions.UP.value:  # UP
                 new_position = (position[0], position[1] - 1)
-            case 3:  # DOWN
+            case Actions.DOWN.value:  # DOWN
                 new_position = (position[0], position[1] + 1)
+            case Actions.UP_LEFT.value:  # UP_LEFT
+                new_position = (position[0] - 1, position[1] - 1)
+            case Actions.UP_RIGHT.value:  # UP_RIGHT
+                new_position = (position[0] + 1, position[1] - 1)
+            case Actions.DOWN_LEFT.value:  # DOWN_LEFT
+                new_position = (position[0] - 1, position[1] + 1)
+            case Actions.DOWN_RIGHT.value:  # DOWN_RIGHT
+                new_position = (position[0] + 1, position[1] + 1)
 
         if not self.is_valid_position(new_position):
             return True, new_position, self.reward_scheme["leave_grid"]
@@ -254,9 +265,10 @@ class DroneSwarmSearch(ParallelEnv):
             drone_action = actions[i]
             drone_x = self.agents_positions[i][0]
             drone_y = self.agents_positions[i][1]
-            is_searching = drone_action == 4
+            is_searching = drone_action == Actions.SEARCH.value
 
-            if drone_action in {0, 1, 2, 3}:
+            if drone_action in [Actions.LEFT.value, Actions.RIGHT.value, Actions.UP.value, Actions.DOWN.value, Actions.UP_LEFT.value,
+                                Actions.UP_RIGHT.value, Actions.DOWN_LEFT.value, Actions.DOWN_RIGHT.value]:
                 is_terminal, new_position, reward = self.move_drone(
                     (drone_x, drone_y), drone_action
                 )
@@ -346,4 +358,5 @@ class DroneSwarmSearch(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return [0, 1, 2, 3, 4]
+        return [Actions.LEFT.value, Actions.RIGHT.value, Actions.UP.value, Actions.DOWN.value, Actions.UP_LEFT.value,
+                Actions.UP_RIGHT.value, Actions.DOWN_LEFT.value, Actions.DOWN_RIGHT.value, Actions.SEARCH.value]
