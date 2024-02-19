@@ -1,5 +1,6 @@
 import pytest
 from core.environment.env import DroneSwarmSearch
+from core.environment.constants import Actions
 
 def test_wrong_drone_number():
     with pytest.raises(ValueError):
@@ -33,7 +34,7 @@ def test_drone_collision_termination():
     rewards = 0
     done = False
     while not done:
-        actions = {"drone0": 4, "drone1": 0}
+        actions = {"drone0": Actions.SEARCH.value, "drone1": Actions.LEFT.value}
         _, reward, terminations, done, _ = env.step(actions)
         rewards += reward["total_reward"]
         done = any([e for e in done.values()])
@@ -59,7 +60,7 @@ def test_timeout_termination():
     done = False
     timestep_counter = 0
     while not done:
-        actions = {"drone0": 4}
+        actions = {"drone0": Actions.SEARCH.value}
         _, reward, terminations, done, _ = env.step(actions)
         done = any([e for e in done.values()])
 
@@ -83,7 +84,7 @@ def test_leave_grid_termination():
     done = False
     step_counter = 0
     while not done:
-        actions = {"drone0": 1}
+        actions = {"drone0": Actions.RIGHT.value}
         _, reward, terminations, done, _ = env.step(actions)
         step_counter += 1
         done = any([e for e in done.values()])

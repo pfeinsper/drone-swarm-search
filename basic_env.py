@@ -18,10 +18,10 @@ def policy(obs, agent):
     for i in range(11):
         # actions["drone{}".format(i)] = np.random.randint(5)
         actions["drone{}".format(i)] = 4
-    return {"drone0": 8,}
+    return actions
 
 
-observations = env.reset(drones_positions=[[10, 10]])
+observations = env.reset(drones_positions=[[0, 10]])
 
 rewards = 0
 done = False
