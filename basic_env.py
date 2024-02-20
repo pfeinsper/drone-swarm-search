@@ -21,7 +21,7 @@ def policy(obs, agent):
     return actions
 
 
-observations = env.reset(drones_positions=[[10, 10]])
+observations = env.reset(drones_positions=[[0, 10]])
 
 rewards = 0
 done = False

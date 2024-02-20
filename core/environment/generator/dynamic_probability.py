@@ -65,6 +65,7 @@ class ProbabilityMatrix:
         map_copy = zeros((len(map), len(map[0])), dtype=float)
         for cell in entire_cells:
             map_copy[cell[1]][cell[0]] = self.calc_prob(cell)
+        # TODO: Analizar solução para quando map_copy.sum() for zero
         self.map_prob = map_copy / map_copy.sum()
         self.map = copy.deepcopy(map_copy)
 
