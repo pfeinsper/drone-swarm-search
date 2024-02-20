@@ -73,21 +73,27 @@ Using Python version above or equal to 3.10.5.
 In order to use the environment download the dependencies using the following command `pip install -r requirements.txt`.
 
 ### General Info
-| Import            | from core.environment.env import DroneSwarmSearch  |
-| -------------     | -------------                                      |
-| Action Space      | Discrete (5)                                       |
-| Action Values     | [0,1,2,3,4]                                      |  
-| Agents            | N                                                  |
-| Observation Space | {droneN: {observation: ((x, y), probability_matrix}|
+
+| Import             | `from core.environment.env import DroneSwarmSearch` |
+| ------------------ | -------------------------------------------------- |
+| Action Space       | Discrete (9)                                      |
+| Action Values      | [0, 1, 2, 3, 4, 5, 6, 7, 8]                       |  
+| Agents             | N                                                |
+| Observation Space  | `{droneN: {observation: ((x, y), probability_matrix)}}` |
 
 ### Action Space
-| Value         | Meaning       |
-| ------------- | ------------- |
-| 0             | Move Left     |
-| 1             | Move Right    |
-| 2             | Move Up       |
-| 3             | Move Down     |
-| 4             | Search Cell   |
+
+| Value | Meaning                |
+| ----- | ---------------------- |
+| 0     | Move Left              |
+| 1     | Move Right             |
+| 2     | Move Up                |
+| 3     | Move Down              |
+| 4     | Diagonal Up Left       |
+| 5     | Diagonal Up Right      |
+| 6     | Diagonal Down Left     |
+| 7     | Diagonal Down Right    |
+| 8     | Search Cell            |
 
 ### Inputs
 | Inputs                    | Possible Values       | Default Values            |
