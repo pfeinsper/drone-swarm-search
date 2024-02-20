@@ -87,11 +87,11 @@ class DroneSwarmSearch(ParallelEnv):
     def default_drones_positions(self):
         counter_x = 0
         counter_y = 0
-        for i in self.agents:
+        for agent in self.agents:
             if counter_x >= self.grid_size:
                 counter_x = 0
                 counter_y += 1
-            self.agents_positions[i] = (counter_x, counter_y)
+            self.agents_positions[agent] = (counter_x, counter_y)
             counter_x += 1
 
     def required_drone_positions(self, drones_positions: list):
@@ -107,6 +107,7 @@ class DroneSwarmSearch(ParallelEnv):
 
     def render(self):
         if self.render_mode == "human":
+            self.pygame_renderer.enable_render()
             self.pygame_renderer.render(
                 self.agents_positions.values(), 
                 (self.person_x, self.person_y), 
@@ -173,12 +174,12 @@ class DroneSwarmSearch(ParallelEnv):
         self.person_x = self.safe_1d_position_update(self.person_x, actual_movement[0])
         self.person_y = self.safe_1d_position_update(self.person_y, actual_movement[1])
 
-        for i in self.possible_agents:
+        for agent in self.possible_agents:
             observation = (
-                (self.agents_positions[i][0], self.agents_positions[i][1]),
+                (self.agents_positions[agent][0], self.agents_positions[agent][1]),
                 self.probability_matrix.get_matrix(),
             )
-            observations[i] = {"observation": observation}
+            observations[agent] = {"observation": observation}
 
         self.render_probability_matrix(self.render_mode_matrix)
         return observations
@@ -187,6 +188,7 @@ class DroneSwarmSearch(ParallelEnv):
         """
         Builds and outputs a 3x3 matrix from the probabality matrix to use in the person movement function.
         """
+        
         # Boundaries for the 3x3 movement matrix.
         left_x = max(self.person_x - 1, 0)
         right_x = min(self.person_x + 2, self.grid_size)
@@ -218,6 +220,7 @@ class DroneSwarmSearch(ParallelEnv):
         Output:
             new position: int
         """
+
         new_position_on_axis = previous + movement
         if new_position_on_axis >= 0 and new_position_on_axis < self.grid_size:
             return new_position_on_axis
@@ -253,46 +256,52 @@ class DroneSwarmSearch(ParallelEnv):
         return False, new_position, self.reward_scheme["default"]
 
     def step(self, actions):
-        """Returns a tuple with (observations, rewards, terminations, truncations, infos)"""
+        """
+        Returns a tuple with (observations, rewards, terminations, truncations, infos)
+        """
+        
         terminations = {a: False for a in self.agents}
         rewards = {a: self.reward_scheme["default"] for a in self.agents}
         truncations = {a: False for a in self.agents}
         person_found = False
-        for i in self.agents:
-            if i not in actions:
-                raise ValueError("Missing action for " + i)
+        
+        for agent in self.agents:
+            if agent not in actions:
+                raise ValueError("Missing action for " + agent)
 
-            drone_action = actions[i]
-            drone_x = self.agents_positions[i][0]
-            drone_y = self.agents_positions[i][1]
+            drone_action = actions[agent]
+            if drone_action not in self.action_space(agent):
+                raise ValueError("Invalid action for " + agent)
+
+            drone_x = self.agents_positions[agent][0]
+            drone_y = self.agents_positions[agent][1]
             is_searching = drone_action == Actions.SEARCH.value
 
-            if drone_action in [Actions.LEFT.value, Actions.RIGHT.value, Actions.UP.value, Actions.DOWN.value, Actions.UP_LEFT.value,
-                                Actions.UP_RIGHT.value, Actions.DOWN_LEFT.value, Actions.DOWN_RIGHT.value]:
+            if drone_action != Actions.SEARCH.value:
                 is_terminal, new_position, reward = self.move_drone(
                     (drone_x, drone_y), drone_action
                 )
-                self.agents_positions[i] = new_position
-                rewards[i] = reward
-                terminations[i] = is_terminal
-                truncations[i] = is_terminal
+                self.agents_positions[agent] = new_position
+                rewards[agent] = reward
+                terminations[agent] = is_terminal
+                truncations[agent] = is_terminal
 
             if drone_x == self.person_x and drone_y == self.person_y and is_searching:
-                rewards[i] = self.reward_scheme["search_and_find"] + self.reward_scheme["search_and_find"] * (1 - self.timestep / self.timestep_limit)
+                rewards[agent] = self.reward_scheme["search_and_find"] + self.reward_scheme["search_and_find"] * (1 - self.timestep / self.timestep_limit)
                 terminations = {a: True for a in self.agents}
                 truncations = {a: True for a in self.agents}
                 person_found = True
             elif is_searching:
                 prob_matrix = self.probability_matrix.get_matrix()
-                rewards[i] = prob_matrix[drone_y][drone_x] * 10000 if prob_matrix[drone_y][drone_x] * 100 > 1 else -100
+                rewards[agent] = prob_matrix[drone_y][drone_x] * 10000 if prob_matrix[drone_y][drone_x] * 100 > 1 else -100
 
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep > self.timestep_limit:
-                rewards[i] = self.rewards_sum[i] * -1 + self.reward_scheme["exceed_timestep"]
-                truncations[i] = True
-                terminations[i] = True
+                rewards[agent] = self.rewards_sum[agent] * -1 + self.reward_scheme["exceed_timestep"]
+                truncations[agent] = True
+                terminations[agent] = True
 
-            self.rewards_sum[i] += rewards[i]
+            self.rewards_sum[agent] += rewards[agent]
 
         self.timestep += 1
         # Get observations
@@ -320,6 +329,7 @@ class DroneSwarmSearch(ParallelEnv):
         """
         Check for drone collision and compute terminations, rewards and truncations.
         """
+        
         for drone_1_id, drone_1_position in self.agents_positions.items():
             for drone_2_id, drone_2_position in self.agents_positions.items():
                 if drone_1_id == drone_2_id:
@@ -358,5 +368,4 @@ class DroneSwarmSearch(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return [Actions.LEFT.value, Actions.RIGHT.value, Actions.UP.value, Actions.DOWN.value, Actions.UP_LEFT.value,
-                Actions.UP_RIGHT.value, Actions.DOWN_LEFT.value, Actions.DOWN_RIGHT.value, Actions.SEARCH.value]
+        return [moviment.value for moviment in Actions]
