@@ -28,6 +28,10 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
 | ![](https://github.com/PFE-Embraer/drone-swarm-search/blob/main/docs/pics/victory_render.png)     | ![](https://github.com/PFE-Embraer/drone-swarm-search/blob/main/docs/pics/fail_render.png)                      |
 
 
+
+
+
+
 ## Basic Usage
 ```python
 from DSSE.env import DroneSwarmSearch

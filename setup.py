@@ -6,7 +6,7 @@ with open("README.md", 'r') as f:
 
 
 setup(name = 'DSSE',
-      version = '0.1.17.1',
+      version = '0.1.17.4',
       description = 'An environment to train drones to search and find a shipwrecked person lost in the ocean using reinforcement learning.',
       long_description = long_description,
       long_description_content_type = 'text/markdown',
