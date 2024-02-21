@@ -3,10 +3,10 @@ from copy import copy
 import numpy as np
 from gymnasium.spaces import MultiDiscrete
 from pettingzoo.utils.env import ParallelEnv
-from core.environment.generator.map import update_shipwrecked_position, noise_person_movement
-from core.environment.generator.dynamic_probability import ProbabilityMatrix
-from core.environment.constants import RED, GREEN, Actions
-from core.environment.pygame_interface import PygameInterface
+from .generator.map import update_shipwrecked_position, noise_person_movement
+from .generator.dynamic_probability import ProbabilityMatrix
+from .constants import RED, GREEN, Actions
+from .pygame_interface import PygameInterface
 
 
 class DroneSwarmSearch(ParallelEnv):
@@ -106,13 +106,11 @@ class DroneSwarmSearch(ParallelEnv):
             self.agents_positions[self.possible_agents[i]] = (x, y)
 
     def render(self):
-        if self.render_mode == "human":
-            self.pygame_renderer.enable_render()
-            self.pygame_renderer.render(
-                self.agents_positions.values(), 
-                (self.person_x, self.person_y), 
-                self.probability_matrix.get_matrix()
-            )
+        self.pygame_renderer.render_map()
+        self.pygame_renderer.render_drones(self.agents_positions.values())
+        self.pygame_renderer.render_person(self.person_x, self.person_y)
+        self.pygame_renderer.refresh_screen()
+
 
     def reset(
             self,
@@ -151,12 +149,9 @@ class DroneSwarmSearch(ParallelEnv):
             self.required_drone_positions(drones_positions)
         
         if self.render_mode == "human":
+            self.pygame_renderer.probability_matrix = self.probability_matrix
             self.pygame_renderer.enable_render()
-            self.pygame_renderer.render(
-                self.agents_positions.values(),
-                (self.person_x, self.person_y),
-                self.probability_matrix.get_matrix()
-            )
+            self.render()
 
         observations = self.create_observations()
         return observations
@@ -321,7 +316,7 @@ class DroneSwarmSearch(ParallelEnv):
                 else:
                     self.pygame_renderer.render_episode_end_screen("The target was not found.", RED)
             else:
-                self.pygame_renderer.render(self.agents_positions.values(), (self.person_x, self.person_y), self.probability_matrix.get_matrix())
+                self.render()
 
         return observations, rewards, terminations, truncations, infos
 
