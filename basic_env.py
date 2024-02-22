@@ -29,9 +29,10 @@ def calculate_direction(movement_vector):
     # Calculate cosine and sine values
     cos_val = np.cos(angle)
     sin_val = np.sin(angle)
+    print(f"Angle: {angle}, Cos: {cos_val}, Sin: {sin_val}")
     # Determine direction based on the sign of cosine and sine
-    x_direction = np.sign(cos_val) if cos_val > 0.0000001 else 0
-    y_direction = np.sign(sin_val) if sin_val > 0.0000001 else 0
+    x_direction = np.sign(cos_val) if abs(cos_val) > 0.0001 else 0
+    y_direction = np.sign(sin_val) if abs(sin_val) > 0.0001 else 0
     return x_direction, y_direction
 
 def policy(obs, agents):
