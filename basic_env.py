@@ -29,7 +29,6 @@ def calculate_direction(movement_vector):
     # Calculate cosine and sine values
     cos_val = np.cos(angle)
     sin_val = np.sin(angle)
-    print(f"Angle: {angle}, Cos: {cos_val}, Sin: {sin_val}")
     # Determine direction based on the sign of cosine and sine
     x_direction = np.sign(cos_val) if abs(cos_val) > 0.0001 else 0
     y_direction = np.sign(sin_val) if abs(sin_val) > 0.0001 else 0
@@ -60,15 +59,9 @@ def policy2(obs, agents):
             order="F"
         )
         movement_vector = np.array(max_probability_index) - agent_position
-        print(
-            f"Agent: {agent_position}", 
-            f"Max Prob Index: {max_probability_index}",
-            f"Movement Vector: {movement_vector}"
-        )
         x_direction, y_direction = calculate_direction(movement_vector)
 
         # Convert direction to action based on Action Space
-        print("action", ACTION_SPACE[(x_direction, y_direction)])
         actions[agent] = ACTION_SPACE[(x_direction, y_direction)]
     return actions
 
