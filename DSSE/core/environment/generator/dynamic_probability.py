@@ -6,7 +6,7 @@ from matplotlib.widgets import Slider
 import math
 
 
-class probability_matrix:
+class ProbabilityMatrix:
     def __init__(
         self, amplitude, spacement_x, spacement_y, vector, initial_position, size
     ):
@@ -65,6 +65,7 @@ class probability_matrix:
         map_copy = zeros((len(map), len(map[0])), dtype=float)
         for cell in entire_cells:
             map_copy[cell[1]][cell[0]] = self.calc_prob(cell)
+        # TODO: Analizar solução para quando map_copy.sum() for zero
         self.map_prob = map_copy / map_copy.sum()
         self.map = copy.deepcopy(map_copy)
 
