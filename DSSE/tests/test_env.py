@@ -12,7 +12,7 @@ def test_wrong_drone_number():
             render_gradient=True,
             n_drones=26,
             vector=[-0.2, 0],
-            person_initial_position=[19, 19],
+            person_initial_position=[0, 0],
             disperse_constant=1,
         )
 
