@@ -1,6 +1,6 @@
 import pytest
-from core.environment.env import DroneSwarmSearch
-from core.environment.constants import Actions
+from DSSE import DroneSwarmSearch
+from DSSE import Actions
 
 def test_wrong_drone_number():
     with pytest.raises(ValueError):

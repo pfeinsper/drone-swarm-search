@@ -3,7 +3,7 @@ from copy import copy
 import numpy as np
 from gymnasium.spaces import MultiDiscrete
 from pettingzoo.utils.env import ParallelEnv
-from .generator.map import update_shipwrecked_position, noise_person_movement
+from .generator.person_movement import update_shipwrecked_position, noise_person_movement
 from .generator.dynamic_probability import ProbabilityMatrix
 from .constants import RED, GREEN, Actions
 from .pygame_interface import PygameInterface
