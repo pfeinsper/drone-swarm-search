@@ -1,6 +1,5 @@
 import pytest
-from DSSE import DroneSwarmSearch
-from DSSE import Actions
+from DSSE import DroneSwarmSearch, Actions
 
 @pytest.mark.parametrize("grid_size, n_drones", [
     (5, 26),   # Testing with more drones than available spaces in a 5x5 grid
@@ -222,10 +221,10 @@ def test_invalid_drone_position_raises_error(n_drones, drones_positions):
 
 
 @pytest.mark.parametrize("n_drones", [
-    1,
-    20,
-    35,
-    48,
+    1,  # Testing with 1 drone.
+    20, # Testing with 20 drones.
+    35, # Testing with 35 drones.
+    48, # Testing with 48 drones.
 ])
 def test_if_all_drones_are_created_with_default_positions(n_drones):
     env = DroneSwarmSearch(
@@ -244,10 +243,10 @@ def test_if_all_drones_are_created_with_default_positions(n_drones):
 
 
 @pytest.mark.parametrize("n_drones, grid_size", [
-    (1, 10),
-    (2, 15),
-    (5, 20),
-    (15, 25),
+    (1, 10),  # Testing with 1 drone in a 10x10 grid.
+    (2, 15),  # Testing with 2 drones in a 15x15 grid.
+    (5, 20),  # Testing with 5 drones in a 20x20 grid.
+    (15, 25), # Testing with 15 drones in a 25x25 grid.
 ])
 def test_with_the_observation_size_is_correct_for_all_drones(n_drones, grid_size):
     env = DroneSwarmSearch(
