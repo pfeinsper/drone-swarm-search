@@ -72,11 +72,11 @@ def test_drone_collision_termination():
         assert reward["total_reward"] < 0, "The total reward should be negative after a collision."
 
 @pytest.mark.parametrize("timestep_limit", [
-    10,
-    20,
-    30,
-    40,
-    50,
+    10, # Testing with a low timestep limit.
+    20, # Testing with a medium timestep limit.
+    30, # Testing with a high timestep limit.
+    40, # Testing with a very high timestep limit.
+    50, # Testing with the maximum timestep limit of
 ])
 def test_timeout_termination(timestep_limit):
     env = DroneSwarmSearch(
