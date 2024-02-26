@@ -9,9 +9,6 @@ from DSSE import Actions
     (50, 2501),# Testing with more drones than available spaces in a 50x50 grid
 ])
 def test_wrong_drone_number(grid_size, n_drones):
-    """
-    Tests that a ValueError is raised when attempting to create more drones than there are spaces in the grid.
-    """
     with pytest.raises(ValueError):
         DroneSwarmSearch(
             grid_size=grid_size,
@@ -30,9 +27,6 @@ def test_wrong_drone_number(grid_size, n_drones):
     (20, 400), # 20x20 grid can accommodate 400 drones
 ])
 def test_maximum_drones_allowed(grid_size, max_drones):
-    """
-    Tests if the system accepts the maximum number of drones that fit in the specified grid.
-    """
     try:
         env = DroneSwarmSearch(
             grid_size=grid_size,
@@ -53,9 +47,6 @@ def test_maximum_drones_allowed(grid_size, max_drones):
 
 
 def test_drone_collision_termination():
-    """
-    This test verifies that the DroneSwarmSearch simulation correctly terminates with a penalty when two drones collide, ensuring collision detection and response mechanisms function as intended.
-    """
     env = DroneSwarmSearch(
             grid_size=20,
             render_mode="ansi",
@@ -88,10 +79,6 @@ def test_drone_collision_termination():
     50,
 ])
 def test_timeout_termination(timestep_limit):
-    """
-    Tests if the DroneSwarmSearch simulation properly terminates after reaching a predefined timestep limit,
-    ensuring the simulation enforces time constraints and penalizes for exceeding the allowed duration.
-    """
     env = DroneSwarmSearch(
             grid_size=20,
             render_mode="ansi",
@@ -120,9 +107,6 @@ def test_timeout_termination(timestep_limit):
 
 
 def test_leave_grid_termination():
-    """
-    This test verifies that the DroneSwarmSearch simulation terminates, applying penalties as expected, when a drone leaves a 15x15 grid.
-    """
     env = DroneSwarmSearch(
         grid_size=15,
         render_mode="ansi",
@@ -153,13 +137,6 @@ def test_leave_grid_termination():
     (5, 5),    # Exactly on the boundary (assuming 0-indexed and grid_size is exclusive).
 ])
 def test_should_raise_invalid_person_position(person_position):
-    """
-    Tests DroneSwarmSearch raises ValueError for invalid or boundary person positions.
-    
-    The function initializes a DroneSwarmSearch environment with specified parameters,
-    including the person's position. It expects a ValueError to be raised for positions
-    that are outside the grid or exactly on its boundary, indicating the position is invalid.
-    """
     with pytest.raises(ValueError):
         DroneSwarmSearch(
             grid_size=5,
@@ -181,9 +158,6 @@ def test_should_raise_invalid_person_position(person_position):
     20, # Testing with 20 drones for upper limit in a fixed grid size.
 ])
 def test_if_all_drones_are_created(n_drones):
-    """
-    Tests whether the specified number of drones (n_drones) are correctly created in the DroneSwarmSearch environment.
-    """
     env = DroneSwarmSearch(
         grid_size=20,
         render_mode="ansi",
@@ -206,10 +180,6 @@ def test_if_all_drones_are_created(n_drones):
     (4, [(5, 0), (0, 0), (1, 1), (10, 10)]),  # Testing with 4 drones.
 ])
 def test_position_drone_is_correct_after_reset(n_drones, drones_positions):
-    """
-    Verifies that each drone is correctly positioned as per the specified initial positions
-    after the environment is reset, with positions expected to be tuples.
-    """
     env = DroneSwarmSearch(
         grid_size=20,
         render_mode="ansi",
@@ -237,9 +207,6 @@ def test_position_drone_is_correct_after_reset(n_drones, drones_positions):
     (4, [(5, 0), (0, 0), (10, 10), (10, 10)]),  # Testing with 4 drones.
 ])
 def test_invalid_drone_position_raises_error(n_drones, drones_positions):
-    """
-    Verifies that the DroneSwarmSearch environment raises a ValueError when trying to place a drone in an invalid position.
-    """
     with pytest.raises(ValueError):
         env = DroneSwarmSearch(
             grid_size=20,
@@ -261,9 +228,6 @@ def test_invalid_drone_position_raises_error(n_drones, drones_positions):
     48,
 ])
 def test_if_all_drones_are_created_with_default_positions(n_drones):
-    """
-    Tests whether the specified number of drones are correctly created in the DroneSwarmSearch environment with default positions.
-    """
     env = DroneSwarmSearch(
         grid_size=20,
         render_mode="ansi",
@@ -286,9 +250,6 @@ def test_if_all_drones_are_created_with_default_positions(n_drones):
     (15, 25),
 ])
 def test_with_the_observation_size_is_correct_for_all_drones(n_drones, grid_size):
-    """
-    Tests if the size of the observation for each drone is correct.
-    """
     env = DroneSwarmSearch(
         grid_size=grid_size,
         render_mode="ansi",
@@ -306,5 +267,3 @@ def test_with_the_observation_size_is_correct_for_all_drones(n_drones, grid_size
         observation_matriz = observations[drone_id]["observation"][1]
         
         assert observation_matriz.shape == (grid_size, grid_size), f"The observation matrix for {drone_id} should have a shape of ({grid_size}, {grid_size}), but was {observation_matriz.shape}."
-
-
