@@ -2,10 +2,10 @@ import pytest
 from DSSE import DroneSwarmSearch, Actions
 
 @pytest.mark.parametrize("grid_size, n_drones", [
-    (5, 26),   # Testing with more drones than available spaces in a 5x5 grid
-    (10, 101), # Testing with more drones than available spaces in a 10x10 grid
-    (20, 401), # Testing with more drones than available spaces in a 20x20 grid
-    (50, 2501),# Testing with more drones than available spaces in a 50x50 grid
+    (5, 26),
+    (10, 101),
+    (20, 401),
+    (50, 2501),
 ])
 def test_wrong_drone_number(grid_size, n_drones):
     with pytest.raises(ValueError):
@@ -21,9 +21,9 @@ def test_wrong_drone_number(grid_size, n_drones):
         )
 
 @pytest.mark.parametrize("grid_size, max_drones", [
-    (5, 25),   # 5x5 grid can accommodate 25 drones
-    (10, 100), # 10x10 grid can accommodate 100 drones
-    (20, 400), # 20x20 grid can accommodate 400 drones
+    (5, 25),
+    (10, 100),
+    (20, 400),
 ])
 def test_maximum_drones_allowed(grid_size, max_drones):
     try:
@@ -71,11 +71,11 @@ def test_drone_collision_termination():
         assert reward["total_reward"] < 0, "The total reward should be negative after a collision."
 
 @pytest.mark.parametrize("timestep_limit", [
-    10, # Testing with a low timestep limit.
-    20, # Testing with a medium timestep limit.
-    30, # Testing with a high timestep limit.
-    40, # Testing with a very high timestep limit.
-    50, # Testing with the maximum timestep limit of
+    10,
+    20,
+    30,
+    40,
+    50,
 ])
 def test_timeout_termination(timestep_limit):
     env = DroneSwarmSearch(
@@ -130,10 +130,10 @@ def test_leave_grid_termination():
 
 
 @pytest.mark.parametrize("person_position", [
-    (19, 19),  # Outside the grid boundaries.
-    (-1, 0),   # Negative position value, invalid.
-    (0, -1),   # Negative position value, invalid.
-    (5, 5),    # Exactly on the boundary (assuming 0-indexed and grid_size is exclusive).
+    (19, 19),
+    (-1, 0),
+    (0, -1),
+    (5, 5),
 ])
 def test_should_raise_invalid_person_position(person_position):
     with pytest.raises(ValueError):
@@ -151,10 +151,10 @@ def test_should_raise_invalid_person_position(person_position):
 
 
 @pytest.mark.parametrize("n_drones", [
-    5,  # Testing with 5 drones.
-    10, # Testing with 10 drones.
-    15, # Testing with 15 drones to see if the system scales.
-    20, # Testing with 20 drones for upper limit in a fixed grid size.
+    5,
+    10,
+    15,
+    20,
 ])
 def test_if_all_drones_are_created(n_drones):
     env = DroneSwarmSearch(
@@ -173,10 +173,10 @@ def test_if_all_drones_are_created(n_drones):
 
 
 @pytest.mark.parametrize("n_drones, drones_positions", [
-    (1, [(3, 3)]),                      # Testing with 1 drone.
-    (2, [(12, 0), (0, 13)]),            # Testing with 2 drones.
-    (3, [(0, 0), (19, 19), (15, 10)]),  # Testing with 3 drones.
-    (4, [(5, 0), (0, 0), (1, 1), (10, 10)]),  # Testing with 4 drones.
+    (1, [(3, 3)]),
+    (2, [(12, 0), (0, 13)]),
+    (3, [(0, 0), (19, 19), (15, 10)]),
+    (4, [(5, 0), (0, 0), (1, 1), (10, 10)]),
 ])
 def test_position_drone_is_correct_after_reset(n_drones, drones_positions):
     env = DroneSwarmSearch(
@@ -200,10 +200,10 @@ def test_position_drone_is_correct_after_reset(n_drones, drones_positions):
 
 
 @pytest.mark.parametrize("n_drones, drones_positions", [
-    (1, [(-1, 3)]),                      # Testing with 1 drone.
-    (2, [(12, 0), (25, 13)]),            # Testing with 2 drones.
-    (3, [(0, 0), (19, 19), (25, -10)]),  # Testing with 3 drones.
-    (4, [(5, 0), (0, 0), (10, 10), (10, 10)]),  # Testing with 4 drones.
+    (1, [(-1, 3)]),
+    (2, [(12, 0), (25, 13)]),
+    (3, [(0, 0), (19, 19), (25, -10)]),
+    (4, [(5, 0), (0, 0), (10, 10), (10, 10)]),
 ])
 def test_invalid_drone_position_raises_error(n_drones, drones_positions):
     with pytest.raises(ValueError):
@@ -221,10 +221,10 @@ def test_invalid_drone_position_raises_error(n_drones, drones_positions):
 
 
 @pytest.mark.parametrize("n_drones", [
-    1,  # Testing with 1 drone.
-    20, # Testing with 20 drones.
-    35, # Testing with 35 drones.
-    48, # Testing with 48 drones.
+    1,
+    20,
+    35,
+    48,
 ])
 def test_if_all_drones_are_created_with_default_positions(n_drones):
     env = DroneSwarmSearch(
@@ -243,10 +243,10 @@ def test_if_all_drones_are_created_with_default_positions(n_drones):
 
 
 @pytest.mark.parametrize("n_drones, grid_size", [
-    (1, 10),  # Testing with 1 drone in a 10x10 grid.
-    (2, 15),  # Testing with 2 drones in a 15x15 grid.
-    (5, 20),  # Testing with 5 drones in a 20x20 grid.
-    (15, 25), # Testing with 15 drones in a 25x25 grid.
+    (1, 10),
+    (2, 15),
+    (5, 20),
+    (15, 25),
 ])
 def test_with_the_observation_size_is_correct_for_all_drones(n_drones, grid_size):
     env = DroneSwarmSearch(
