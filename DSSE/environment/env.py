@@ -3,7 +3,7 @@ from copy import copy
 import numpy as np
 from gymnasium.spaces import MultiDiscrete
 from pettingzoo.utils.env import ParallelEnv
-from .generator.map import update_shipwrecked_position, noise_person_movement
+from .generator.person_movement import update_shipwrecked_position, noise_person_movement
 from .generator.dynamic_probability import ProbabilityMatrix
 from .constants import RED, GREEN, Actions
 from .pygame_interface import PygameInterface
@@ -79,10 +79,20 @@ class DroneSwarmSearch(ParallelEnv):
             "search_and_find": 100000,
         }
     
-    def is_valid_position(self, position: tuple[int]) -> bool:
+    def is_valid_position(self, position: tuple[int, int]) -> bool:
         valid_x = position[0] >= 0 and position[0] < self.grid_size
         valid_y = position[1] >= 0 and position[1] < self.grid_size
         return valid_x and valid_y
+    
+    def is_valid_position_drones(self, positions: list[tuple[int, int]]) -> bool:
+        seen = list()
+
+        for position in positions:
+            if not self.is_valid_position(position) or position in seen:
+                return False
+            seen.append(position)
+
+        return True
 
     def default_drones_positions(self):
         counter_x = 0
@@ -120,10 +130,10 @@ class DroneSwarmSearch(ParallelEnv):
             drones_positions=None,
             vector=None,
     ):
+        
         if drones_positions is not None:
-            for position in drones_positions:
-                if max(position) > self.grid_size:
-                    raise ValueError("You are trying to place the drone outside the grid")
+            if not self.is_valid_position_drones(drones_positions):
+                raise ValueError("You are trying to place the drone outside the grid")
 
         # reset target position
         self.person_y = self.person_initial_position[1]
