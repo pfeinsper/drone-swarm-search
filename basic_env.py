@@ -1,5 +1,6 @@
 from DSSE import DroneSwarmSearch
 from DSSE import Actions
+# from DSSE import DroneData
 
 env = DroneSwarmSearch(
     grid_size=20,
@@ -10,6 +11,11 @@ env = DroneSwarmSearch(
     vector=[-0.2, 0],
     person_initial_position=(19, 19),
     disperse_constant=1,
+    # drone_data=DroneData(
+    #     speed=10,
+    #     sweep_width=5,
+    #     track_spacing=5
+    # ),
 )
 
 
@@ -29,4 +35,3 @@ while not done:
     observations, reward, _, done, info = env.step(actions)
     rewards += reward["total_reward"]
     done = any(done.values())
-

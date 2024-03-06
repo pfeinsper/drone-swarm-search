@@ -25,6 +25,7 @@ class DroneSwarmSearch(ParallelEnv):
             person_initial_position=[0, 0],
             disperse_constant=10,
             timestep_limit=100,
+            drone_data=None,
     ):
         self.grid_size = grid_size
 
@@ -104,6 +105,7 @@ class DroneSwarmSearch(ParallelEnv):
             self.agents_positions[agent] = (counter_x, counter_y)
             counter_x += 1
 
+
     def required_drone_positions(self, drones_positions: list):
         if len(drones_positions) != len(self.possible_agents):
             raise ValueError(
@@ -169,6 +171,9 @@ class DroneSwarmSearch(ParallelEnv):
     
     def create_observations(self):
         observations = {}
+
+        #TODO: Create a barrier that will only allow the person to move to the next cell
+        # if the amount of time steps are enough.
         self.probability_matrix.step()
 
         movement_map = self.build_movement_matrix()
@@ -178,6 +183,8 @@ class DroneSwarmSearch(ParallelEnv):
         
         self.person_x = self.safe_1d_position_update(self.person_x, actual_movement[0])
         self.person_y = self.safe_1d_position_update(self.person_y, actual_movement[1])
+
+        #TODO: END
 
         for agent in self.possible_agents:
             observation = (
