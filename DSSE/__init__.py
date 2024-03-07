@@ -2,8 +2,10 @@
 
 from .environment.env import DroneSwarmSearch
 from .environment.constants import Actions
+from .environment.drone import DroneData
 
 __all__ = [
     "DroneSwarmSearch",
     "Actions",
+    "DroneData",
 ]

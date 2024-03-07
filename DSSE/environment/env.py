@@ -7,6 +7,7 @@ from .generator.person_movement import update_shipwrecked_position, noise_person
 from .generator.dynamic_probability import ProbabilityMatrix
 from .constants import RED, GREEN, Actions
 from .pygame_interface import PygameInterface
+from .drone import DroneData
 
 
 class DroneSwarmSearch(ParallelEnv):
@@ -25,9 +26,16 @@ class DroneSwarmSearch(ParallelEnv):
             person_initial_position=[0, 0],
             disperse_constant=10,
             timestep_limit=100,
-            drone_data=None,
+            drone_data=DroneData(
+                speed=10,
+                sweep_width=5,
+                track_spacing=5,
+            ),
     ):
+        self.cell_size = 130  # in meters
         self.grid_size = grid_size
+
+        self.drone_data = drone_data
 
         # Error Checking
         if n_drones > grid_size * grid_size:
@@ -50,6 +58,9 @@ class DroneSwarmSearch(ParallelEnv):
         self.possible_agents = []
         self.agents_positions = {}
         self.render_mode_matrix = None
+        
+        self.person_in_water_time_step_relation = None
+        self.person_in_water_time_step_counter = 0
         
         for i in range(n_drones):
             self.possible_agents.append("drone" + str(i))
@@ -143,6 +154,7 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.agents = copy(self.possible_agents)
         self.timestep = 0
+        self.person_in_water_time_step_counter = 0
         self.vector = vector if vector else self.vector
         self.rewards_sum = {a: 0 for a in self.agents}
         self.rewards_sum["total"] = 0
@@ -172,19 +184,35 @@ class DroneSwarmSearch(ParallelEnv):
     def create_observations(self):
         observations = {}
 
-        #TODO: Create a barrier that will only allow the person to move to the next cell
-        # if the amount of time steps are enough.
         self.probability_matrix.step()
 
         movement_map = self.build_movement_matrix()
 
         movement = update_shipwrecked_position(movement_map)
         actual_movement = noise_person_movement(movement, self.vector, epsilon=0.0)
-        
-        self.person_x = self.safe_1d_position_update(self.person_x, actual_movement[0])
-        self.person_y = self.safe_1d_position_update(self.person_y, actual_movement[1])
 
-        #TODO: END
+        drone_timestep = self.calculate_timestep(
+            self.drone_data.speed,
+            self.cell_size
+        )
+
+        person_in_water_speed = self.calculate_person_in_water_speed(
+            water_speed=(2.0, 2.0),
+            wind_speed=(0.0, 0.0),
+            person_swimming_speed=(0.0, 0.0) # could be a tuple of random values
+        )
+
+        person_in_water_timestep, _ = self.calculate_person_in_water_timestep_and_direction(
+            drone_timestep,
+            person_in_water_speed,
+            self.cell_size
+        )
+
+        self.update_person_time_step_relation(person_in_water_timestep)
+
+        if self.reached_timestep_barrier():
+            self.person_x = self.safe_1d_position_update(self.person_x, actual_movement[0])
+            self.person_y = self.safe_1d_position_update(self.person_y, actual_movement[1])
 
         for agent in self.possible_agents:
             observation = (
@@ -372,6 +400,93 @@ class DroneSwarmSearch(ParallelEnv):
 
     def get_agents(self):
         return self.possible_agents
+
+    def calculate_person_in_water_speed(self, water_speed: tuple[float], wind_speed: tuple[float], person_swimming_speed: tuple[float]) -> tuple[float]:
+        """
+        Calculate the speed of a person in the water
+        This speed is calculated based on the sea surface current velocity, wind-induced drift velocity, and the swimming speed of the person
+        v(x, t) = V_current(x, t) + V_leeway(x, t) + V_swim(x, t)
+
+        Args:
+        water_speed: tuple[float] (components in x and y directions)
+            Sea surface current velocity in m/s
+        wind_speed: tuple[float] (components in x and y directions)
+            Wind speed in m/s
+        person_swimming_speed: tuple[float] (components in x and y directions)
+            Swimming speed of the person in m/s
+        """
+        return (water_speed[0] + wind_speed[0] + person_swimming_speed[0], water_speed[1] + wind_speed[1] + person_swimming_speed[1]) # in m/s
+
+    def calculate_timestep(self, max_speed: float, cell_size: float, wind_resistance: float = 0.0) -> float:
+        """
+        Calculate the time step for the simulation based on the maximum speed of the drones and the cell size
+
+        Args:
+        max_speed: float
+            Maximum speed of the drones in m/s
+        cell_size: float
+            Size of the cells in meters
+        wind_resistance: float
+            Wind resistance in m/s
+        """
+        return cell_size / (max_speed - wind_resistance) # in seconds
+    
+    def calculate_person_in_water_timestep_and_direction(
+            self,
+            timestep: float,
+            person_in_water_speed: tuple[float],
+            cell_size: float
+        ) -> tuple[float, tuple[int]]:
+        """
+        Calculate the amount of time steps it takes for a person in the water to move one cell
+
+        Args:
+        timestep: float
+            Time step in seconds
+        person_in_water_speed: tuple[float]
+            Speed of the person in the water in m/s (x and y components)
+        cell_size: float
+            Size of the cells in meters
+        """
+        speed_magnitude, speed_direction = self.calculate_vector_magnitude_and_direction(person_in_water_speed)
+        return (cell_size / speed_magnitude / timestep, speed_direction)
+
+    def calculate_vector_magnitude_and_direction(self, vector: tuple[float]) -> tuple[float, tuple[int]]:
+        """
+        Calculate the magnitude and direction of a vector
+
+        Args:
+        vector: tuple[float]
+            Vector with x and y components
+
+        Returns:
+        tuple[float]
+            Magnitude and direction of the vector
+        Magnitude is in m/s
+        Direction is in x and y components, a unit vector
+        """
+        magnitude = np.linalg.norm(vector)
+        angle = np.arctan2(vector[1], vector[0])
+
+        # Calculate cosine and sine values
+        cos_val = np.cos(angle)
+        sin_val = np.sin(angle)
+
+        # Determine direction based on the sign of cosine and sine
+        x_direction = np.sign(cos_val) if abs(cos_val) > 0.0001 else 0
+        y_direction = np.sign(sin_val) if abs(sin_val) > 0.0001 else 0
+        return (magnitude, (x_direction, y_direction))
+
+    def reached_timestep_barrier(self):
+        reached_barrier = self.person_in_water_time_step_counter >= self.person_in_water_time_step_relation
+        if reached_barrier:
+            self.person_in_water_time_step_counter = 0
+        else:
+            self.person_in_water_time_step_counter += 1
+        return reached_barrier
+    
+    def update_person_time_step_relation(self, person_in_water_timestep):
+        self.person_in_water_time_step_relation = int(person_in_water_timestep)
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
