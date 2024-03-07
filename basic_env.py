@@ -1,28 +1,29 @@
 from DSSE import DroneSwarmSearch
 from DSSE import Actions
-# from DSSE import DroneData
+from DSSE import DroneData
 
 env = DroneSwarmSearch(
-    grid_size=20,
+    grid_size=40,
     render_mode="human",
     render_grid=True,
     render_gradient=True,
     n_drones=2,
     vector=[-0.2, 0],
     person_initial_position=(19, 19),
-    disperse_constant=1,
-    # drone_data=DroneData(
-    #     speed=10,
-    #     sweep_width=5,
-    #     track_spacing=5
-    # ),
+    disperse_constant=10,
+    drone_data=DroneData(
+        speed=10,
+        sweep_width=5,
+        track_spacing=5
+    ),
 )
 
 
 def policy(obs, agents):
     actions = {}
     for agent in agents:
-        actions[agent] = Actions.SEARCH.value # value: int = 8
+        # actions[agent] = Actions.SEARCH.value # value: int = 8
+        actions[agent] = Actions.RIGHT.value
     return actions
 
 
