@@ -32,6 +32,7 @@ class DroneData:
         the drone will detect a target in the search area.
 
     """
+    number_of_drones: int
     speed: float
     sweep_width: float
     track_spacing: float
@@ -41,6 +42,8 @@ class DroneData:
         Method to check if the attributes are valid and
         calculate the remaining attributes.
         """
+        if self.number_of_drones <= 0:
+            raise ValueError("The number of drones must be greater than 0.")
         if self.speed <= 0:
             raise ValueError("The drone's speed must be greater than 0.")
         if self.sweep_width <= 0:
