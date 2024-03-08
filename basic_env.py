@@ -1,29 +1,19 @@
 from DSSE import DroneSwarmSearch
 from DSSE import Actions
-from DSSE import DroneData
-from DSSE import PersonData
-
-drone_data = DroneData(
-    number_of_drones=2,
-    speed=10,
-    sweep_width=5,
-    track_spacing=5
-)
-
-person_data = PersonData(
-    number_of_persons=1,
-    initial_position=(19, 19)
-)
 
 env = DroneSwarmSearch(
     grid_size=40,
     render_mode="human",
     render_grid=True,
     render_gradient=True,
-    vector=[-0.2, 0],
-    disperse_constant=7,
-    person=person_data,
-    drone=drone_data,
+    vector=[3.5, -0.5],
+    disperse_constant=5,
+    timestep_limit=200,
+    person_amount=1,
+    person_initial_position=(19, 19),
+    drone_amount=2,
+    drone_speed=10,
+    drone_probability_of_detection=0.9,
 )
 
 
