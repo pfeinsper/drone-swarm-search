@@ -5,5 +5,5 @@ from .environment.constants import Actions
 
 __all__ = [
     "DroneSwarmSearch",
-    "Actions",
+    "Actions"
 ]
