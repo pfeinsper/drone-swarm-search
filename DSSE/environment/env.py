@@ -29,7 +29,7 @@ class DroneSwarmSearch(ParallelEnv):
             person_initial_position=(0, 0),
             drone_amount=1,
             drone_speed=10,
-            drone_probability_of_detection=0.9,
+            probability_of_detection=0.9,
     ):
         self.cell_size = 130  # in meters
         self.grid_size = grid_size
@@ -42,7 +42,7 @@ class DroneSwarmSearch(ParallelEnv):
         self.drone = DroneData(
                 amount=drone_amount,
                 speed=drone_speed,
-                probability_of_detection=drone_probability_of_detection,
+                probability_of_detection=probability_of_detection,
             )
 
         # Error Checking
@@ -76,9 +76,6 @@ class DroneSwarmSearch(ParallelEnv):
         self.rewards_sum = {a: 0 for a in self.possible_agents}
         self.rewards_sum["total"] = 0
 
-        self.pod = self.calculate_pod(sweep_width, coverage_factor)
-
-        print(f"{self.pod=}")
         # Reward Function
         self.reward_scheme = {
             "default": 1,
@@ -93,11 +90,6 @@ class DroneSwarmSearch(ParallelEnv):
         valid_x = position[0] >= 0 and position[0] < self.grid_size
         valid_y = position[1] >= 0 and position[1] < self.grid_size
         return valid_x and valid_y
-
-    def calculate_pod(self, sweep_width, coverage_factor):
-        c = sweep_width / coverage_factor
-        return 1 - np.exp(-c)
-    
 
     def default_drones_positions(self):
         counter_x = 0
@@ -205,7 +197,6 @@ class DroneSwarmSearch(ParallelEnv):
             self.probability_matrix.step()
 
             movement_map = self.build_movement_matrix()
-
             movement = self.person.update_shipwrecked_position(movement_map)
             actual_movement = self.person.noise_person_movement(movement, self.vector, epsilon=0.0)
 
@@ -223,6 +214,20 @@ class DroneSwarmSearch(ParallelEnv):
             observations[agent] = {"observation": observation}
 
         return observations
+    
+    def calculate_simulation_time_step(self, drone_max_speed: float, cell_size: float, wind_resistance: float = 0.0) -> float:
+        """
+        Calculate the time step for the simulation based on the maximum speed of the drones and the cell size
+
+        Args:
+        max_speed: float
+            Maximum speed of the drones in m/s
+        cell_size: float
+            Size of the cells in meters
+        wind_resistance: float
+            Wind resistance in m/s
+        """
+        return cell_size / (drone_max_speed - wind_resistance) # in seconds
 
     def build_movement_matrix(self) -> np.array:
         """
@@ -250,7 +255,7 @@ class DroneSwarmSearch(ParallelEnv):
             movement_map = np.insert(movement_map, 2, 0, axis=0)
         
         return movement_map
-
+    
 
 
     def safe_1d_position_update(self, previous: int, movement: int) -> int:
@@ -313,8 +318,7 @@ class DroneSwarmSearch(ParallelEnv):
             if drone_action not in self.action_space(agent):
                 raise ValueError("Invalid action for " + agent)
 
-            drone_x = self.agents_positions[agent][0]
-            drone_y = self.agents_positions[agent][1]
+            drone_x, drone_y = self.agents_positions[agent]
             is_searching = drone_action == Actions.SEARCH.value
 
             if drone_action != Actions.SEARCH.value:
@@ -329,7 +333,7 @@ class DroneSwarmSearch(ParallelEnv):
             
             drone_found_person = drone_x == self.person.x and drone_y == self.person.y and is_searching
             random_value = random()
-            if drone_found_person and random_value < self.pod:
+            if drone_found_person and random_value < self.drone.probability_of_detection:
                 time_reward_corrected = self.reward_scheme["search_and_find"] * (1 - self.timestep / self.timestep_limit)
                 rewards[agent] = self.reward_scheme["search_and_find"] + time_reward_corrected
                 terminations = {a: True for a in self.agents}
@@ -393,19 +397,6 @@ class DroneSwarmSearch(ParallelEnv):
     def get_agents(self):
         return self.possible_agents
 
-    def calculate_simulation_time_step(self, drone_max_speed: float, cell_size: float, wind_resistance: float = 0.0) -> float:
-        """
-        Calculate the time step for the simulation based on the maximum speed of the drones and the cell size
-
-        Args:
-        max_speed: float
-            Maximum speed of the drones in m/s
-        cell_size: float
-            Size of the cells in meters
-        wind_resistance: float
-            Wind resistance in m/s
-        """
-        return cell_size / (drone_max_speed - wind_resistance) # in seconds
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):

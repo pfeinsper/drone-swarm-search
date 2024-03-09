@@ -133,7 +133,7 @@ class ProbabilityMatrix:
         x = np.arange(0, columns)
         y = np.arange(0, rows)
         x, y = np.meshgrid(x, y)
-        res = (x - x0) ** 2 + (y - y0) ** 2 <= radius**2
+        res = (x - x0) ** 2 + (y - y0) ** 2 <= radius ** 2
         return np.argwhere(res)
 
     def calc_probs_numpy(self, cells):
