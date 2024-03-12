@@ -29,5 +29,6 @@ setup(
         "pygame",
         "pettingzoo",
         "matplotlib",
+        "numba",
     ],
 )
