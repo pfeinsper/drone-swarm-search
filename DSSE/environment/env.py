@@ -26,8 +26,7 @@ class DroneSwarmSearch(ParallelEnv):
         person_initial_position=(0, 0),
         disperse_constant=10,
         timestep_limit=100,
-        sweep_width=1,
-        coverage_factor=0.5,
+        probability_of_detection=1.0,
     ):
         self.grid_size = grid_size
         self._was_reset = False
@@ -65,9 +64,8 @@ class DroneSwarmSearch(ParallelEnv):
         self.rewards_sum = {a: 0 for a in self.possible_agents}
         self.rewards_sum["total"] = 0
 
-        self.pod = self.calculate_pod(sweep_width, coverage_factor)
+        self.pod = probability_of_detection
 
-        print(f"{self.pod=}")
         # Reward Function
         self.reward_scheme = {
             "default": 1,
@@ -83,10 +81,6 @@ class DroneSwarmSearch(ParallelEnv):
         valid_y = position[1] >= 0 and position[1] < self.grid_size
         return valid_x and valid_y
 
-    def calculate_pod(self, sweep_width, coverage_factor):
-        c = sweep_width / coverage_factor
-        return 1 - np.exp(-c)
-    
 
     def default_drones_positions(self):
         counter_x = 0
