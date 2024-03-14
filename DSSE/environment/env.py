@@ -193,8 +193,8 @@ class DroneSwarmSearch(ParallelEnv):
         )
         self.person.update_time_step_relation(person_time_step)
 
+        self.probability_matrix.step(self.drone.speed)
         if self.person.reached_time_step():
-            self.probability_matrix.step()
 
             movement_map = self.build_movement_matrix()
             movement = self.person.update_shipwrecked_position(movement_map)
@@ -256,7 +256,30 @@ class DroneSwarmSearch(ParallelEnv):
         
         return movement_map
     
+    def build_n_n_movement_matrix(self, n: int) -> np.array:
+        n_left = int(n / 2)
+        n_right = n - n_left
 
+        left_x = max(self.person.x - n_left, 0)
+        right_x = min(self.person.x + n_right, self.grid_size)
+        left_y = max(self.person.y - n_left, 0)
+        right_y = min(self.person.y + n_right, self.grid_size)
+
+        probability_matrix = self.probability_matrix.get_matrix()
+        movement_map = probability_matrix[left_y:right_y, left_x:right_x]
+
+        # Pad the matrix
+        if self.person.x == 0:
+            movement_map = np.insert(movement_map, 0, 0, axis=1)
+        elif self.person.x == self.grid_size - 1:
+            movement_map = np.insert(movement_map, n - 1, 0, axis=1)
+        
+        if self.person.y == 0:
+            movement_map = np.insert(movement_map, 0, 0, axis=0)
+        elif self.person.y == self.grid_size - 1:
+            movement_map = np.insert(movement_map, n - 1, 0, axis=0)
+
+        return movement_map
 
     def safe_1d_position_update(self, previous: int, movement: int) -> int:
         """

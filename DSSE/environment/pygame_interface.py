@@ -132,3 +132,4 @@ class PygameInterface:
             pygame.event.pump()
             pygame.display.quit()
             self.render_on = False
+    

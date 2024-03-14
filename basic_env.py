@@ -6,14 +6,14 @@ env = DroneSwarmSearch(
     render_mode="human",
     render_grid=True,
     render_gradient=True,
-    vector=[3.5, -0.5],
+    vector=(3.2, -3.1),
     disperse_constant=5,
     timestep_limit=200,
     person_amount=1,
     person_initial_position=(19, 19),
     drone_amount=2,
     drone_speed=10,
-    drone_probability_of_detection=0.9,
+    probability_of_detection=0.9,
 )
 
 

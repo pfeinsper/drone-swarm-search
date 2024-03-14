@@ -56,7 +56,7 @@ class Person():
         return original_vector / vector_norm
 
 
-    def update_shipwrecked_position(self, probability_matrix: np.array) -> tuple[int]:
+    def update_shipwrecked_position(self, probability_matrix: np.array, dimension: int = 3) -> tuple[int]:
         """
         Function that takes a 3x3 cut of the DynamicProbability matrix, multiplies it by a random numbers matrix [0, 1],
         and returns the column and line of the highest probability on the resulting matrix.
@@ -74,10 +74,10 @@ class Person():
         max_line = max_probabilities[0]
         max_column = max_probabilities[1]
 
-        return self.movement_to_cartesian(max_column, max_line)
+        return self.movement_to_cartesian(max_column, max_line, dimension)
 
 
-    def movement_to_cartesian(self, mov_x: int, mov_y: int) -> tuple[int]:
+    def movement_to_cartesian(self, mov_x: int, mov_y: int, dimesion: int) -> tuple[int]:
         """
         The movement of the shipwrecked person on the input follows the scheme (for the value of line and column):
             - if 0 -> Move to the left (x - 1) or to the top (y - 1).
@@ -87,8 +87,8 @@ class Person():
         So this function converts from this matrix movement notation to cartesian, as the matrix that creates this indexes is only 3x3,
         just removing 1 converts it back to cartesian movement.
         """
-        x_component = mov_x - 1
-        y_component = mov_y - 1
+        x_component = mov_x - int(dimesion / 2)
+        y_component = mov_y - int(dimesion / 2)
         return x_component, y_component
 
 
