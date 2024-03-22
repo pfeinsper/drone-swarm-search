@@ -40,7 +40,7 @@ class DroneSwarmSearch(ParallelEnv):
             initial_position=person_initial_position,
         )
 
-        self.person.calculate_movement_vector(self.vector)
+        self.person.calculate_movement_vector(vector)
 
         self.drone = DroneData(
             amount=drone_amount,

@@ -105,6 +105,41 @@ class Person():
     def reset_position(self):
         self.x, self.y = self.initial_position
 
+    def update_time_step_relation(self, time_step: float, cell_size: float) -> None:
+        self.time_step_relation = self.calculate_time_step(time_step, self.movement_vector, cell_size)
+
+    def calculate_time_step(
+            self,
+            time_step: float,
+            person_speed: tuple[float],
+            cell_size: float
+        ) -> int:
+        """
+        Args:
+        time_step: float
+            Time step in seconds
+        person_speed: tuple[float]
+            Speed of the person in the water in m/s (x and y components)
+        cell_size: float
+            Size of the cells in meters
+        """
+        speed_magnitude, _ = self.calculate_vector_magnitude_and_direction(person_speed)
+        return int(cell_size / speed_magnitude / time_step)
+
+    def reached_time_step(self):
+        reached = self.time_step_counter >= self.time_step_relation
+        if reached:
+            self.reset_time_step_counter()
+        else:
+            self.increment_time_step_counter()
+        return reached
+
+    def reset_time_step_counter(self) -> None:
+        self.time_step_counter = 0
+
+    def increment_time_step_counter(self) -> None:
+        self.time_step_counter += 1
+
     def calculate_speed(
             self,
             water_speed: tuple[float] = (0, 0),
