@@ -36,14 +36,17 @@ class DroneSwarmSearch(ParallelEnv):
         self._was_reset = False
 
         self.person = Person(
-                amount=person_amount,
-                initial_position=person_initial_position,
-            )
+            amount=person_amount,
+            initial_position=person_initial_position,
+        )
+
+        self.person.calculate_movement_vector(self.vector)
+
         self.drone = DroneData(
-                amount=drone_amount,
-                speed=drone_speed,
-                probability_of_detection=drone_probability_of_detection,
-            )
+            amount=drone_amount,
+            speed=drone_speed,
+            probability_of_detection=drone_probability_of_detection,
+        )
 
         # Error Checking
         if self.drone.amount > grid_size * grid_size:
@@ -58,6 +61,10 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.timestep = None
         self.timestep_limit = timestep_limit
+        self.time_step_relation = self.calculate_simulation_time_step(
+            self.drone.speed,
+            self.cell_size
+        )
         self.disperse_constant = disperse_constant
         self.vector = vector
         self.possible_agents = []
@@ -76,9 +83,6 @@ class DroneSwarmSearch(ParallelEnv):
         self.rewards_sum = {a: 0 for a in self.possible_agents}
         self.rewards_sum["total"] = 0
 
-        self.pod = self.calculate_pod(sweep_width, coverage_factor)
-
-        print(f"{self.pod=}")
         # Reward Function
         self.reward_scheme = {
             "default": 1,
@@ -93,11 +97,6 @@ class DroneSwarmSearch(ParallelEnv):
         valid_x = position[0] >= 0 and position[0] < self.grid_size
         valid_y = position[1] >= 0 and position[1] < self.grid_size
         return valid_x and valid_y
-
-    def calculate_pod(self, sweep_width, coverage_factor):
-        c = sweep_width / coverage_factor
-        return 1 - np.exp(-c)
-    
 
     def default_drones_positions(self):
         counter_x = 0
@@ -185,21 +184,7 @@ class DroneSwarmSearch(ParallelEnv):
     def create_observations(self):
         observations = {}
 
-        drone_timestep = self.calculate_simulation_time_step(
-            self.drone.speed,
-            self.cell_size
-        )
-
-        person_speed = self.person.calculate_speed(
-            water_speed=self.vector,
-        )
-
-        person_time_step = self.person.calculate_time_step(
-            drone_timestep,
-            person_speed,
-            self.cell_size
-        )
-        self.person.update_time_step_relation(person_time_step)
+        self.person.update_time_step_relation(self.time_step_relation, self.cell_size)
 
         if self.person.reached_time_step():
             self.probability_matrix.step()
@@ -207,11 +192,10 @@ class DroneSwarmSearch(ParallelEnv):
             movement_map = self.build_movement_matrix()
 
             movement = self.person.update_shipwrecked_position(movement_map)
-            actual_movement = self.person.noise_person_movement(movement, self.vector, epsilon=0.0)
 
             self.person.update_position(
-                x=self.safe_1d_position_update(self.person.x, actual_movement[0]),
-                y=self.safe_1d_position_update(self.person.y, actual_movement[1])
+                x=self.safe_1d_position_update(self.person.x, movement[0]),
+                y=self.safe_1d_position_update(self.person.y, movement[1])
             )
 
         probability_matrix = self.probability_matrix.get_matrix()

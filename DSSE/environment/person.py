@@ -1,4 +1,4 @@
-from random import randint, random
+from random import randint, random, uniform
 import numpy as np
 
 class Person():
@@ -20,6 +20,8 @@ class Person():
         The x coordinate of the person in the environment.
     y: int
         The y coordinate of the person in the environment.
+    movement_vector: tuple
+        The vector that determines the movement of the person in the environment.
     """
 
     def __init__(self, amount: int, initial_position: tuple[int, int]):
@@ -30,20 +32,26 @@ class Person():
         self.x, self.y = self.initial_position
         self.time_step_counter = 0
         self.time_step_relation = 1
-        
-    def noise_person_movement(
-        self, current_movement: tuple[int], drift_vector: list[int], epsilon=1.0
-    ) -> tuple[int]:
-        chance = random()
-        if chance < epsilon:
-            randomized_movement = np.array([randint(-1, 1), randint(-1, 1)])
-            angle = self.angle_between(randomized_movement, drift_vector)
-            # Only noises the movement if the new movement isnt against the vector.
-            if angle < 120 or angle > 240:
-                return randomized_movement
-        return current_movement
+        self.movement_vector = (0.0, 0.0)
 
-    def angle_between(self, movement: np.array, drift_vector: list[int]) -> float:
+    def calculate_movement_vector(self, primary_movement_vector) -> None:
+        """
+        Function that calculates the person's movement vector 
+        based on the primary movement vector that is being applied 
+        by the environment, that is the water drift vector.
+        """
+        noised_vector = self.noise_vector(primary_movement_vector)
+        self.movement_vector = (primary_movement_vector[0] + noised_vector[0], primary_movement_vector[1] + noised_vector[1])
+
+    def noise_vector(self, primary_movement_vector: tuple[float]) -> tuple[float]:
+        noised_vector = (0.0, 0.0)
+        angle = 0
+        while angle < 120 or angle > 240:
+            noised_vector = np.array([uniform(-1, 1), uniform(-1, 1)])
+            angle = self.angle_between(noised_vector, primary_movement_vector)
+        return noised_vector
+
+    def angle_between(self, movement: np.array, drift_vector: list[float]) -> float:
         direction_movement = self.get_unit_vector(movement)
         direction_vector = self.get_unit_vector(np.array(drift_vector))
         dot_product = np.dot(direction_movement, direction_vector)
@@ -54,7 +62,41 @@ class Person():
         if vector_norm == 0.0:
             vector_norm = 1.0
         return original_vector / vector_norm
+    
+    def update_time_step_relation(self, time_step: float, cell_size: float) -> None:
+        self.time_step_relation = self.calculate_time_step(time_step, self.movement_vector, cell_size)
 
+    def calculate_time_step(
+            self,
+            time_step: float,
+            person_speed: tuple[float],
+            cell_size: float
+        ) -> int:
+        """
+        Args:
+        time_step: float
+            Time step in seconds
+        person_speed: tuple[float]
+            Speed of the person in the water in m/s (x and y components)
+        cell_size: float
+            Size of the cells in meters
+        """
+        speed_magnitude, _ = self.calculate_vector_magnitude_and_direction(person_speed)
+        return int(cell_size / speed_magnitude / time_step)
+
+    def reached_time_step(self):
+        reached = self.time_step_counter >= self.time_step_relation
+        if reached:
+            self.reset_time_step_counter()
+        else:
+            self.increment_time_step_counter()
+        return reached
+
+    def reset_time_step_counter(self) -> None:
+        self.time_step_counter = 0
+
+    def increment_time_step_counter(self) -> None:
+        self.time_step_counter += 1
 
     def update_shipwrecked_position(self, probability_matrix: np.array) -> tuple[int]:
         """
@@ -76,7 +118,6 @@ class Person():
 
         return self.movement_to_cartesian(max_column, max_line)
 
-
     def movement_to_cartesian(self, mov_x: int, mov_y: int) -> tuple[int]:
         """
         The movement of the shipwrecked person on the input follows the scheme (for the value of line and column):
@@ -91,30 +132,12 @@ class Person():
         y_component = mov_y - 1
         return x_component, y_component
 
-
     def update_position(self, x: int, y: int) -> None:
         self.x = x
         self.y = y
 
     def reset_position(self):
         self.x, self.y = self.initial_position
-
-    def update_time_step_relation(self, time_step_relation: int):
-        self.time_step_relation = time_step_relation
-
-    def reached_time_step(self):
-        reached = self.time_step_counter >= self.time_step_relation
-        if reached:
-            self.reset_time_step_counter()
-        else:
-            self.increment_time_step_counter()
-        return reached
-
-    def reset_time_step_counter(self) -> None:
-        self.time_step_counter = 0
-
-    def increment_time_step_counter(self) -> None:
-        self.time_step_counter += 1
 
     def calculate_speed(
             self,
@@ -140,23 +163,7 @@ class Person():
             water_speed[1] + wind_speed[1] + swimming_speed[1]
         ) # in m/s
 
-    def calculate_time_step(
-            self,
-            time_step: float,
-            person_speed: tuple[float],
-            cell_size: float
-        ) -> int:
-        """
-        Args:
-        time_step: float
-            Time step in seconds
-        person_speed: tuple[float]
-            Speed of the person in the water in m/s (x and y components)
-        cell_size: float
-            Size of the cells in meters
-        """
-        speed_magnitude, _ = self.calculate_vector_magnitude_and_direction(person_speed)
-        return int(cell_size / speed_magnitude / time_step)
+    
 
     def calculate_vector_magnitude_and_direction(self, vector: tuple[float]) -> tuple[float, tuple[int]]:
         """
