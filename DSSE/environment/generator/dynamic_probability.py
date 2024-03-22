@@ -34,36 +34,40 @@ class ProbabilityMatrix:
         self.vector = vector
 
         # These determine the movement of the target as well
-        self.x = 0
-        self.y = 0
+        self.inc_x = 0
+        self.inc_y = 0
         # Circle that cointains the probabilities
         self.circle = Circle(1, initial_position[1], initial_position[0])
 
-    def step(self):
-        self.update_position()
+    def step(self, drone_speed):
+        self.update_position(drone_speed)
         self.diffuse_probability()
 
         self.circle.update_center(self.supposed_position)
         self.circle.increase_area()
 
-    def update_position(self):
-        if abs(self.x) >= 1:
-            self.x = 0
-        if abs(self.y) >= 1:
-            self.y = 0
-        self.x += self.vector[0]
-        self.y += self.vector[1]
+    def update_position(self, drone_speed):
+        if abs(self.inc_x) >= 1:
+            self.inc_x = 0
+        if abs(self.inc_y) >= 1:
+            self.inc_y = 0
+
+        self.inc_x += self.vector[0] / drone_speed
+        self.inc_y += self.vector[1] / drone_speed
+
+        # On row, column notation (y, x)
         new_position = (
-            self.supposed_position[0] + int(self.y),
-            self.supposed_position[1] + int(self.x),
+            self.supposed_position[0] + int(self.inc_x),
+            self.supposed_position[1] + int(self.inc_x),
         )
 
         if self.is_valid_position(new_position):
             self.supposed_position = new_position
 
     def is_valid_position(self, position: tuple[int]) -> bool:
-        is_valid_y = position[0] >= 0 and position[0] < len(self.map)
-        is_valid_x = position[1] >= 0 and position[1] < len(self.map[0])
+        rows, columns = self.map.shape
+        is_valid_y = position[0] >= 0 and position[0] < rows
+        is_valid_x = position[1] >= 0 and position[1] < columns
         return is_valid_x and is_valid_y
 
     def diffuse_probability(self):
@@ -92,7 +96,7 @@ class ProbabilityMatrix:
 
         self.map = map_copy
 
-    # Uses classmethod because numba does not support instance methods.
+    # Uses staticmethod because numba does not support instance methods.
     @staticmethod
     @njit(cache=True, fastmath=True)
     def all_cells_inside_circle(x0, y0, radius, rows, columns) -> np.array:
@@ -133,7 +137,7 @@ class ProbabilityMatrix:
         x = np.arange(0, columns)
         y = np.arange(0, rows)
         x, y = np.meshgrid(x, y)
-        res = (x - x0) ** 2 + (y - y0) ** 2 <= radius**2
+        res = (x - x0) ** 2 + (y - y0) ** 2 <= radius ** 2
         return np.argwhere(res)
 
     def calc_probs_numpy(self, cells):

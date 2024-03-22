@@ -62,43 +62,8 @@ class Person():
         if vector_norm == 0.0:
             vector_norm = 1.0
         return original_vector / vector_norm
-    
-    def update_time_step_relation(self, time_step: float, cell_size: float) -> None:
-        self.time_step_relation = self.calculate_time_step(time_step, self.movement_vector, cell_size)
 
-    def calculate_time_step(
-            self,
-            time_step: float,
-            person_speed: tuple[float],
-            cell_size: float
-        ) -> int:
-        """
-        Args:
-        time_step: float
-            Time step in seconds
-        person_speed: tuple[float]
-            Speed of the person in the water in m/s (x and y components)
-        cell_size: float
-            Size of the cells in meters
-        """
-        speed_magnitude, _ = self.calculate_vector_magnitude_and_direction(person_speed)
-        return int(cell_size / speed_magnitude / time_step)
-
-    def reached_time_step(self):
-        reached = self.time_step_counter >= self.time_step_relation
-        if reached:
-            self.reset_time_step_counter()
-        else:
-            self.increment_time_step_counter()
-        return reached
-
-    def reset_time_step_counter(self) -> None:
-        self.time_step_counter = 0
-
-    def increment_time_step_counter(self) -> None:
-        self.time_step_counter += 1
-
-    def update_shipwrecked_position(self, probability_matrix: np.array) -> tuple[int]:
+    def update_shipwrecked_position(self, probability_matrix: np.array, dimension: int = 3) -> tuple[int]:
         """
         Function that takes a 3x3 cut of the DynamicProbability matrix, multiplies it by a random numbers matrix [0, 1],
         and returns the column and line of the highest probability on the resulting matrix.
@@ -116,9 +81,10 @@ class Person():
         max_line = max_probabilities[0]
         max_column = max_probabilities[1]
 
-        return self.movement_to_cartesian(max_column, max_line)
+        return self.movement_to_cartesian(max_column, max_line, dimension)
 
-    def movement_to_cartesian(self, mov_x: int, mov_y: int) -> tuple[int]:
+
+    def movement_to_cartesian(self, mov_x: int, mov_y: int, dimesion: int) -> tuple[int]:
         """
         The movement of the shipwrecked person on the input follows the scheme (for the value of line and column):
             - if 0 -> Move to the left (x - 1) or to the top (y - 1).
@@ -128,8 +94,8 @@ class Person():
         So this function converts from this matrix movement notation to cartesian, as the matrix that creates this indexes is only 3x3,
         just removing 1 converts it back to cartesian movement.
         """
-        x_component = mov_x - 1
-        y_component = mov_y - 1
+        x_component = mov_x - int(dimesion / 2)
+        y_component = mov_y - int(dimesion / 2)
         return x_component, y_component
 
     def update_position(self, x: int, y: int) -> None:
@@ -162,8 +128,6 @@ class Person():
             water_speed[0] + wind_speed[0] + swimming_speed[0],
             water_speed[1] + wind_speed[1] + swimming_speed[1]
         ) # in m/s
-
-    
 
     def calculate_vector_magnitude_and_direction(self, vector: tuple[float]) -> tuple[float, tuple[int]]:
         """
