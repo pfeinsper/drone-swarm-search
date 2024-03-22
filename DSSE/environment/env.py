@@ -30,10 +30,15 @@ class DroneSwarmSearch(ParallelEnv):
             drone_amount=1,
             drone_speed=10,
             drone_probability_of_detection=0.9,
+            pre_render_time = 0,
     ):
         self.cell_size = 130  # in meters
         self.grid_size = grid_size
         self._was_reset = False
+        self.pre_render_steps = round((pre_render_time * 60) / (self.calculate_simulation_time_step(drone_speed, self.cell_size)))
+        print("pre render time: ", pre_render_time, " minutes")
+        print("pre render steps: ", self.pre_render_steps)
+        
 
         self.person = Person(
             amount=person_amount,
@@ -309,7 +314,7 @@ class DroneSwarmSearch(ParallelEnv):
                 new_position = (position[0] + 1, position[1] + 1)
 
         if not self.is_valid_position(new_position):
-            return True, new_position, self.reward_scheme["leave_grid"]
+            return False, position, self.reward_scheme["leave_grid"]
 
         return False, new_position, self.reward_scheme["default"]
 
@@ -324,6 +329,11 @@ class DroneSwarmSearch(ParallelEnv):
         rewards = {a: self.reward_scheme["default"] for a in self.agents}
         truncations = {a: False for a in self.agents}
         person_found = False
+                
+        while self.pre_render_steps > 0:
+            self.create_observations()
+            self.pre_render_steps -= 1
+
         
         for agent in self.agents:
             if agent not in actions:
@@ -421,3 +431,22 @@ class DroneSwarmSearch(ParallelEnv):
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
         return [moviment.value for moviment in Actions]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
