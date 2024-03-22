@@ -76,7 +76,7 @@ class DroneSwarmSearch(ParallelEnv):
         self.rewards_sum = {a: 0 for a in self.possible_agents}
         self.rewards_sum["total"] = 0
 
-        self.pod = self.calculate_pod(sweep_width, coverage_factor)
+        self.pod = drone_probability_of_detection
 
         print(f"{self.pod=}")
         # Reward Function
@@ -93,10 +93,6 @@ class DroneSwarmSearch(ParallelEnv):
         valid_x = position[0] >= 0 and position[0] < self.grid_size
         valid_y = position[1] >= 0 and position[1] < self.grid_size
         return valid_x and valid_y
-
-    def calculate_pod(self, sweep_width, coverage_factor):
-        c = sweep_width / coverage_factor
-        return 1 - np.exp(-c)
     
 
     def default_drones_positions(self):
