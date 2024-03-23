@@ -14,6 +14,7 @@ env = DroneSwarmSearch(
     drone_amount=2,
     drone_speed=10,
     drone_probability_of_detection=0.9,
+    pre_render_time = 20,
 )
 
 

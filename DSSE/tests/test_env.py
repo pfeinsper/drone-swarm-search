@@ -103,22 +103,21 @@ def test_timeout_termination(timestep_limit):
     (25, [15, 15]),
     (30, [20, 20]),
 ])
-def test_leave_grid_termination(grid_size, person_initial_position):
+def test_leave_grid_get_negative_reward(grid_size, person_initial_position):
     env = init_drone_swarm_search(grid_size=grid_size, person_initial_position=person_initial_position)
-    _ = env.reset()
+    _ = env.reset(drones_positions=[(0, 0)])
 
     done = False
-    step_counter = 0
-    while not done and step_counter < grid_size:
-        actions = {"drone0": Actions.RIGHT.value}
+    reward_sum = 0
+    while not done and reward_sum >= -500_000:
+        actions = {"drone0": Actions.UP.value}
         _, reward, terminations, done, _ = env.step(actions)
-        step_counter += 1
         done = any(done.values())
+        reward_sum += reward["total_reward"]
 
-    assert step_counter >= 15, "The simulation should run for at least 15 steps before terminating."
-    assert done, "The simulation should end, indicating the drone left the grid or another termination condition was met."
+    assert not done, "The simulation should not end, indicating the drone left the grid or another termination condition was met."
     assert reward["total_reward"] < 0, "The total reward should be negative, indicating a penalty was applied."
-    assert any(terminations.values()), "There should be at least one termination condition met."
+    assert not any(terminations.values()), "There not should be at least one termination condition met."
 
 
 @pytest.mark.parametrize("grid_size, person_position", [
