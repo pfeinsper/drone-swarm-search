@@ -24,30 +24,43 @@ class Person():
         The vector that determines the movement of the person in the environment.
     """
 
-    def __init__(self, amount: int, initial_position: tuple[int, int]):
+    def __init__(
+            self,
+            amount: int,
+            initial_position: tuple[int, int],
+            grid_size: int,    
+        ):
+
         if amount <= 0:
             raise ValueError("The number of persons must be greater than 0.")
         self.amount = amount
         self.initial_position = initial_position
         self.x, self.y = self.initial_position
+        self.inc_x, self.inc_y = 0, 0
+        self.grid_size = grid_size
         self.time_step_counter = 0
         self.time_step_relation = 1
         self.movement_vector = (0.0, 0.0)
 
-    def calculate_movement_vector(self, primary_movement_vector) -> None:
+    def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> None:
         """
         Function that calculates the person's movement vector 
         based on the primary movement vector that is being applied 
         by the environment, that is the water drift vector.
         """
         noised_vector = self.noise_vector(primary_movement_vector)
-        self.movement_vector = (primary_movement_vector[0] + noised_vector[0], primary_movement_vector[1] + noised_vector[1])
+        self.movement_vector = (
+            (primary_movement_vector[0] + noised_vector[0]),
+            (primary_movement_vector[1] + noised_vector[1])
+        )
 
     def noise_vector(self, primary_movement_vector: tuple[float]) -> tuple[float]:
         noised_vector = (0.0, 0.0)
         angle = 0
-        while angle < 120 or angle > 240:
-            noised_vector = np.array([uniform(-1, 1), uniform(-1, 1)])
+        while angle > 90 or angle < 45:
+            noised_x = uniform(-abs(primary_movement_vector[0]), abs(primary_movement_vector[0]))
+            noised_y = uniform(-abs(primary_movement_vector[1]), abs(primary_movement_vector[1]))
+            noised_vector = np.array([noised_x, noised_y])
             angle = self.angle_between(noised_vector, primary_movement_vector)
         return noised_vector
 
@@ -63,7 +76,14 @@ class Person():
             vector_norm = 1.0
         return original_vector / vector_norm
 
-    def update_shipwrecked_position(self, probability_matrix: np.array, dimension: int = 3) -> tuple[int]:
+    def update_position(self, drone_speed: float, movement_map: np.array = None) -> None:
+        movement = self.update_shipwrecked_position(drone_speed, movement_map)
+        print(f"Movement: {movement}")
+
+        self.x = self.safe_1d_position_update(self.x, movement[0])
+        self.y = self.safe_1d_position_update(self.y, movement[1])
+    
+    def update_shipwrecked_position(self, drone_speed: float, probability_matrix: np.array = None, dimension: int = 3) -> tuple[int]:
         """
         Function that takes a 3x3 cut of the DynamicProbability matrix, multiplies it by a random numbers matrix [0, 1],
         and returns the column and line of the highest probability on the resulting matrix.
@@ -71,20 +91,40 @@ class Person():
         Output:
             (movement_x, movement_y): tuple[int]
         """
-        random_numbers_matrix = np.random.rand(*probability_matrix.shape)
-        probabilities_mult_random_factor = random_numbers_matrix * probability_matrix
 
-        # Using a numpy function to find the line and column of the greatest probability in the random factor multiplied matrix.
-        max_probabilities = np.unravel_index(
-            np.argmax(probabilities_mult_random_factor, axis=None), probability_matrix.shape
+        # OLD CODE
+        # random_numbers_matrix = np.random.rand(*probability_matrix.shape)
+        # probabilities_mult_random_factor = random_numbers_matrix * probability_matrix
+
+        # # Using a numpy function to find the line and column of the greatest probability in the random factor multiplied matrix.
+        # max_probabilities = np.unravel_index(
+        #     np.argmax(probabilities_mult_random_factor, axis=None), probability_matrix.shape
+        # )
+        # max_line = max_probabilities[0]
+        # max_column = max_probabilities[1]
+
+        # print(f"Max line: {max_line}, Max column: {max_column}")
+
+        # return self.movement_to_cartesian(max_column, max_line, dimension)
+
+        # NEW CODE
+        if abs(self.inc_x) >= 1:
+            self.inc_x = 0
+        if abs(self.inc_y) >= 1:
+            self.inc_y = 0
+
+        self.inc_x += self.movement_vector[0] / drone_speed
+        self.inc_y += self.movement_vector[1] / drone_speed
+
+        # On row, column notation (y, x) -> (row, column)
+        new_position = (
+            int(self.inc_x),
+            int(self.inc_y),
         )
-        max_line = max_probabilities[0]
-        max_column = max_probabilities[1]
 
-        return self.movement_to_cartesian(max_column, max_line, dimension)
+        return self.movement_to_cartesian(new_position[0], new_position[1], dimension=0)
 
-
-    def movement_to_cartesian(self, mov_x: int, mov_y: int, dimesion: int) -> tuple[int]:
+    def movement_to_cartesian(self, mov_x: int, mov_y: int, dimension: int) -> tuple[int]:
         """
         The movement of the shipwrecked person on the input follows the scheme (for the value of line and column):
             - if 0 -> Move to the left (x - 1) or to the top (y - 1).
@@ -94,13 +134,22 @@ class Person():
         So this function converts from this matrix movement notation to cartesian, as the matrix that creates this indexes is only 3x3,
         just removing 1 converts it back to cartesian movement.
         """
-        x_component = mov_x - int(dimesion / 2)
-        y_component = mov_y - int(dimesion / 2)
-        return x_component, y_component
+        x_component = mov_x - int(dimension / 2)
+        y_component = mov_y - int(dimension / 2)
 
-    def update_position(self, x: int, y: int) -> None:
-        self.x = x
-        self.y = y
+        return x_component, y_component
+    
+    def safe_1d_position_update(self, previous: int, movement: int) -> int:
+        """
+        Updates the shipwrecked person position on a given axis, checking for edge cases first.
+
+        Output:
+            new position: int
+        """
+        new_position_on_axis = previous + movement
+        if new_position_on_axis >= 0 and new_position_on_axis < self.grid_size:
+            return new_position_on_axis
+        return previous
 
     def reset_position(self):
         self.x, self.y = self.initial_position
