@@ -78,7 +78,6 @@ class Person():
 
     def update_position(self, drone_speed: float, movement_map: np.array = None) -> None:
         movement = self.update_shipwrecked_position(drone_speed, movement_map)
-        print(f"Movement: {movement}")
 
         self.x = self.safe_1d_position_update(self.x, movement[0])
         self.y = self.safe_1d_position_update(self.y, movement[1])
