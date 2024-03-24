@@ -98,15 +98,15 @@ def test_timeout_termination(timestep_limit):
     assert timestep_counter > timestep_limit, "The simulation should run beyond the timestep limit before terminating."
 
 @pytest.mark.parametrize("grid_size, person_initial_position", [
-    (15, [4, 4]),
-    (20, [10, 10]),
-    (25, [15, 15]),
-    (30, [20, 20]),
+    (15, (4, 4)),
+    (20, (10, 10)),
+    (25, (15, 15)),
+    (30, (20, 20)),
 ])
 def test_leave_grid_get_negative_reward(grid_size, person_initial_position):
     env = init_drone_swarm_search(grid_size=grid_size, person_initial_position=person_initial_position)
     _ = env.reset(drones_positions=[(0, 0)])
-
+    
     done = False
     reward_sum = 0
     while not done and reward_sum >= -500_000:
