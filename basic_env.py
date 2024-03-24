@@ -9,12 +9,12 @@ env = DroneSwarmSearch(
     vector=(3.2, 3.1),
     disperse_constant=5,
     timestep_limit=200,
-    person_amount=1,
+    person_amount=5,
     person_initial_position=(19, 19),
     drone_amount=2,
     drone_speed=10,
     drone_probability_of_detection=0.9,
-    pre_render_time = 20,
+    pre_render_time = 0,
 )
 
 def policy(obs, agents):
