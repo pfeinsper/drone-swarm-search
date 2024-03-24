@@ -1,4 +1,5 @@
-from random import randint, random, uniform
+from random import randint, random, uniform, choice
+from math import cos, sin, radians
 import numpy as np
 
 class Person():
@@ -23,24 +24,25 @@ class Person():
     movement_vector: tuple
         The vector that determines the movement of the person in the environment.
     """
-
+    lista = [(0, 45), (45, 55), (300, 360), (315, 360)]
+    
+    # Escolhendo um intervalo aleatório da lista e armazenando como uma variável de classe
+    angulo_intervalo = choice(lista)
+    print(f"Intervalo de ângulo: {angulo_intervalo}")
+    
     def __init__(
             self,
-            amount: int,
             initial_position: tuple[int, int],
             grid_size: int,    
         ):
 
-        if amount <= 0:
-            raise ValueError("The number of persons must be greater than 0.")
-        self.amount = amount
         self.initial_position = initial_position
         self.x, self.y = self.initial_position
         self.inc_x, self.inc_y = 0, 0
         self.grid_size = grid_size
         self.time_step_counter = 0
         self.time_step_relation = 1
-        self.movement_vector = (0.0, 0.0)
+        self.movement_vector = (0.0, 0.0)        
 
     def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> None:
         """
@@ -55,13 +57,25 @@ class Person():
         )
 
     def noise_vector(self, primary_movement_vector: tuple[float]) -> tuple[float]:
-        noised_vector = (0.0, 0.0)
-        angle = 0
-        while angle > 90 or angle < 45:
-            noised_x = uniform(-abs(primary_movement_vector[0]), abs(primary_movement_vector[0]))
-            noised_y = uniform(-abs(primary_movement_vector[1]), abs(primary_movement_vector[1]))
-            noised_vector = np.array([noised_x, noised_y])
-            angle = self.angle_between(noised_vector, primary_movement_vector)
+        # Normalizando o vetor de movimento principal para obter a direção
+        primary_direction = np.array(primary_movement_vector) / np.linalg.norm(primary_movement_vector)
+        
+        # Lista de intervalos de ângulos em graus
+        angle = radians(uniform(*Person.angulo_intervalo))  # Usando * para desempacotar o intervalo
+        
+        # Criando uma matriz de rotação 2D
+        rotation_matrix = np.array([
+            [cos(angle), -sin(angle)],
+            [sin(angle), cos(angle)]
+        ])
+        
+        # Rotacionando o vetor de direção principal para obter o vetor de ruído
+        noised_direction = np.dot(rotation_matrix, primary_direction)
+        
+        # Ajustando a magnitude do vetor de ruído para corresponder à do vetor de movimento principal
+        magnitude = np.linalg.norm(primary_movement_vector)
+        noised_vector = noised_direction * magnitude
+        
         return noised_vector
 
     def angle_between(self, movement: np.array, drift_vector: list[float]) -> float:
