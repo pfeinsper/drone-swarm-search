@@ -10,7 +10,7 @@ class PygameInterface:
     Class for rendering the grafical interface of the simulation
     """
 
-    FPS = 3
+    FPS = 15
 
     def __init__(
         self, grid_size: int, render_gradient: bool, render_grid: bool
