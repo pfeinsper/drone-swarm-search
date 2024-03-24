@@ -38,14 +38,6 @@ class DroneSwarmSearch(ParallelEnv):
         self.pre_render_steps = round((pre_render_time * 60) / (self.calculate_simulation_time_step(drone_speed, self.cell_size)))
         print("pre render time: ", pre_render_time, " minutes")
         print("pre render steps: ", self.pre_render_steps)
-        
-
-        self.person = Person(
-            amount=person_amount,
-            initial_position=person_initial_position,
-        )
-
-        self.person.calculate_movement_vector(vector)
 
         self.drone = DroneData(
             amount=drone_amount,
@@ -58,8 +50,6 @@ class DroneSwarmSearch(ParallelEnv):
             raise ValueError(
                 "There are more drones than grid spots. Reduce number of drones or increase grid size."
             )
-        if not self.is_valid_position(self.person.initial_position):
-            raise ValueError("Person initial position is out of the matrix")
 
         if render_mode != "ansi" and render_mode != "human":
             raise ValueError("Render mode not recognized")
@@ -82,6 +72,19 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.render_mode = render_mode
         self.probability_matrix = None
+
+        # Person
+        self.person = Person(
+            amount=person_amount,
+            initial_position=person_initial_position,
+            grid_size=grid_size,
+        )
+
+        self.person.calculate_movement_vector(vector)
+        self.person.update_time_step_relation(self.time_step_relation, self.cell_size)
+
+        if not self.is_valid_position(self.person.initial_position):
+            raise ValueError("Person initial position is out of the matrix")
 
         # Initializing render
         self.pygame_renderer = PygameInterface(self.grid_size, render_gradient, render_grid)
@@ -189,18 +192,10 @@ class DroneSwarmSearch(ParallelEnv):
     def create_observations(self):
         observations = {}
 
-        self.person.update_time_step_relation(self.time_step_relation, self.cell_size)
-
         self.probability_matrix.step(self.drone.speed)
         if self.person.reached_time_step():
-
             movement_map = self.build_movement_matrix()
-            movement = self.person.update_shipwrecked_position(movement_map)
-
-            self.person.update_position(
-                x=self.safe_1d_position_update(self.person.x, movement[0]),
-                y=self.safe_1d_position_update(self.person.y, movement[1])
-            )
+            self.person.update_position(self.drone.speed, movement_map)
 
         probability_matrix = self.probability_matrix.get_matrix()
         for agent in self.possible_agents:
@@ -224,72 +219,7 @@ class DroneSwarmSearch(ParallelEnv):
         wind_resistance: float
             Wind resistance in m/s
         """
-        return cell_size / (drone_max_speed - wind_resistance) # in seconds
-
-    def build_movement_matrix(self) -> np.array:
-        """
-        Builds and outputs a 3x3 matrix from the probabality matrix to use in the person movement function.
-        """
-
-        # Boundaries for the 3x3 movement matrix.
-        left_x = max(self.person.x - 1, 0)
-        right_x = min(self.person.x + 2, self.grid_size)
-        left_y = max(self.person.y - 1, 0)
-        right_y = min(self.person.y + 2, self.grid_size)
-
-        probability_matrix = self.probability_matrix.get_matrix()
-        movement_map = probability_matrix[left_y:right_y, left_x:right_x]
-
-        # Pad the matrix
-        if self.person.x == 0:
-            movement_map = np.insert(movement_map, 0, 0, axis=1)
-        elif self.person.x == self.grid_size - 1:
-            movement_map = np.insert(movement_map, 2, 0, axis=1)
-        
-        if self.person.y == 0:
-            movement_map = np.insert(movement_map, 0, 0, axis=0)
-        elif self.person.y == self.grid_size - 1:
-            movement_map = np.insert(movement_map, 2, 0, axis=0)
-        
-        return movement_map
-    
-    def build_n_n_movement_matrix(self, n: int) -> np.array:
-        n_left = int(n / 2)
-        n_right = n - n_left
-
-        left_x = max(self.person.x - n_left, 0)
-        right_x = min(self.person.x + n_right, self.grid_size)
-        left_y = max(self.person.y - n_left, 0)
-        right_y = min(self.person.y + n_right, self.grid_size)
-
-        probability_matrix = self.probability_matrix.get_matrix()
-        movement_map = probability_matrix[left_y:right_y, left_x:right_x]
-
-        # Pad the matrix
-        if self.person.x == 0:
-            movement_map = np.insert(movement_map, 0, 0, axis=1)
-        elif self.person.x == self.grid_size - 1:
-            movement_map = np.insert(movement_map, n - 1, 0, axis=1)
-        
-        if self.person.y == 0:
-            movement_map = np.insert(movement_map, 0, 0, axis=0)
-        elif self.person.y == self.grid_size - 1:
-            movement_map = np.insert(movement_map, n - 1, 0, axis=0)
-
-        return movement_map
-
-    def safe_1d_position_update(self, previous: int, movement: int) -> int:
-        """
-        Updates the shipwrecked person position on a given axis, checking for edge cases first.
-
-        Output:
-            new position: int
-        """
-        new_position_on_axis = previous + movement
-        if new_position_on_axis >= 0 and new_position_on_axis < self.grid_size:
-            return new_position_on_axis
-        return previous
- 
+        return cell_size / (drone_max_speed - wind_resistance) # in seconds 
 
     def move_drone(self, position, action):
         """
@@ -422,6 +352,57 @@ class DroneSwarmSearch(ParallelEnv):
     def get_agents(self):
         return self.possible_agents
 
+    def build_movement_matrix(self) -> np.array:
+        """
+        Builds and outputs a 3x3 matrix from the probabality matrix to use in the person movement function.
+        """
+
+        # Boundaries for the 3x3 movement matrix.
+        left_x = max(self.person.x - 1, 0)
+        right_x = min(self.person.x + 2, self.grid_size)
+        left_y = max(self.person.y - 1, 0)
+        right_y = min(self.person.y + 2, self.grid_size)
+
+        probability_matrix = self.probability_matrix.get_matrix()
+        movement_map = probability_matrix[left_y:right_y, left_x:right_x]
+
+        # Pad the matrix
+        if self.person.x == 0:
+            movement_map = np.insert(movement_map, 0, 0, axis=1)
+        elif self.person.x == self.grid_size - 1:
+            movement_map = np.insert(movement_map, 2, 0, axis=1)
+        
+        if self.person.y == 0:
+            movement_map = np.insert(movement_map, 0, 0, axis=0)
+        elif self.person.y == self.grid_size - 1:
+            movement_map = np.insert(movement_map, 2, 0, axis=0)
+        
+        return movement_map
+    
+    def build_n_n_movement_matrix(self, n: int) -> np.array:
+        n_left = int(n / 2)
+        n_right = n - n_left
+
+        left_x = max(self.person.x - n_left, 0)
+        right_x = min(self.person.x + n_right, self.grid_size)
+        left_y = max(self.person.y - n_left, 0)
+        right_y = min(self.person.y + n_right, self.grid_size)
+
+        probability_matrix = self.probability_matrix.get_matrix()
+        movement_map = probability_matrix[left_y:right_y, left_x:right_x]
+
+        # Pad the matrix
+        if self.person.x == 0:
+            movement_map = np.insert(movement_map, 0, 0, axis=1)
+        elif self.person.x == self.grid_size - 1:
+            movement_map = np.insert(movement_map, n - 1, 0, axis=1)
+        
+        if self.person.y == 0:
+            movement_map = np.insert(movement_map, 0, 0, axis=0)
+        elif self.person.y == self.grid_size - 1:
+            movement_map = np.insert(movement_map, n - 1, 0, axis=0)
+
+        return movement_map
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):

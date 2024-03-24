@@ -57,7 +57,7 @@ class ProbabilityMatrix:
 
         # On row, column notation (y, x)
         new_position = (
-            self.supposed_position[0] + int(self.inc_x),
+            self.supposed_position[0] + int(self.inc_y),
             self.supposed_position[1] + int(self.inc_x),
         )
 
