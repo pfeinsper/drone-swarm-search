@@ -111,7 +111,9 @@ class DroneSwarmSearch(ParallelEnv):
         if not self.is_valid_position(central_position):
             raise ValueError("Central position is out of the matrix")
         
-        if amount > self.grid_size * self.grid_size:
+        max_distance_range = (max_distance * 2 + 1)**2
+        
+        if amount > max_distance_range:
             raise ValueError("There are more persons than grid spots. Reduce number of persons or increase grid size.")
         
         unique_random_positions = {central_position}
@@ -119,7 +121,7 @@ class DroneSwarmSearch(ParallelEnv):
             dx = randint(-max_distance, max_distance)
             dy = randint(-max_distance, max_distance)
             
-            # Verificando para não incluir a posição central ou posições repetidas
+            # Checking to avoid including the central position or duplicate positions.
             if (dx, dy) != (0, 0):
                 new_position = (central_position[0] + dx, central_position[1] + dy)
                 if self.is_valid_position(new_position):
