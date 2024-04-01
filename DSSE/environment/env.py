@@ -108,6 +108,12 @@ class DroneSwarmSearch(ParallelEnv):
         }
 
     def create_random_positions_person(self, central_position: tuple[int, int], amount: int, max_distance: int = 2) -> list[tuple[int, int]]:
+        if not self.is_valid_position(central_position):
+            raise ValueError("Central position is out of the matrix")
+        
+        if amount > self.grid_size * self.grid_size:
+            raise ValueError("There are more persons than grid spots. Reduce number of persons or increase grid size.")
+        
         unique_random_positions = {central_position}
         while len(unique_random_positions) < amount:
             dx = randint(-max_distance, max_distance)
