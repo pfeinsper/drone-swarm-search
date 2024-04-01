@@ -62,16 +62,16 @@ class PygameInterface:
 
     def render_entities(self, entities) -> None:
         for entity in entities:
-            # Verifica se a entidade é uma tupla (assumindo que os drones são representados por tuplas)
+            # Checks if the entity is a tuple (assuming that drones are represented as tuples).
             if isinstance(entity, tuple):
                 rectangle = self.get_position_rectangle(entity)
                 image = self.drone_img
-            # Caso contrário, assume que é um objeto com atributos 'x' e 'y' (como uma pessoa)
+            # Otherwise, assumes it is an object with 'x' and 'y' attributes (such as a person).
             else:
                 rectangle = self.get_position_rectangle((entity.x, entity.y))
                 image = self.person_img
             
-            # Renderiza a entidade
+            # Renders the entity.
             self.screen.blit(image, rectangle)
 
 

@@ -25,11 +25,10 @@ class Person():
     movement_vector: tuple
         The vector that determines the movement of the person in the environment.
     """
-    lista = [(0, 45), (20, 55), (300, 360), (315, 360)]
+    angle_ranges_list = [(0, 45), (20, 55), (300, 360), (315, 360)]
     
     # Escolhendo um intervalo aleatório da lista e armazenando como uma variável de classe
-    angulo_intervalo = choice(lista)
-    print(f"Intervalo de angulo: {angulo_intervalo}")
+    angle_range = choice(angle_ranges_list)
     
     def __init__(
             self,
@@ -43,7 +42,7 @@ class Person():
         self.grid_size = grid_size
         self.time_step_counter = 0
         self.time_step_relation = 1
-        self.movement_vector = (0.0, 0.0)        
+        self.movement_vector = (0.0, 0.0)
 
     def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> None:
         """
@@ -58,14 +57,31 @@ class Person():
         )
 
     def noise_vector(self, primary_movement_vector: tuple[float], speed_factor_range: tuple[float, float] = (0.5, 1.5)) -> tuple[float]:
+        """
+        Generates a 'noised' version of a given primary movement vector, simulating more natural or unpredictable motion.
+        
+        The function introduces variability to the vector's direction and magnitude by applying a randomly chosen angle 
+        and an inverse exponential adjustment based on the angle's deviation from a base angle (90 degrees).
+        A speed factor, influenced by the angle's normalized deviation, scales the vector's magnitude within a specified range.
+
+        Parameters:
+        - primary_movement_vector (tuple[float]): The original movement vector to be noised.
+        - speed_factor_range (tuple[float, float], optional): A tuple specifying the range within which the speed factor will be scaled. 
+        Defaults to (0.5, 1.5), allowing for both reduction and amplification of the vector's magnitude.
+
+        Returns:
+        - tuple[float]: A noised version of the input vector, represented as a tuple of floats, incorporating random variations in both direction and magnitude.
+
+        Note:
+        - If the input vector is a zero vector, the function returns a zero vector since no direction or magnitude can be meaningfully adjusted.
+        """
         if norm(primary_movement_vector) == 0:
             return (0.0, 0.0)
         
-        angle = radians(uniform(*Person.angulo_intervalo))
+        angle = radians(uniform(*Person.angle_range))
         angle_base = pi / 2
-        normalized_angle_diff = abs(angle - angle_base) / pi  # Normalização completa considerando pi como o maior desvio possível
+        normalized_angle_diff = abs(angle - angle_base) / pi
         
-        # Aplica a função exponencial inversamente proporcional à diferença de ângulo normalizada
         speed_factor = speed_factor_range[0] + (exp(-normalized_angle_diff) * (speed_factor_range[1] - speed_factor_range[0]))
         
         primary_direction = np.array(primary_movement_vector) / norm(primary_movement_vector)
@@ -74,6 +90,7 @@ class Person():
         noised_vector = noised_direction * norm(primary_movement_vector) * speed_factor
 
         return tuple(noised_vector)
+
 
 
     def angle_between(self, movement: np.array, drift_vector: list[float]) -> float:

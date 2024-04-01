@@ -77,11 +77,7 @@ class DroneSwarmSearch(ParallelEnv):
         self.probability_matrix = None
 
         
-        # Person
-        # self.person = Person(
-        #         initial_position=person_initial_position,
-        #         grid_size=grid_size,
-        #     )
+        # Person initialization
         self.person = []
         self.position = self.create_random_positions_person(person_initial_position, person_amount)
         
