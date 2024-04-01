@@ -2,7 +2,7 @@ from DSSE import DroneSwarmSearch
 from DSSE import Actions
 
 env = DroneSwarmSearch(
-    grid_size=60,
+    grid_size=40,
     render_mode="human",
     render_grid=True,
     render_gradient=True,
@@ -10,7 +10,7 @@ env = DroneSwarmSearch(
     disperse_constant=5,
     timestep_limit=200,
     person_amount=5,
-    person_initial_position=(19, 19),
+    person_initial_position=(10, 10),
     drone_amount=2,
     drone_speed=10,
     drone_probability_of_detection=0.9,

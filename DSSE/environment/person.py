@@ -1,5 +1,6 @@
 from random import randint, random, uniform, choice
-from math import cos, sin, radians
+from numpy.linalg import norm
+from math import cos, sin, radians, pi, exp
 import numpy as np
 
 class Person():
@@ -24,11 +25,11 @@ class Person():
     movement_vector: tuple
         The vector that determines the movement of the person in the environment.
     """
-    lista = [(0, 45), (45, 55), (300, 360), (315, 360)]
+    lista = [(0, 45), (20, 55), (300, 360), (315, 360)]
     
     # Escolhendo um intervalo aleatório da lista e armazenando como uma variável de classe
     angulo_intervalo = choice(lista)
-    print(f"Intervalo de ângulo: {angulo_intervalo}")
+    print(f"Intervalo de angulo: {angulo_intervalo}")
     
     def __init__(
             self,
@@ -56,27 +57,24 @@ class Person():
             (primary_movement_vector[1] + noised_vector[1])
         )
 
-    def noise_vector(self, primary_movement_vector: tuple[float]) -> tuple[float]:
-        # Normalizando o vetor de movimento principal para obter a direção
-        primary_direction = np.array(primary_movement_vector) / np.linalg.norm(primary_movement_vector)
+    def noise_vector(self, primary_movement_vector: tuple[float], speed_factor_range: tuple[float, float] = (0.5, 1.5)) -> tuple[float]:
+        if norm(primary_movement_vector) == 0:
+            return (0.0, 0.0)
         
-        # Lista de intervalos de ângulos em graus
-        angle = radians(uniform(*Person.angulo_intervalo))  # Usando * para desempacotar o intervalo
+        angle = radians(uniform(*Person.angulo_intervalo))
+        angle_base = pi / 2
+        normalized_angle_diff = abs(angle - angle_base) / pi  # Normalização completa considerando pi como o maior desvio possível
         
-        # Criando uma matriz de rotação 2D
-        rotation_matrix = np.array([
-            [cos(angle), -sin(angle)],
-            [sin(angle), cos(angle)]
-        ])
+        # Aplica a função exponencial inversamente proporcional à diferença de ângulo normalizada
+        speed_factor = speed_factor_range[0] + (exp(-normalized_angle_diff) * (speed_factor_range[1] - speed_factor_range[0]))
         
-        # Rotacionando o vetor de direção principal para obter o vetor de ruído
+        primary_direction = np.array(primary_movement_vector) / norm(primary_movement_vector)
+        rotation_matrix = np.array([[cos(angle), -sin(angle)], [sin(angle), cos(angle)]])
         noised_direction = np.dot(rotation_matrix, primary_direction)
-        
-        # Ajustando a magnitude do vetor de ruído para corresponder à do vetor de movimento principal
-        magnitude = np.linalg.norm(primary_movement_vector)
-        noised_vector = noised_direction * magnitude
-        
-        return noised_vector
+        noised_vector = noised_direction * norm(primary_movement_vector) * speed_factor
+
+        return tuple(noised_vector)
+
 
     def angle_between(self, movement: np.array, drift_vector: list[float]) -> float:
         direction_movement = self.get_unit_vector(movement)
