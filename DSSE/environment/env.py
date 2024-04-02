@@ -230,10 +230,12 @@ class DroneSwarmSearch(ParallelEnv):
         observations = {}
 
         self.probability_matrix.step(self.drone.speed)
-        if len(self.person) > 0 and self.person[0].reached_time_step():
-            movement_map = self.build_movement_matrix()
+        
+        if len(self.person) > 0:
             for person in self.person:
-                person.update_position(self.drone.speed, movement_map)
+                if person.reached_time_step():
+                    movement_map = self.build_movement_matrix()
+                    person.update_position(self.drone.speed, movement_map)
 
         probability_matrix = self.probability_matrix.get_matrix()
         for agent in self.possible_agents:
