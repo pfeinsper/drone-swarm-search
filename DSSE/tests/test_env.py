@@ -1,8 +1,8 @@
 import pytest
 from DSSE import DroneSwarmSearch
-from DSSE import Actions
+from DSSE.environment.constants import Actions, Rewards
+from DSSE.tests.drone_policy import policy
 from pettingzoo.test import parallel_api_test
-
 
 def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, render_gradient=True,
                             vector=(3.5, -0.5), disperse_constant=5, 
@@ -218,3 +218,42 @@ def test_petting_zoo_interface_works():
     env = init_drone_swarm_search()
     parallel_api_test(env)
     env.close()
+
+
+@pytest.mark.parametrize("person_initial_position, person_amount", [
+    ((10, 10), 10),
+    ((10, 10), 15),
+    ((10, 10), 20),
+    ((10, 10), 25),
+])
+def test_castaway_count_after_reset(person_initial_position, person_amount):
+    env = init_drone_swarm_search(person_amount=person_amount, person_initial_position=person_initial_position)
+    _ = env.reset()
+    
+    assert len(env.get_persons()) == person_amount, f"Should have {person_amount} castaways, but found {len(env.get_persons())}."
+
+
+@pytest.mark.parametrize("person_initial_position, person_amount, drone_amount", [
+    ((10, 10), 1, 1),
+    ((1, 10), 5, 1),
+    ((19, 5), 10, 1),
+    ((5, 16), 15, 1),
+])
+def test_castaway_count_after_reset(person_initial_position, person_amount, drone_amount):
+    env = init_drone_swarm_search(person_amount=person_amount, person_initial_position=person_initial_position, drone_amount=drone_amount)
+    observations = env.reset()
+    
+    rewards = 0
+    done = False
+    while not done:
+        actions = policy(observations, env.get_agents(), env)
+        observations, reward, _, done, info = env.step(actions)
+        rewards += sum(reward.values())
+        done = any(done.values())
+    
+    _ = env.reset()
+    
+    assert rewards >= Rewards.SEARCH_AND_FIND.value * person_amount, f"The total reward should be positive after finding all castaways. But the total reward was: {rewards}."
+    assert done, "The simulation should end after finding all castaways."
+    assert len(env.get_persons()) == person_amount, f"Should have {person_amount} castaways, but found {len(env.get_persons())}."
+    assert len(env.get_agents()) == drone_amount, f"Should have {drone_amount} drones, but found {len(env.get_agents())}."

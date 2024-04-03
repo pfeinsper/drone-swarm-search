@@ -16,3 +16,12 @@ class Actions(Enum):
     DOWN_LEFT = 6
     DOWN_RIGHT = 7
     SEARCH = 8
+
+# Rewards
+class Rewards(Enum):
+    DEFAULT = 1
+    LEAVE_GRID = -100_000
+    EXCEED_TIMESTEP = -100_000
+    DRONES_COLLISION = -100_000
+    SEARCH_CELL = 1
+    SEARCH_AND_FIND = 100_000

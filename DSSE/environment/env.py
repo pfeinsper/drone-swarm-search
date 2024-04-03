@@ -5,7 +5,7 @@ import numpy as np
 from gymnasium.spaces import MultiDiscrete, Discrete
 from pettingzoo.utils.env import ParallelEnv
 from .generator.dynamic_probability import ProbabilityMatrix
-from .constants import RED, GREEN, Actions
+from .constants import RED, GREEN, Actions, Rewards
 from .pygame_interface import PygameInterface
 from .drone import DroneData
 from .person import Person
@@ -93,12 +93,12 @@ class DroneSwarmSearch(ParallelEnv):
 
         # Reward Function
         self.reward_scheme = {
-            "default": 1,
-            "leave_grid": -100000,
-            "exceed_timestep": -100000,
-            "drones_collision": -100000,
-            "search_cell": 1,
-            "search_and_find": 100000,
+            "default": Rewards.DEFAULT.value,
+            "leave_grid": Rewards.LEAVE_GRID.value,
+            "exceed_timestep": Rewards.EXCEED_TIMESTEP.value,
+            "drones_collision": Rewards.DRONES_COLLISION.value,
+            "search_cell": Rewards.SEARCH_CELL.value,
+            "search_and_find": Rewards.SEARCH_AND_FIND.value,
         }
 
     def create_random_positions_person(self, central_position: tuple[int, int], amount: int, max_distance: int = 2) -> list[tuple[int, int]]:
@@ -396,6 +396,7 @@ class DroneSwarmSearch(ParallelEnv):
                     continue
 
                 if drone_1_position[0] == drone_2_position[0] and drone_1_position[1] == drone_2_position[1]:
+                    print("Drone collision")
                     truncations[drone_1_id] = True
                     terminations[drone_1_id] = True
                     rewards[drone_1_id] = self.reward_scheme["drones_collision"]
@@ -412,6 +413,9 @@ class DroneSwarmSearch(ParallelEnv):
 
     def get_agents(self):
         return self.possible_agents
+
+    def get_persons(self):
+        return self.persons_list
 
     def build_movement_matrix(self) -> np.array:
         """
