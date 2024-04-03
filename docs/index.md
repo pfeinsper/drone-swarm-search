@@ -3,22 +3,25 @@
 layout: home
 
 hero:
-  name: "DSSE"
-  text: "Drone Swarm Search Training Environment"
-  tagline: My great project tagline
+  name: "Drone Swarm Search Environment"
+  text: "A environment to train reinforcement learning agents"
+  tagline: Based on "petting zoo" and "OpenAI Gym" to train RL agents for search and rescue operations in maritime scenarios.
   actions:
     - theme: brand
       text: Documentation
       link: /docs
     - theme: alt
       text: QuickStart
-      link: /Documentation
+      link: /quickStart
+    - theme: alt
+      text: pypi
+      link: https://pypi.org/project/DSSE/
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: FLOSS
+    details: A FLOSS library
+  - title: Based on "petting zoo" and "OpenAI Gym"
+    details: compatible with know RL libraries
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---

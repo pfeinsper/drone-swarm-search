@@ -8,20 +8,27 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Documentation', link: '/docs' }
+      { text: 'Documentation', link: '/docs' },
+      { text: 'Pypi', link: 'https://pypi.org/project/DSSE/'},
+      { text: 'github', link: 'https://github.com/pfeinsper/drone-swarm-search'},
     ],
 
     sidebar: [
       {
         text: 'Documentation',
         items: [
-          { text: 'Documentation', link: '/docs' },
+          { text: 'About', link: '/about' },
+          { text: 'Quick Start', link: '/quickStart' },
+          { text: 'General Info', link: '/generalInfo' },
+          { text: 'Built in Functions', link: '/buildInFunctions' },
+          { text: 'Environment', link: '/environment' },
+          { text: 'Single page Docs', link: '/docs' },
         ]
       }
     ],
       
     socialLinks: [
-      { icon: 'gitgub', link: 'https://github.com/pfeinsper/drone-swarm-search' }
+      { icon: 'github', link: 'https://github.com/pfeinsper/drone-swarm-search' }
     ]
   }
 })

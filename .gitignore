@@ -131,3 +131,7 @@ dmypy.json
 
 # Large pkl files
 *.pkl
+
+#VitePress
+docs/.vitepress/dist
+docs/.vitepress/cache
