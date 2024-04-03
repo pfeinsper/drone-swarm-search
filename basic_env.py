@@ -21,7 +21,6 @@ def policy(obs, agents):
     actions = {}
     for agent in agents:
         actions[agent] = Actions.SEARCH.value # value: int = 8
-        # actions[agent] = Actions.RIGHT.value
     return actions
 
 opt = {
