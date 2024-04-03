@@ -1,21 +1,5 @@
 # Drone Swarm Search
 
-## Workflow Status: Automated Testing with Pytest
-
-[![Run Pytest](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml)
-
-## Quick Start
-
-#### Install
-`pip install DSSE`
-
-#### Use
-`from DSSE.env import DroneSwarmSearch`
-
-#### PyPi Package Page
-
-https://pypi.org/project/DSSE/
-
 ## About
 
 The Drone Swarm Search project is an environment, based on PettingZoo, that is to be used in conjunction with multi-agent (or single-agent) reinforcement learning algorithms. It is an environment in which the agents (drones), have to find the targets (shipwrecked people). The agents do not know the position of the target, and do not receive rewards related to their own distance to the target(s). However, the agents receive the probabilities of the target(s) being in a certain cell of the map. The aim of this project is to aid in the study of reinforcement learning algorithms that require dynamic probabilities as inputs. A visual representation of the environment is displayed below. To test the environment (without an algorithm), run `basic_env.py`.
@@ -25,56 +9,67 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
 </p>
 
 
-## Outcome
+### Outcome
 
 | If drone is found            | If drone is not found  |
 :-------------------------:|:-------------------------:
 | ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/pics/fail_render.png) |
 
 
-## Basic Usage
+## Quick Start
+
+#### Install
+`pip install DSSE`
+
+#### Use
+
 ```python
 from DSSE import DroneSwarmSearch
+from DSSE import Actions
 
 env = DroneSwarmSearch(
-    grid_size=50, 
-    render_mode="human", 
+    grid_size = 60,
+    render_mode = "human",
     render_grid = True,
     render_gradient = True,
-    n_drones=4, 
-    vector=[0.2, 0.2],
-    person_initial_position = [8, 8],
-    disperse_constant = 3)
+    vector = (3.2, 3.1),
+    disperse_constant = 5,
+    timestep_limit = 200,
+    person_amount = 1,
+    person_initial_position = (19, 19),
+    drone_amount = 2,
+    drone_speed = 10,
+    drone_probability_of_detection = 0.9,
+    pre_render_time = 0,
+)
 
-def policy(obs, agent):
-    actions = {
-        "drone0": 1, # Right
-        "drone1": 3, # Down
-        "drone2": 0, # Left
-        "drone3": 2, # Up
-    }
-    
+def policy(obs, agents):
+    actions = {}
+    for agent in agents:
+        actions[agent] = Actions.SEARCH.value
     return actions
 
 
-observations = env.reset(drones_positions=[[5, 5], [43, 5], [43, 43], [5, 43]])
+observations = env.reset(drones_positions = [(0, 10), (0, 11)])
+
 rewards = 0
 done = False
-
 while not done:
     actions = policy(observations, env.get_agents())
     observations, reward, _, done, info = env.step(actions)
     rewards += reward["total_reward"]
-    done = True if True in [e for e in done.values()] else False
-
-print(rewards)
+    done = any(done.values())
 ```
 
 ### Installing Dependencies
+Python version above or equal to 3.10.5.
 
-Using Python version above or equal to 3.10.5.
+By default all dependencies should install with the pypi installation, in case something fails,  download the dependencies using the following command:
 
-In order to use the environment download the dependencies using the following command `pip install -r requirements.txt`.
+```bash
+pip install -r requirements.txt
+```
+
 
 ### General Info
 
@@ -258,6 +253,15 @@ Info is a dictionary that contains a key called "Found" that contains a boolean 
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
 
+## PyPi Package 
+
+https://pypi.org/project/DSSE/
+
+## Workflow Status: Automated Testing with Pytest
+
+[![Run Pytest](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml)
+
+
 ## How to cite this work
 
 If you use this package, please consider citing it with this piece of BibTeX:
@@ -265,8 +269,8 @@ If you use this package, please consider citing it with this piece of BibTeX:
 ```
 @misc{castanares2023dsse,
       title={DSSE: a drone swarm search environment}, 
-      author={Manuel Castanares and Luis F. S. Carrete and Enrico F. Damiani and Leonardo D. M. de Abreu and José Fernando B. Brancalion and Fabrício J. Barth},
-      year={2023},
+      author={Jorás Oliveira, Pedro Andrade, Ricardo Rodrigues, Renato Laffranchi,Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
+      year={2024},
       eprint={2307.06240},
       archivePrefix={arXiv},
       primaryClass={cs.LG},
