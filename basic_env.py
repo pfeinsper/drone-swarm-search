@@ -24,13 +24,15 @@ def policy(obs, agents):
         # actions[agent] = Actions.RIGHT.value
     return actions
 
-
-observations = env.reset(drones_positions=[(10, 10), (0, 11)])
+opt = {
+    "drones_positions": [(10, 10), (0, 11)],
+}
+observations = env.reset(options=opt)
 
 rewards = 0
 done = False
 while not done:
     actions = policy(observations, env.get_agents())
     observations, reward, _, done, info = env.step(actions)
-    rewards += reward["total_reward"]
+    rewards += sum(reward.values())
     done = any(done.values())
