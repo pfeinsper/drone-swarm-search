@@ -18,10 +18,10 @@ hero:
       link: https://pypi.org/project/DSSE/
 
 features:
-  - title: Based on "petting zoo" and "OpenAI Gym"
+  - title: Based on petting zoo and OpenAI Gymmnasium
     details: Compatible with know RL libraries
   - title: FLOSS
-    details: maybe the only FLOSS env for marite SAR operations?
+    details: maybe the only FLOSS env for maritime SAR operations?
   # - title: Feature C
   #   details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 
