@@ -60,17 +60,22 @@ class PygameInterface:
         )
         return scaled_img
 
-    def render_drones(self, drone_positions) -> None:
-        for position in drone_positions:
-            rectangle = self.get_position_rectangle(position)
-            self.screen.blit(self.drone_img, rectangle)
+    def render_entities(self, entities) -> None:
+        for entity in entities:
+            # Checks if the entity is a tuple (assuming that drones are represented as tuples).
+            if isinstance(entity, tuple):
+                rectangle = self.get_position_rectangle(entity)
+                image = self.drone_img
+            # Otherwise, assumes it is an object with 'x' and 'y' attributes (such as a person).
+            else:
+                rectangle = self.get_position_rectangle((entity.x, entity.y))
+                image = self.person_img
+            
+            # Renders the entity.
+            self.screen.blit(image, rectangle)
 
-    def render_person(self, person_x: int, person_y: int) -> None:
-        self.screen.blit(
-            self.person_img, self.get_position_rectangle((person_x, person_y))
-        )
 
-    def get_position_rectangle(self, position: tuple[int]) -> pygame.Rect:
+    def get_position_rectangle(self, position: tuple[int, int]) -> pygame.Rect:
         x = 10 + self.block_size * position[0]
         y = 10 + self.block_size * position[1]
         return pygame.Rect(x, y, self.block_size, self.block_size)

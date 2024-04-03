@@ -1,6 +1,8 @@
 import pytest
 from DSSE import DroneSwarmSearch
 from DSSE import Actions
+from pettingzoo.test import parallel_api_test
+
 
 def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, render_gradient=True,
                             vector=(3.5, -0.5), disperse_constant=5, 
@@ -60,17 +62,15 @@ def test_drone_collision_termination(drone_amount):
     env = init_drone_swarm_search(drone_amount=drone_amount)
     _ = env.reset()
 
-    rewards = 0
     done = False
     while not done:
         actions = {"drone0": Actions.SEARCH.value, "drone1": Actions.LEFT.value}
         _, reward, terminations, done, _ = env.step(actions)
-        rewards += reward["total_reward"]
         done = any(done.values())
         
         assert done, "The simulation should terminate upon drone collision."
         assert any(terminations.values()), "There should be a termination flag set due to the collision."
-        assert reward["total_reward"] < 0, "The total reward should be negative after a collision."
+        assert sum(reward.values()) < 0, "The total reward should be negative after a collision."
 
 @pytest.mark.parametrize("timestep_limit", [
     10,
@@ -91,32 +91,35 @@ def test_timeout_termination(timestep_limit):
         done = any([e for e in done.values()])
 
         if timestep_counter > timestep_limit:
-            assert reward["total_reward"] < 0, f"The total reward should be negative, indicating a penalty. But the total reward was: {reward['total_reward']}."
+            assert sum(reward.values()) < 0, f"The total reward should be negative, indicating a penalty. But the total reward was: {reward['total_reward']}."
             assert done, "The simulation should flag as done after exceeding the timestep limit."
             assert any(terminations.values()), "A termination flag should be set due to exceeding the timestep limit."
         timestep_counter += 1
     assert timestep_counter > timestep_limit, "The simulation should run beyond the timestep limit before terminating."
 
 @pytest.mark.parametrize("grid_size, person_initial_position", [
-    (15, [4, 4]),
-    (20, [10, 10]),
-    (25, [15, 15]),
-    (30, [20, 20]),
+    (15, (4, 4)),
+    (20, (10, 10)),
+    (25, (15, 15)),
+    (30, (20, 20)),
 ])
 def test_leave_grid_get_negative_reward(grid_size, person_initial_position):
     env = init_drone_swarm_search(grid_size=grid_size, person_initial_position=person_initial_position)
-    _ = env.reset(drones_positions=[(0, 0)])
-
+    opt = {
+        "drones_positions": [(0, 0)]
+    }
+    _ = env.reset(options=opt)
+    
     done = False
     reward_sum = 0
     while not done and reward_sum >= -500_000:
         actions = {"drone0": Actions.UP.value}
         _, reward, terminations, done, _ = env.step(actions)
         done = any(done.values())
-        reward_sum += reward["total_reward"]
+        reward_sum += sum(reward.values())
 
     assert not done, "The simulation should not end, indicating the drone left the grid or another termination condition was met."
-    assert reward["total_reward"] < 0, "The total reward should be negative, indicating a penalty was applied."
+    assert sum(reward.values()) < 0, "The total reward should be negative, indicating a penalty was applied."
     assert not any(terminations.values()), "There not should be at least one termination condition met."
 
 
@@ -153,7 +156,10 @@ def test_if_all_drones_are_created(drone_amount):
 def test_position_drone_is_correct_after_reset(drone_amount, drones_positions):
     env = init_drone_swarm_search(drone_amount=drone_amount)
     
-    observations = env.reset(drones_positions=drones_positions)
+    opt = {
+        "drones_positions": drones_positions
+    }
+    observations, _ = env.reset(options=opt)
     
     for i, position in enumerate(drones_positions):
         drone_id = f"drone{i}"
@@ -171,8 +177,10 @@ def test_position_drone_is_correct_after_reset(drone_amount, drones_positions):
 def test_invalid_drone_position_raises_error(drone_amount, drones_positions):
     with pytest.raises(ValueError):
         env = init_drone_swarm_search(drone_amount=drone_amount)
-        
-        _ = env.reset(drones_positions=drones_positions)
+        opt = {
+            "drones_positions": drones_positions
+        }
+        _ = env.reset(options=opt)
 
 
 @pytest.mark.parametrize("drone_amount", [
@@ -198,10 +206,15 @@ def test_if_all_drones_are_created_with_default_positions(drone_amount):
 def test_with_the_observation_size_is_correct_for_all_drones(drone_amount, grid_size):
     env = init_drone_swarm_search(grid_size=grid_size, drone_amount=drone_amount)
     
-    observations = env.reset()
+    observations, _ = env.reset()
     
     for drone in range(drone_amount):
         drone_id = f"drone{drone}"
         observation_matriz = observations[drone_id]["observation"][1]
         
         assert observation_matriz.shape == (grid_size, grid_size), f"The observation matrix for {drone_id} should have a shape of ({grid_size}, {grid_size}), but was {observation_matriz.shape}."
+
+def test_petting_zoo_interface_works():
+    env = init_drone_swarm_search()
+    parallel_api_test(env)
+    env.close()

@@ -1,8 +1,8 @@
-from random import random
+from random import random, randint
 import functools
 from copy import copy
 import numpy as np
-from gymnasium.spaces import MultiDiscrete
+from gymnasium.spaces import MultiDiscrete, Discrete
 from pettingzoo.utils.env import ParallelEnv
 from .generator.dynamic_probability import ProbabilityMatrix
 from .constants import RED, GREEN, Actions
@@ -15,6 +15,10 @@ class DroneSwarmSearch(ParallelEnv):
     """
     PettingZoo based environment for SAR missions using drones.
     """
+    possible_actions = {action for action in Actions}
+    metadata = {
+        "name": "DroneSwarmSearchV0",
+    }
 
     def __init__(
             self,
@@ -36,8 +40,11 @@ class DroneSwarmSearch(ParallelEnv):
         self.grid_size = grid_size
         self._was_reset = False
         self.pre_render_steps = round((pre_render_time * 60) / (self.calculate_simulation_time_step(drone_speed, self.cell_size)))
-        print("pre render time: ", pre_render_time, " minutes")
-        print("pre render steps: ", self.pre_render_steps)
+        self.person_amount = person_amount
+        self.person_initial_position = person_initial_position
+
+        print(f"Pre render time: {pre_render_time} minutes")
+        print(f"Pre render steps: {self.pre_render_steps}")
 
         self.drone = DroneData(
             amount=drone_amount,
@@ -46,13 +53,16 @@ class DroneSwarmSearch(ParallelEnv):
         )
 
         # Error Checking
-        if self.drone.amount > grid_size * grid_size:
+        if self.drone.amount > self.grid_size * self.grid_size:
             raise ValueError(
                 "There are more drones than grid spots. Reduce number of drones or increase grid size."
             )
 
         if render_mode != "ansi" and render_mode != "human":
             raise ValueError("Render mode not recognized")
+
+        if person_amount <= 0:
+            raise ValueError("The number of persons must be greater than 0.")
 
         self.timestep = None
         self.timestep_limit = timestep_limit
@@ -73,18 +83,8 @@ class DroneSwarmSearch(ParallelEnv):
         self.render_mode = render_mode
         self.probability_matrix = None
 
-        # Person
-        self.person = Person(
-            amount=person_amount,
-            initial_position=person_initial_position,
-            grid_size=grid_size,
-        )
-
-        self.person.calculate_movement_vector(vector)
-        self.person.update_time_step_relation(self.time_step_relation, self.cell_size)
-
-        if not self.is_valid_position(self.person.initial_position):
-            raise ValueError("Person initial position is out of the matrix")
+        # Person initialization
+        self.person = self.create_list_person()
 
         # Initializing render
         self.pygame_renderer = PygameInterface(self.grid_size, render_gradient, render_grid)
@@ -101,6 +101,45 @@ class DroneSwarmSearch(ParallelEnv):
             "search_and_find": 100000,
         }
 
+    def create_random_positions_person(self, central_position: tuple[int, int], amount: int, max_distance: int = 2) -> list[tuple[int, int]]:
+        if not self.is_valid_position(central_position):
+            raise ValueError("Central position is out of the matrix")
+        
+        max_distance_range = (max_distance * 2 + 1)**2
+        
+        if amount > max_distance_range:
+            raise ValueError("There are more persons than grid spots. Reduce number of persons or increase grid size.")
+        
+        unique_random_positions = {central_position}
+        while len(unique_random_positions) < amount:
+            dx = randint(-max_distance, max_distance)
+            dy = randint(-max_distance, max_distance)
+            
+            # Checking to avoid including the central position or duplicate positions.
+            if (dx, dy) != (0, 0):
+                new_position = (central_position[0] + dx, central_position[1] + dy)
+                if self.is_valid_position(new_position):
+                    unique_random_positions.add(new_position)
+        
+        return list(unique_random_positions)
+
+    def create_list_person(self) -> list[Person]:
+        list_person = []
+        self.position = self.create_random_positions_person(self.person_initial_position, self.person_amount)
+        
+        for i in range(self.person_amount):
+            list_person.append(Person(
+                initial_position=self.position[i],
+                grid_size=self.grid_size,
+            ))
+            list_person[i].calculate_movement_vector(self.vector)
+            list_person[i].update_time_step_relation(self.time_step_relation, self.cell_size)
+            
+            if not self.is_valid_position(list_person[i].initial_position):
+                raise ValueError("Person initial position is out of the matrix")
+        
+        return list_person
+
     def is_valid_position(self, position: tuple[int, int]) -> bool:
         valid_x = position[0] >= 0 and position[0] < self.grid_size
         valid_y = position[1] >= 0 and position[1] < self.grid_size
@@ -116,7 +155,6 @@ class DroneSwarmSearch(ParallelEnv):
             self.agents_positions[agent] = (counter_x, counter_y)
             counter_x += 1
 
-
     def required_drone_positions(self, drones_positions: list):
         if len(drones_positions) != len(self.possible_agents):
             raise ValueError(
@@ -130,31 +168,34 @@ class DroneSwarmSearch(ParallelEnv):
 
     def render(self):
         self.pygame_renderer.render_map()
-        self.pygame_renderer.render_drones(self.agents_positions.values())
-        self.pygame_renderer.render_person(self.person.x, self.person.y)
+        self.pygame_renderer.render_entities(self.person)
+        self.pygame_renderer.render_entities(self.agents_positions.values())
         self.pygame_renderer.refresh_screen()
-
 
     def reset(
             self,
             seed=None,
             return_info=False,
             options=None,
-            drones_positions=None,
-            vector=None,
     ):
+        vector = options.get("vector") if options else None
+        drones_positions = options.get("drones_positions") if options else None
         self._was_reset = True
         
         if drones_positions is not None:
             if not self.is_valid_position_drones(drones_positions):
                 raise ValueError("You are trying to place the drone in a invalid position")
 
+        # Person initialization
+        self.person = self.create_list_person()
+
         # reset target position
-        self.person.reset_position()
+        for person in self.person:
+            person.reset_position()
+            person.reset_time_step_counter()
 
         self.agents = copy(self.possible_agents)
         self.timestep = 0
-        self.person.reset_time_step_counter()
         self.vector = vector if vector else self.vector
         self.rewards_sum = {a: 0 for a in self.agents}
         self.rewards_sum["total"] = 0
@@ -163,7 +204,7 @@ class DroneSwarmSearch(ParallelEnv):
             self.disperse_constant,
             self.disperse_constant,
             self.vector,
-            [self.person.initial_position[1], self.person.initial_position[0]],
+            [self.person[0].initial_position[1], self.person[0].initial_position[0]],
             self.grid_size,
         )
 
@@ -178,7 +219,8 @@ class DroneSwarmSearch(ParallelEnv):
             self.render()
 
         observations = self.create_observations()
-        return observations
+        infos = {drone: {"Found": False} for drone in self.agents}
+        return observations, infos
     
     def is_valid_position_drones(self, positions: list[tuple[int, int]]) -> bool:
         seen = set()
@@ -193,16 +235,20 @@ class DroneSwarmSearch(ParallelEnv):
         observations = {}
 
         self.probability_matrix.step(self.drone.speed)
-        if self.person.reached_time_step():
-            movement_map = self.build_movement_matrix()
-            self.person.update_position(self.drone.speed, movement_map)
+        
+        if len(self.person) > 0:
+            for person in self.person:
+                if person.reached_time_step():
+                    movement_map = self.build_movement_matrix()
+                    person.update_position(self.drone.speed, movement_map)
 
         probability_matrix = self.probability_matrix.get_matrix()
-        for agent in self.possible_agents:
+        for agent in self.agents:
             observation = (
                 (self.agents_positions[agent][0], self.agents_positions[agent][1]),
                 probability_matrix,
             )
+            # TODO: Ver se é interessante tirar esse diciionário de dentro do dicionário
             observations[agent] = {"observation": observation}
 
         return observations
@@ -285,15 +331,25 @@ class DroneSwarmSearch(ParallelEnv):
                 terminations[agent] = is_terminal
                 truncations[agent] = is_terminal
 
+            human_id = 0
+            for i, human in enumerate(self.person):
+                drone_found_person = human.x == drone_x and human.y == drone_y and is_searching
+                if drone_found_person:
+                    human_id = i
+                    break
             
-            drone_found_person = drone_x == self.person.x and drone_y == self.person.y and is_searching
             random_value = random()
             if drone_found_person and random_value < self.drone.probability_of_detection:
+                print("Drone found person")
+                del self.person[human_id]
                 time_reward_corrected = self.reward_scheme["search_and_find"] * (1 - self.timestep / self.timestep_limit)
                 rewards[agent] = self.reward_scheme["search_and_find"] + time_reward_corrected
-                terminations = {a: True for a in self.agents}
-                truncations = {a: True for a in self.agents}
-                person_found = True
+
+                if len(self.person) == 0:
+                    person_found = True
+                    for agent in self.agents:
+                        terminations[agent] = True
+                        truncations[agent] = True
             elif is_searching:
                 prob_matrix = self.probability_matrix.get_matrix()
                 rewards[agent] = prob_matrix[drone_y][drone_x] * 10000 if prob_matrix[drone_y][drone_x] * 100 > 1 else -100
@@ -308,25 +364,29 @@ class DroneSwarmSearch(ParallelEnv):
             self.rewards_sum[agent] += rewards[agent]
 
         self.timestep += 1
-        # Get observations
-        observations = self.create_observations()
         # Get dummy infos
-        infos = {"Found": person_found}
+        infos = {drone: {"Found": person_found} for drone in self.agents}
 
         # CHECK COLISION - Drone
         self.compute_drone_collision(terminations, rewards, truncations)
-        rewards["total_reward"] = sum(rewards.values())
-        self.rewards_sum["total"] += rewards["total_reward"]
+        # TODO: Check real usage of this, gives error when using w/ RL libs
+        # rewards["total_reward"] = sum(rewards.values())
+        # self.rewards_sum["total"] += rewards["total_reward"]
 
         self.render_step(any(terminations.values()), person_found)        
 
+        # Get observations
+        observations = self.create_observations()
+        # If terminted, reset the agents (pettingzoo parallel env requirement)
+        if any(terminations.values()) or any(truncations.values()):
+            self.agents = []
         return observations, rewards, terminations, truncations, infos
+    
     
     def compute_drone_collision(self, terminations, rewards, truncations):
         """
         Check for drone collision and compute terminations, rewards and truncations.
         """
-        
         for drone_1_id, drone_1_position in self.agents_positions.items():
             for drone_2_id, drone_2_position in self.agents_positions.items():
                 if drone_1_id == drone_2_id:
@@ -358,50 +418,25 @@ class DroneSwarmSearch(ParallelEnv):
         """
 
         # Boundaries for the 3x3 movement matrix.
-        left_x = max(self.person.x - 1, 0)
-        right_x = min(self.person.x + 2, self.grid_size)
-        left_y = max(self.person.y - 1, 0)
-        right_y = min(self.person.y + 2, self.grid_size)
+        left_x = max(self.person[0].x - 1, 0)
+        right_x = min(self.person[0].x + 2, self.grid_size)
+        left_y = max(self.person[0].y - 1, 0)
+        right_y = min(self.person[0].y + 2, self.grid_size)
 
         probability_matrix = self.probability_matrix.get_matrix()
         movement_map = probability_matrix[left_y:right_y, left_x:right_x]
 
         # Pad the matrix
-        if self.person.x == 0:
+        if self.person[0].x == 0:
             movement_map = np.insert(movement_map, 0, 0, axis=1)
-        elif self.person.x == self.grid_size - 1:
+        elif self.person[0].x == self.grid_size - 1:
             movement_map = np.insert(movement_map, 2, 0, axis=1)
         
-        if self.person.y == 0:
+        if self.person[0].y == 0:
             movement_map = np.insert(movement_map, 0, 0, axis=0)
-        elif self.person.y == self.grid_size - 1:
+        elif self.person[0].y == self.grid_size - 1:
             movement_map = np.insert(movement_map, 2, 0, axis=0)
         
-        return movement_map
-    
-    def build_n_n_movement_matrix(self, n: int) -> np.array:
-        n_left = int(n / 2)
-        n_right = n - n_left
-
-        left_x = max(self.person.x - n_left, 0)
-        right_x = min(self.person.x + n_right, self.grid_size)
-        left_y = max(self.person.y - n_left, 0)
-        right_y = min(self.person.y + n_right, self.grid_size)
-
-        probability_matrix = self.probability_matrix.get_matrix()
-        movement_map = probability_matrix[left_y:right_y, left_x:right_x]
-
-        # Pad the matrix
-        if self.person.x == 0:
-            movement_map = np.insert(movement_map, 0, 0, axis=1)
-        elif self.person.x == self.grid_size - 1:
-            movement_map = np.insert(movement_map, n - 1, 0, axis=1)
-        
-        if self.person.y == 0:
-            movement_map = np.insert(movement_map, 0, 0, axis=0)
-        elif self.person.y == self.grid_size - 1:
-            movement_map = np.insert(movement_map, n - 1, 0, axis=0)
-
         return movement_map
 
     @functools.lru_cache(maxsize=None)
@@ -411,7 +446,7 @@ class DroneSwarmSearch(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return [moviment.value for moviment in Actions]
+        return Discrete(len(self.possible_actions))
 
 
 

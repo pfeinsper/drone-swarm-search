@@ -2,19 +2,19 @@ from DSSE import DroneSwarmSearch
 from DSSE import Actions
 
 env = DroneSwarmSearch(
-    grid_size=60,
+    grid_size=40,
     render_mode="human",
     render_grid=True,
     render_gradient=True,
     vector=(3.2, 3.1),
     disperse_constant=5,
     timestep_limit=200,
-    person_amount=1,
-    person_initial_position=(19, 19),
+    person_amount=5,
+    person_initial_position=(10, 10),
     drone_amount=2,
     drone_speed=10,
     drone_probability_of_detection=0.9,
-    pre_render_time = 20,
+    pre_render_time = 0,
 )
 
 def policy(obs, agents):
@@ -25,7 +25,7 @@ def policy(obs, agents):
     return actions
 
 
-observations = env.reset(drones_positions=[(0, 10), (0, 11)])
+observations = env.reset(drones_positions=[(10, 10), (0, 11)])
 
 rewards = 0
 done = False
