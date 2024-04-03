@@ -1,6 +1,6 @@
 import pytest
 from DSSE import DroneSwarmSearch
-from DSSE.environment.constants import Actions, Rewards
+from DSSE.environment.constants import Actions
 from DSSE.tests.drone_policy import policy
 from pettingzoo.test import parallel_api_test
 
@@ -253,7 +253,7 @@ def test_castaway_count_after_reset(person_initial_position, person_amount, dron
     
     _ = env.reset()
     
-    assert rewards >= Rewards.SEARCH_AND_FIND.value * person_amount, f"The total reward should be positive after finding all castaways. But the total reward was: {rewards}."
+    assert rewards >= DroneSwarmSearch.reward_scheme.search_and_find * person_amount, f"The total reward should be positive after finding all castaways. But the total reward was: {rewards}."
     assert done, "The simulation should end after finding all castaways."
     assert len(env.get_persons()) == person_amount, f"Should have {person_amount} castaways, but found {len(env.get_persons())}."
     assert len(env.get_agents()) == drone_amount, f"Should have {drone_amount} drones, but found {len(env.get_agents())}."

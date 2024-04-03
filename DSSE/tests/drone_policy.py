@@ -6,7 +6,6 @@ def calculate_action(drone_position, target_position):
     target_x, target_y = target_position
     
     if drone_x == target_x and drone_y == target_y:
-        print("SEARCH")
         return Actions.SEARCH.value
     
     diff_x = target_x - drone_x
@@ -47,7 +46,6 @@ def policy(obs, agents, env):
         drone_position = env.agents_positions[agent]
         
         nearest_castaway = min(castaways_positions, key=lambda pos: distance(drone_position, pos))
-        print(drone_position, nearest_castaway)
         
         action = calculate_action(drone_position, nearest_castaway)
         
