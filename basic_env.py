@@ -27,7 +27,7 @@ def policy(obs, agents):
 opt = {
     "drones_positions": [(10, 10), (0, 11)],
 }
-observations = env.reset(options=opt)
+observations, info = env.reset(options=opt)
 
 rewards = 0
 done = False
