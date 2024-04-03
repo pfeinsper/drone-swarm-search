@@ -253,7 +253,7 @@ Info is a dictionary that contains a key called "Found" that contains a boolean 
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
 
-#### PyPi Package Page
+## PyPi Package 
 
 https://pypi.org/project/DSSE/
 
