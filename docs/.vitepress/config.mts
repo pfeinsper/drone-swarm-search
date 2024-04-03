@@ -17,12 +17,12 @@ export default defineConfig({
       {
         text: 'Documentation',
         items: [
-          { text: 'About', link: '/about' },
-          { text: 'Quick Start', link: '/quickStart' },
-          { text: 'General Info', link: '/generalInfo' },
-          { text: 'Built in Functions', link: '/buildInFunctions' },
-          { text: 'Environment', link: '/environment' },
-          { text: 'Single page Docs', link: '/docs' },
+          { text: 'About', link: '/docs#about' },
+          { text: 'Quick Start', link: '/docs#quick-start' },
+          { text: 'General Info', link: '/docs#general-info' },
+          { text: 'Built in Functions', link: '/docs#built-in-functions' },
+          { text: 'Person Movement', link: '/docs#person-movement' },
+          // { text: 'Single page Docs', link: '/docs' },
         ]
       }
     ],
