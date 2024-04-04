@@ -242,10 +242,9 @@ class DroneSwarmSearch(ParallelEnv):
         self.probability_matrix.step(self.drone.speed)
 
         if len(self.persons_list) > 0:
+            movement_map = self.build_movement_matrix()
             for person in self.persons_list:
-                if person.reached_time_step():
-                    movement_map = self.build_movement_matrix()
-                    person.update_position(self.drone.speed, movement_map)
+                person.update_position(movement_map)
 
         probability_matrix = self.probability_matrix.get_matrix()
         for agent in self.agents:
@@ -412,7 +411,7 @@ class DroneSwarmSearch(ParallelEnv):
 
     def get_agents(self):
         return self.possible_agents
-
+    
     def build_movement_matrix(self) -> np.array:
         """
         Builds and outputs a 3x3 matrix from the probabality matrix to use in the person movement function.

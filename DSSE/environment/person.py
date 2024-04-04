@@ -52,9 +52,10 @@ class Person():
         """
         noised_vector = self.noise_vector(primary_movement_vector)
         self.movement_vector = (
-            (primary_movement_vector[0] + noised_vector[0]),
-            (primary_movement_vector[1] + noised_vector[1])
+            (primary_movement_vector[0] + noised_vector[0]) / norm(primary_movement_vector),
+            (primary_movement_vector[1] + noised_vector[1]) / norm(primary_movement_vector),
         )
+
 
     def noise_vector(self, primary_movement_vector: tuple[float], speed_factor_range: tuple[float, float] = (0.5, 1.5)) -> tuple[float]:
         """
@@ -105,11 +106,12 @@ class Person():
             vector_norm = 1.0
         return original_vector / vector_norm
 
-    def update_position(self, drone_speed: float, movement_map: np.array = None) -> None:
-        movement = self.update_shipwrecked_position(drone_speed, movement_map)
-        self.safe_position_update(movement)
+    def update_position(self, movement_map: np.array) -> None:
+        if self.reached_time_step():
+            movement = self.update_shipwrecked_position(movement_map)
+            self.safe_position_update(movement)
     
-    def update_shipwrecked_position(self, drone_speed: float, probability_matrix: np.array = None, dimension: int = 3) -> tuple[int]:
+    def update_shipwrecked_position(self, movement_map: np.array) -> tuple[int]:
         """
         Function that takes a 3x3 cut of the DynamicProbability matrix, multiplies it by a random numbers matrix [0, 1],
         and returns the column and line of the highest probability on the resulting matrix.
@@ -117,39 +119,27 @@ class Person():
         Output:
             (movement_x, movement_y): tuple[int]
         """
-        # OLD CODE
-        # random_numbers_matrix = np.random.rand(*probability_matrix.shape)
-        # probabilities_mult_random_factor = random_numbers_matrix * probability_matrix
-
-        # # Using a numpy function to find the line and column of the greatest probability in the random factor multiplied matrix.
-        # max_probabilities = np.unravel_index(
-        #     np.argmax(probabilities_mult_random_factor, axis=None), probability_matrix.shape
-        # )
-        # max_line = max_probabilities[0]
-        # max_column = max_probabilities[1]
-
-        # print(f"Max line: {max_line}, Max column: {max_column}")
-
-        # return self.movement_to_cartesian(max_column, max_line, dimension)
-
-        # NEW CODE
         if abs(self.inc_x) >= 1:
             self.inc_x = 0
         if abs(self.inc_y) >= 1:
             self.inc_y = 0
 
-        self.inc_x += self.movement_vector[0] / drone_speed
-        self.inc_y += self.movement_vector[1] / drone_speed
+        self.inc_x += self.movement_vector[0]
+        self.inc_y += self.movement_vector[1]
 
         # On row, column notation (y, x) -> (row, column)
-        new_position = (
+        movement = (
             int(self.inc_x),
             int(self.inc_y),
         )
 
-        return self.movement_to_cartesian(new_position[0], new_position[1], dimension=0)
+        prob_walk = 2
+        movement_map[movement[0] + 1][movement[1] + 1] = prob_walk
+        movement_map /= np.sum(movement_map)
+        movement_index = np.random.choice(9, size=1, p=movement_map.flatten())[0]
+        return self.movement_to_cartesian(movement_index)
 
-    def movement_to_cartesian(self, mov_x: int, mov_y: int, dimension: int) -> tuple[int]:
+    def movement_to_cartesian(self, movement_index: int, dimension: int = 3) -> tuple[int]:
         """
         The movement of the shipwrecked person on the input follows the scheme (for the value of line and column):
             - if 0 -> Move to the left (x - 1) or to the top (y - 1).
@@ -159,8 +149,8 @@ class Person():
         So this function converts from this matrix movement notation to cartesian, as the matrix that creates this indexes is only 3x3,
         just removing 1 converts it back to cartesian movement.
         """
-        x_component = mov_x - int(dimension / 2)
-        y_component = mov_y - int(dimension / 2)
+        x_component = (movement_index % dimension) - (dimension // 2)
+        y_component = (movement_index // dimension) - (dimension // 2)
 
         return x_component, y_component
     
