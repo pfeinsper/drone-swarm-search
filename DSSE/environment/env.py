@@ -356,7 +356,6 @@ class DroneSwarmSearch(ParallelEnv):
 
             random_value = random()
             if drone_found_person and random_value < self.drone.probability_of_detection:
-                print("Drone found person")
                 del self.persons_list[human_id]
                 time_reward_corrected = self.reward_scheme.search_and_find * (1 - self.timestep / self.timestep_limit)
                 rewards[agent] = self.reward_scheme.search_and_find + time_reward_corrected
@@ -408,7 +407,6 @@ class DroneSwarmSearch(ParallelEnv):
                     continue
 
                 if drone_1_position[0] == drone_2_position[0] and drone_1_position[1] == drone_2_position[1]:
-                    print("Drone collision")
                     truncations[drone_1_id] = True
                     terminations[drone_1_id] = True
                     rewards[drone_1_id] = self.reward_scheme.drones_collision
