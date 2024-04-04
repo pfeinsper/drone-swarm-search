@@ -22,13 +22,19 @@ export default defineConfig({
           { text: 'General Info', link: '/docs#general-info' },
           { text: 'Built in Functions', link: '/docs#built-in-functions' },
           { text: 'Person Movement', link: '/docs#person-movement' },
-          // { text: 'Single page Docs', link: '/docs' },
+          { text: 'License', link: '/docs#license' },
         ]
       }
     ],
       
     socialLinks: [
       { icon: 'github', link: 'https://github.com/pfeinsper/drone-swarm-search' }
-    ]
+    ],
+
+    footer: {
+      message: 'Publicado sob a Licença MIT.<br/>',
+      copyright: 'Copyright © 2023'
+    }
+
   }
 })
