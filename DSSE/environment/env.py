@@ -2,6 +2,7 @@ from random import random, randint
 import functools
 from copy import copy
 import numpy as np
+from collections import namedtuple
 from gymnasium.spaces import MultiDiscrete, Discrete
 from pettingzoo.utils.env import ParallelEnv
 from .generator.dynamic_probability import ProbabilityMatrix
@@ -11,6 +12,15 @@ from .drone import DroneData
 from .person import Person
 
 
+Reward = namedtuple('Reward', [
+            'default', 
+            'leave_grid', 
+            'exceed_timestep', 
+            'drones_collision', 
+            'search_cell', 
+            'search_and_find'
+        ])
+
 class DroneSwarmSearch(ParallelEnv):
     """
     PettingZoo based environment for SAR missions using drones.
@@ -19,6 +29,15 @@ class DroneSwarmSearch(ParallelEnv):
     metadata = {
         "name": "DroneSwarmSearchV0",
     }
+
+    reward_scheme = Reward(
+            default=1, 
+            leave_grid=-100_000, 
+            exceed_timestep=-100_000, 
+            drones_collision=-100_000, 
+            search_cell=1,
+            search_and_find=100_000
+        )
 
     def __init__(
             self,
@@ -90,16 +109,9 @@ class DroneSwarmSearch(ParallelEnv):
         self.pygame_renderer = PygameInterface(self.grid_size, render_gradient, render_grid)
         self.rewards_sum = {a: 0 for a in self.possible_agents}
         self.rewards_sum["total"] = 0
-
+        
         # Reward Function
-        self.reward_scheme = {
-            "default": 1,
-            "leave_grid": -100000,
-            "exceed_timestep": -100000,
-            "drones_collision": -100000,
-            "search_cell": 1,
-            "search_and_find": 100000,
-        }
+        self.reward_scheme = DroneSwarmSearch.reward_scheme
 
     def create_random_positions_person(self, central_position: tuple[int, int], amount: int, max_distance: int = 2) -> list[tuple[int, int]]:
         if not self.is_valid_position(central_position):
@@ -295,9 +307,9 @@ class DroneSwarmSearch(ParallelEnv):
                 new_position = (position[0] + 1, position[1] + 1)
 
         if not self.is_valid_position(new_position):
-            return False, position, self.reward_scheme["leave_grid"]
+            return False, position, self.reward_scheme.leave_grid
 
-        return False, new_position, self.reward_scheme["default"]
+        return False, new_position, self.reward_scheme.default
 
     def step(self, actions):
         """
@@ -307,7 +319,7 @@ class DroneSwarmSearch(ParallelEnv):
             raise ValueError("Please reset the env before interacting with it")
 
         terminations = {a: False for a in self.agents}
-        rewards = {a: self.reward_scheme["default"] for a in self.agents}
+        rewards = {a: self.reward_scheme.default for a in self.agents}
         truncations = {a: False for a in self.agents}
         person_found = False
 
@@ -344,10 +356,9 @@ class DroneSwarmSearch(ParallelEnv):
 
             random_value = random()
             if drone_found_person and random_value < self.drone.probability_of_detection:
-                print("Drone found person")
                 del self.persons_list[human_id]
-                time_reward_corrected = self.reward_scheme["search_and_find"] * (1 - self.timestep / self.timestep_limit)
-                rewards[agent] = self.reward_scheme["search_and_find"] + time_reward_corrected
+                time_reward_corrected = self.reward_scheme.search_and_find * (1 - self.timestep / self.timestep_limit)
+                rewards[agent] = self.reward_scheme.search_and_find + time_reward_corrected
 
                 if len(self.persons_list) == 0:
                     person_found = True
@@ -361,7 +372,7 @@ class DroneSwarmSearch(ParallelEnv):
             # Check truncation conditions (overwrites termination conditions)
             # TODO: Think, should this be >= ??
             if self.timestep > self.timestep_limit:
-                rewards[agent] = self.rewards_sum[agent] * -1 + self.reward_scheme["exceed_timestep"]
+                rewards[agent] = self.rewards_sum[agent] * -1 + self.reward_scheme.exceed_timestep
                 truncations[agent] = True
                 terminations[agent] = True
 
@@ -398,7 +409,7 @@ class DroneSwarmSearch(ParallelEnv):
                 if drone_1_position[0] == drone_2_position[0] and drone_1_position[1] == drone_2_position[1]:
                     truncations[drone_1_id] = True
                     terminations[drone_1_id] = True
-                    rewards[drone_1_id] = self.reward_scheme["drones_collision"]
+                    rewards[drone_1_id] = self.reward_scheme.drones_collision
 
     def render_step(self, terminal, person_found):
         if self.render_mode == "human":
@@ -412,6 +423,9 @@ class DroneSwarmSearch(ParallelEnv):
 
     def get_agents(self):
         return self.possible_agents
+
+    def get_persons(self):
+        return self.persons_list
 
     def build_movement_matrix(self) -> np.array:
         """

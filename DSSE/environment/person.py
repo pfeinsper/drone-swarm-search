@@ -27,7 +27,7 @@ class Person():
     """
     angle_ranges_list = [(0, 45), (20, 55), (300, 360), (315, 360)]
     
-    # Escolhendo um intervalo aleatório da lista e armazenando como uma variável de classe
+    # Selecting a random range from the list and storing it as a class variable.
     angle_range = choice(angle_ranges_list)
     
     def __init__(
@@ -264,3 +264,6 @@ class Person():
         x_direction = np.sign(cos_val) if abs(cos_val) > 0.0001 else 0
         y_direction = np.sign(sin_val) if abs(sin_val) > 0.0001 else 0
         return (magnitude, (x_direction, y_direction))
+    
+    def get_position(self) -> tuple[int]:
+        return (self.x, self.y)
