@@ -107,9 +107,7 @@ class Person():
 
     def update_position(self, drone_speed: float, movement_map: np.array = None) -> None:
         movement = self.update_shipwrecked_position(drone_speed, movement_map)
-
-        self.x = self.safe_1d_position_update(self.x, movement[0])
-        self.y = self.safe_1d_position_update(self.y, movement[1])
+        self.safe_position_update(movement)
     
     def update_shipwrecked_position(self, drone_speed: float, probability_matrix: np.array = None, dimension: int = 3) -> tuple[int]:
         """
@@ -119,7 +117,6 @@ class Person():
         Output:
             (movement_x, movement_y): tuple[int]
         """
-
         # OLD CODE
         # random_numbers_matrix = np.random.rand(*probability_matrix.shape)
         # probabilities_mult_random_factor = random_numbers_matrix * probability_matrix
@@ -167,17 +164,19 @@ class Person():
 
         return x_component, y_component
     
-    def safe_1d_position_update(self, previous: int, movement: int) -> int:
+    def safe_position_update(self, movement: tuple[int]) -> None:
         """
-        Updates the shipwrecked person position on a given axis, checking for edge cases first.
-
-        Output:
-            new position: int
+        Updates the shipwrecked person position on given movement, checking for edge cases first.
         """
-        new_position_on_axis = previous + movement
-        if new_position_on_axis >= 0 and new_position_on_axis < self.grid_size:
-            return new_position_on_axis
-        return previous
+        new_x = self.x + movement[0]
+        new_y = self.y + movement[1]
+        if self.is_safe_position(new_x):
+            self.x = new_x
+        if self.is_safe_position(new_y):
+            self.y = new_y
+    
+    def is_safe_position(self, new_position: int) -> bool:
+        return new_position >= 0 and new_position < self.grid_size
 
     def reset_position(self):
         self.x, self.y = self.initial_position
