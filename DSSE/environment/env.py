@@ -204,6 +204,7 @@ class DroneSwarmSearch(ParallelEnv):
             if not self.is_valid_position_drones(drones_positions):
                 raise ValueError("You are trying to place the drone in a invalid position")
 
+        
         # Person initialization
         self.persons_list = self.create_list_person()
 
@@ -211,7 +212,7 @@ class DroneSwarmSearch(ParallelEnv):
         for person in self.persons_list:
             person.reset_position()
             person.reset_time_step_counter()
-
+        
         self.agents = copy(self.possible_agents)
         self.timestep = 0
         self.vector = vector if vector else self.vector
@@ -225,7 +226,7 @@ class DroneSwarmSearch(ParallelEnv):
             [self.persons_list[0].initial_position[1], self.persons_list[0].initial_position[0]],
             self.grid_size,
         )
-
+        
         if drones_positions is None:
             self.default_drones_positions()
         else:
@@ -235,7 +236,7 @@ class DroneSwarmSearch(ParallelEnv):
             self.pygame_renderer.probability_matrix = self.probability_matrix
             self.pygame_renderer.enable_render()
             self.render()
-
+        
         self.pre_search_simulate()
         observations = self.create_observations()
         infos = {drone: {"Found": False} for drone in self.agents}
@@ -252,7 +253,8 @@ class DroneSwarmSearch(ParallelEnv):
     def pre_search_simulate(self):
         for _ in range(self.pre_render_steps):
             self.create_observations()
-            self.render()
+            if self.render_mode == "human":
+                self.render()
 
     def create_observations(self):
         observations = {}
