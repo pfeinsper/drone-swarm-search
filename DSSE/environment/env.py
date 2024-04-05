@@ -21,20 +21,20 @@ class DroneSwarmSearch(ParallelEnv):
     }
 
     def __init__(
-            self,
-            grid_size=7,
-            render_mode="ansi",
-            render_grid=False,
-            render_gradient=True,
-            vector=(-0.5, -0.5),
-            disperse_constant=10,
-            timestep_limit=100,
-            person_amount=1,
-            person_initial_position=(0, 0),
-            drone_amount=1,
-            drone_speed=10,
-            drone_probability_of_detection=0.9,
-            pre_render_time = 0,
+        self,
+        grid_size=7,
+        render_mode="ansi",
+        render_grid=False,
+        render_gradient=True,
+        vector=(-0.5, -0.5),
+        disperse_constant=10,
+        timestep_limit=100,
+        person_amount=1,
+        person_initial_position=(0, 0),
+        drone_amount=1,
+        drone_speed=10,
+        drone_probability_of_detection=0.9,
+        pre_render_time = 0,
     ):
         self.cell_size = 130  # in meters
         self.grid_size = grid_size
@@ -224,6 +224,7 @@ class DroneSwarmSearch(ParallelEnv):
             self.pygame_renderer.enable_render()
             self.render()
 
+        self.pre_search_simulate()
         observations = self.create_observations()
         infos = {drone: {"Found": False} for drone in self.agents}
         return observations, infos
@@ -235,6 +236,11 @@ class DroneSwarmSearch(ParallelEnv):
                 return False
             seen.add(position)
         return True
+    
+    def pre_search_simulate(self):
+        for _ in range(self.pre_render_steps):
+            self.create_observations()
+            self.render()
 
     def create_observations(self):
         observations = {}
@@ -310,10 +316,6 @@ class DroneSwarmSearch(ParallelEnv):
         rewards = {a: self.reward_scheme["default"] for a in self.agents}
         truncations = {a: False for a in self.agents}
         person_found = False
-
-        while self.pre_render_steps > 0:
-            self.create_observations()
-            self.pre_render_steps -= 1
 
         for agent in self.agents:
             if agent not in actions:
