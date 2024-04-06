@@ -8,10 +8,11 @@ def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, 
                             vector=(3.5, -0.5), disperse_constant=5, 
                             timestep_limit=200, person_amount=1, person_initial_position=None,
                             drone_amount=1, drone_speed=10,
-                            drone_probability_of_detection=0.9):
+                            drone_probability_of_detection=0.9,
+                            pre_render_time = 0):
 
     if person_initial_position is None:
-        person_initial_position = (grid_size - 1, grid_size - 1)
+        person_initial_position = (grid_size - round(grid_size/2), grid_size - round(grid_size/2))
         
     return DroneSwarmSearch(
             grid_size=grid_size,
@@ -26,6 +27,7 @@ def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, 
             drone_amount=drone_amount,
             drone_speed=drone_speed,
             drone_probability_of_detection=drone_probability_of_detection,
+            pre_render_time = pre_render_time,
         )
 
 @pytest.mark.parametrize("grid_size, drone_amount", [
@@ -257,3 +259,22 @@ def test_castaway_count_after_reset(person_initial_position, person_amount, dron
     assert done, "The simulation should end after finding all castaways."
     assert len(env.get_persons()) == person_amount, f"Should have {person_amount} castaways, but found {len(env.get_persons())}."
     assert len(env.get_agents()) == drone_amount, f"Should have {drone_amount} drones, but found {len(env.get_agents())}."
+
+@pytest.mark.parametrize("pre_render_time, cell_size, drone_max_speed, wind_resistance", [
+    (1, 130, 10, 0.0),
+    (5, 130, 20, 0.0),
+    (10, 130, 30, 0.0),
+    (15, 130, 40, 0.0),
+    (20, 130, 50, 0.0),
+])
+def test_pre_render_work_after_reset(pre_render_time, cell_size, drone_max_speed, wind_resistance):
+    env = init_drone_swarm_search(pre_render_time=pre_render_time, drone_speed=drone_max_speed)
+    _ = env.reset()
+    pre_render_steps = round((pre_render_time * 60) / (cell_size / (drone_max_speed - wind_resistance)))
+    
+    assert env.pre_render_steps == pre_render_steps, f"The pre-render time should be {pre_render_steps}, but was {env.pre_render_time}."
+    
+    _ = env.reset()
+    
+    assert env.pre_render_steps == pre_render_steps, f"The pre-render time should be {pre_render_steps}, but was {env.pre_render_time}."
+    
