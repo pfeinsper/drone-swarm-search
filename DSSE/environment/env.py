@@ -65,6 +65,9 @@ class DroneSwarmSearch(ParallelEnv):
 
         print(f"Pre render time: {pre_render_time} minutes")
         print(f"Pre render steps: {self.pre_render_steps}")
+        
+        if self.probability_of_detection < 0 or self.probability_of_detection > 1:
+            return ValueError("Probability of detection must be between 0 and 1")
 
         self.drone = DroneData(
             amount=drone_amount,
