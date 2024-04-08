@@ -6,7 +6,7 @@ hero:
   name: "Drone Swarm Search Environment"
   # text: "A environment to train reinforcement learning agents"
   tagline: A environment to train reinforcement learning agents for search and rescue operations in maritime scenarios.
-  image: /drone-swarm-search/pics/drone.png
+  image: /pics/drone.png
   actions:
     - theme: brand
       text: Documentation
@@ -19,17 +19,17 @@ hero:
       link: https://pypi.org/project/DSSE/
 
 features:
-  # - title: Based on petting zoo and OpenAI Gymmnasium
-  #   details: Compatible with know RL libraries
-  # - title: FLOSS
-  #   details: maybe the only FLOSS env for maritime SAR operations?
-  - title: Fabrício Barth
-    details: PhD, Computer Engineering
-    link: https://github.com/fbarth
-    linkText: GitHub
-  - title: Jose Fernando Basso Brancalion
-    details: Product Development Engineer, Embraer
-    link: https://www.linkedin.com/in/jose-fernando-basso-brancalion/
+  - title: Based on petting zoo and OpenAI Gymmnasium
+    details: Compatible with know RL libraries
+  - title: FLOSS
+    details: maybe the only FLOSS env for maritime SAR operations?
+  # - title: Fabrício Barth
+  #   details: PhD, Computer Engineering
+  #   link: https://github.com/fbarth
+  #   linkText: GitHub
+  # - title: Jose Fernando Basso Brancalion
+  #   details: Product Development Engineer, Embraer
+  #   link: https://www.linkedin.com/in/jose-fernando-basso-brancalion/
     linkText: Linkein
   # - title: Feature C
   #   details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
@@ -41,6 +41,8 @@ members:
     links:
     - icon: 'github' 
       link: 'https://github.com/JorasOliveira'
+    - icon: 'linkedin'
+      link: https://www.linkedin.com/in/jorasoliveira/
 
   - avatar: 'https://www.github.com/Pedro2712.png'
     name: 'Pedro Andrade'
@@ -48,6 +50,8 @@ members:
     links:
     - icon: 'github' 
       link: 'https://github.com/Pedro2712'
+    - icon: 'linkedin'
+      link: 'https://www.linkedin.com/in/pedro-henrique-britto-aragao-andrade/'
 
   - avatar: 'https://github.com/RicardoRibeiroRodrigues.png'
     name: 'Ricardo Rodrigues'
@@ -55,6 +59,8 @@ members:
     links:
     - icon: 'github' 
       link: 'https://github.com/RicardoRibeiroRodrigues'
+    - icon: 'linkedin'
+      link: 'https://www.linkedin.com/in/ricardo-ribeiro-rodrigues-983b94196/'
 
   - avatar: 'https://github.com/renatex333.png'
     name: 'Renato Laffranchi.'
@@ -62,6 +68,8 @@ members:
     links:
     - icon: 'github' 
       link: 'https://github.com/renatex333'
+    - icon: 'linkedin'
+      link: 'https://www.linkedin.com/in/renato-laffranchi-falcao/'
 
   - avatar: 'https://github.com/enricofd.png'
     name: 'Enrico Damiani'
@@ -90,6 +98,22 @@ members:
     links:
     - icon: 'github' 
       link: 'https://github.com/leonardodma'
+  
+  - avatar: 'https://github.com/fbarth.png'
+    name: Fabrício Barth
+    title: 'Author'
+    links:
+    - icon: 'github'
+      link: https://github.com/fbarth
+    - icon: 'linkedin'
+      link: 'https://www.linkedin.com/in/fbarth/'
+
+  - avatar: 'https://media.licdn.com/dms/image/C4E03AQGn6DuuYwhjBw/profile-displayphoto-shrink_200_200/0/1564709106422?e=1718236800&v=beta&t=3JrDTb5QTF4k5qFZbQc3lK9sgSJbalH7Y3QD_rthXBE'
+    name: Jose Fernando Basso Brancalion
+    title: 'Author'
+    links:
+    - icon: 'linkedin'
+      link: https://www.linkedin.com/in/jose-fernando-basso-brancalion/
 
 ---
 
