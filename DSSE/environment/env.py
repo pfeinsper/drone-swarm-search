@@ -52,7 +52,7 @@ class DroneSwarmSearch(ParallelEnv):
         person_initial_position=(0, 0),
         drone_amount=1,
         drone_speed=10,
-        drone_probability_of_detection=0.9,
+        probability_of_detection=0.9,
         pre_render_time = 0,
     ):
         self.cell_size = 130  # in meters
@@ -61,6 +61,7 @@ class DroneSwarmSearch(ParallelEnv):
         self.pre_render_steps = round((pre_render_time * 60) / (self.calculate_simulation_time_step(drone_speed, self.cell_size)))
         self.person_amount = person_amount
         self.person_initial_position = person_initial_position
+        self.probability_of_detection = probability_of_detection
 
         print(f"Pre render time: {pre_render_time} minutes")
         print(f"Pre render steps: {self.pre_render_steps}")
@@ -68,7 +69,6 @@ class DroneSwarmSearch(ParallelEnv):
         self.drone = DroneData(
             amount=drone_amount,
             speed=drone_speed,
-            probability_of_detection=drone_probability_of_detection,
         )
 
         # Error Checking
@@ -146,6 +146,7 @@ class DroneSwarmSearch(ParallelEnv):
                 Person(
                     initial_position=self.position[i],
                     grid_size=self.grid_size,
+                    probability_of_detection=self.probability_of_detection,
                 )
             )
             list_person[i].calculate_movement_vector(self.vector)
@@ -198,11 +199,15 @@ class DroneSwarmSearch(ParallelEnv):
     ):
         vector = options.get("vector") if options else None
         drones_positions = options.get("drones_positions") if options else None
+        individual_pods = options.get("individual_pods") if options else None
         self._was_reset = True
 
         if drones_positions is not None:
             if not self.is_valid_position_drones(drones_positions):
                 raise ValueError("You are trying to place the drone in a invalid position")
+        
+        if individual_pods is not None:
+            self.is_valid_pod(individual_pods)
 
         
         # Person initialization
@@ -231,6 +236,10 @@ class DroneSwarmSearch(ParallelEnv):
             self.default_drones_positions()
         else:
             self.required_drone_positions(drones_positions)
+        
+        if individual_pods is not None:
+            for i, pod in enumerate(individual_pods):
+                self.persons_list[i].set_pod(pod)
 
         if self.render_mode == "human":
             self.pygame_renderer.probability_matrix = self.probability_matrix
@@ -248,6 +257,14 @@ class DroneSwarmSearch(ParallelEnv):
             if not self.is_valid_position(position) or position in seen:
                 return False
             seen.add(position)
+        return True
+
+    def is_valid_pod(self, individual_pods: list[int]) -> bool:
+        if len(individual_pods) != len(self.persons_list):
+            raise ValueError("The number of pods is different from the number of person.")
+        for pod in individual_pods:
+            if pod < 0 or pod > 1:
+                raise ValueError("You tried to put a invalid pod scale")
         return True
     
     def pre_search_simulate(self):
@@ -359,7 +376,7 @@ class DroneSwarmSearch(ParallelEnv):
                     break
 
             random_value = random()
-            if drone_found_person and random_value < self.drone.probability_of_detection:
+            if drone_found_person and random_value <= self.persons_list[human_id].get_pod():
                 del self.persons_list[human_id]
                 time_reward_corrected = self.reward_scheme.search_and_find * (1 - self.timestep / self.timestep_limit)
                 rewards[agent] = self.reward_scheme.search_and_find + time_reward_corrected
