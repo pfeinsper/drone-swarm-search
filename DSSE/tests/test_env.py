@@ -8,7 +8,7 @@ def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, 
                             vector=(3.5, -0.5), disperse_constant=5, 
                             timestep_limit=200, person_amount=1, person_initial_position=None,
                             drone_amount=1, drone_speed=10,
-                            drone_probability_of_detection=0.9,
+                            probability_of_detection=0.9,
                             pre_render_time = 0):
 
     if person_initial_position is None:
@@ -26,7 +26,7 @@ def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, 
             person_initial_position=person_initial_position,
             drone_amount=drone_amount,
             drone_speed=drone_speed,
-            drone_probability_of_detection=drone_probability_of_detection,
+            probability_of_detection=probability_of_detection,
             pre_render_time = pre_render_time,
         )
 
