@@ -6,7 +6,7 @@ hero:
   name: "Drone Swarm Search Environment"
   # text: "A environment to train reinforcement learning agents"
   tagline: A environment to train reinforcement learning agents for search and rescue operations in maritime scenarios.
-  image: /pics/drone.png
+  image: /drone-swarm-search/pics/drone.png
   actions:
     - theme: brand
       text: Documentation
