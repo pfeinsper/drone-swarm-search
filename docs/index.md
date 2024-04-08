@@ -19,10 +19,18 @@ hero:
       link: https://pypi.org/project/DSSE/
 
 features:
-  - title: Based on petting zoo and OpenAI Gymmnasium
-    details: Compatible with know RL libraries
-  - title: FLOSS
-    details: maybe the only FLOSS env for maritime SAR operations?
+  # - title: Based on petting zoo and OpenAI Gymmnasium
+  #   details: Compatible with know RL libraries
+  # - title: FLOSS
+  #   details: maybe the only FLOSS env for maritime SAR operations?
+  - title: Fabrício Barth
+    details: PhD, Computer Engineering
+    link: https://github.com/fbarth
+    linkText: GitHub
+  - title: Jose Fernando Basso Brancalion
+    details: Product Development Engineer, Embraer
+    link: https://www.linkedin.com/in/jose-fernando-basso-brancalion/
+    linkText: Linkein
   # - title: Feature C
   #   details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 
@@ -54,6 +62,34 @@ members:
     links:
     - icon: 'github' 
       link: 'https://github.com/renatex333'
+
+  - avatar: 'https://github.com/enricofd.png'
+    name: 'Enrico Damiani'
+    title: 'Author'
+    links:
+    - icon: 'github' 
+      link: 'https://github.com/enricofd'
+
+  - avatar: 'https://github.com/Manuel-castanares.png'
+    name: 'Manuel-castanares'
+    title: 'Author'
+    links:
+    - icon: 'github' 
+      link: 'https://github.com/Manuel-castanares'
+
+  - avatar: 'https://github.com/lfcarrete.png'
+    name: 'Luis Filipe Carrete'
+    title: 'Author'
+    links:
+    - icon: 'github' 
+      link: 'https://github.com/lfcarrete'
+
+  - avatar: 'https://github.com/leonardodma.png'
+    name: 'Leonardo Malta'
+    title: 'Author'
+    links:
+    - icon: 'github' 
+      link: 'https://github.com/leonardodma'
 
 ---
 

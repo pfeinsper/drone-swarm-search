@@ -277,3 +277,6 @@ If you use this package, please consider citing it with this piece of BibTeX:
       doi={https://doi.org/10.48550/arXiv.2307.06240}
 }
 ```
+
+## License
+This documentation is licensed under the terms of the [MIT License](https://opensource.org/licenses/MIT). See the LICENSE file for more details.
