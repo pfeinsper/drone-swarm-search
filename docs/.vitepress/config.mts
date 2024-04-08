@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "DSSE",
   description: "Drone Swarm Search Training Environment",
+  base: '/drone-swarm-search/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
