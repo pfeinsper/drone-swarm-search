@@ -1,3 +1,7 @@
+## Status deploy git hub pages
+
+[![Deploy VitePress site to Pages](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/deploy.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/deploy.yml)
+
 # Drone Swarm Search
 
 ## About
