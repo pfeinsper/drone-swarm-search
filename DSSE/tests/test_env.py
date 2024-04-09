@@ -287,7 +287,7 @@ def test_pre_render_work_after_reset(pre_render_time, cell_size, drone_max_speed
     (5, ["1", "0.8", "0.7", "0.6", "0.5"]),
 ])
 def test_get_wrong_if_scale_pod_is_not_a_number(person_amount, pod):
-    with pytest.raises(Exception):  # Espera por qualquer tipo de erro
+    with pytest.raises(Exception):
         env = init_drone_swarm_search(person_amount=person_amount)
         opt = {
             "individual_pods": pod
