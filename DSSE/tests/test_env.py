@@ -277,4 +277,20 @@ def test_pre_render_work_after_reset(pre_render_time, cell_size, drone_max_speed
     _ = env.reset()
     
     assert env.pre_render_steps == pre_render_steps, f"The pre-render time should be {pre_render_steps}, but was {env.pre_render_time}."
+
+
+@pytest.mark.parametrize("person_amount, pod", [
+    (1, ["1"]),
+    (2, [1, "0.8"]),
+    (3, [1, "0.8", 0.7]),
+    (4, ["1", 0.8, "0.7", 0.6]),
+    (5, ["1", "0.8", "0.7", "0.6", "0.5"]),
+])
+def test_get_wrong_if_scale_pod_is_not_a_number(person_amount, pod):
+    with pytest.raises(Exception):  # Espera por qualquer tipo de erro
+        env = init_drone_swarm_search(person_amount=person_amount)
+        opt = {
+            "individual_pods": pod
+        }
+        _ = env.reset(options=opt)
     
