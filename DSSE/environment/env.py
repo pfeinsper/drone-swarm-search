@@ -3,7 +3,7 @@ import functools
 from copy import copy
 import numpy as np
 from collections import namedtuple
-from gymnasium.spaces import MultiDiscrete, Discrete
+from gymnasium.spaces import MultiDiscrete, Discrete, Box, Tuple
 from pettingzoo.utils.env import ParallelEnv
 from .generator.dynamic_probability import ProbabilityMatrix
 from .constants import RED, GREEN, Actions
@@ -46,7 +46,8 @@ class DroneSwarmSearch(ParallelEnv):
         render_grid=False,
         render_gradient=True,
         vector=(-0.5, -0.5),
-        disperse_constant=10,
+        dispersion_inc=0.1,
+        dispersion_start=0.5,
         timestep_limit=100,
         person_amount=1,
         person_initial_position=(0, 0),
@@ -92,7 +93,8 @@ class DroneSwarmSearch(ParallelEnv):
             self.drone.speed,
             self.cell_size
         )
-        self.disperse_constant = disperse_constant
+        self.dispersion_inc = dispersion_inc
+        self.dispersion_start = dispersion_start
         self.vector = vector
         self.possible_agents = []
         self.agents_positions = {}
@@ -112,9 +114,10 @@ class DroneSwarmSearch(ParallelEnv):
         self.pygame_renderer = PygameInterface(self.grid_size, render_gradient, render_grid)
         self.rewards_sum = {a: 0 for a in self.possible_agents}
         self.rewards_sum["total"] = 0
-        
-        # Reward Function
-        self.reward_scheme = DroneSwarmSearch.reward_scheme
+
+        # Define the action and observation spaces for compatibility with RL libraries 
+        self.action_spaces = {agent: self.action_space(agent) for agent in self.possible_agents}
+        self.observation_spaces = {agent: self.observation_space(agent) for agent in self.possible_agents}
 
     def create_random_positions_person(self, central_position: tuple[int, int], amount: int, max_distance: int = 2) -> list[tuple[int, int]]:
         if not self.is_valid_position(central_position):
@@ -229,8 +232,8 @@ class DroneSwarmSearch(ParallelEnv):
         self.rewards_sum["total"] = 0
         self.probability_matrix = ProbabilityMatrix(
             40,
-            self.disperse_constant,
-            self.disperse_constant,
+            self.dispersion_start,
+            self.dispersion_inc,
             self.vector,
             [self.persons_list[0].initial_position[1], self.persons_list[0].initial_position[0]],
             self.grid_size,
@@ -296,8 +299,7 @@ class DroneSwarmSearch(ParallelEnv):
                 (self.agents_positions[agent][0], self.agents_positions[agent][1]),
                 probability_matrix,
             )
-            # TODO: Ver se é interessante tirar esse diciionário de dentro do dicionário
-            observations[agent] = {"observation": observation}
+            observations[agent] = observation
 
         return observations
 
@@ -337,10 +339,7 @@ class DroneSwarmSearch(ParallelEnv):
             case Actions.DOWN_RIGHT.value:  # DOWN_RIGHT
                 new_position = (position[0] + 1, position[1] + 1)
 
-        if not self.is_valid_position(new_position):
-            return False, position, self.reward_scheme.leave_grid
-
-        return False, new_position, self.reward_scheme.default
+        return new_position
 
     def step(self, actions):
         """
@@ -366,13 +365,12 @@ class DroneSwarmSearch(ParallelEnv):
             is_searching = drone_action == Actions.SEARCH.value
 
             if drone_action != Actions.SEARCH.value:
-                is_terminal, new_position, reward = self.move_drone(
-                    (drone_x, drone_y), drone_action
-                )
-                self.agents_positions[agent] = new_position
-                rewards[agent] = reward
-                terminations[agent] = is_terminal
-                truncations[agent] = is_terminal
+                new_position = self.move_drone((drone_x, drone_y), drone_action)
+                if not self.is_valid_position(new_position):
+                    rewards[agent] = self.reward_scheme["leave_grid"]
+                else:
+                    self.agents_positions[agent] = new_position
+                    rewards[agent] = self.reward_scheme["default"]
 
             human_id = 0
             for i, human in enumerate(self.persons_list):
@@ -382,6 +380,7 @@ class DroneSwarmSearch(ParallelEnv):
                     break
 
             random_value = random()
+
             if drone_found_person and random_value <= self.persons_list[human_id].get_pod():
                 del self.persons_list[human_id]
                 time_reward_corrected = self.reward_scheme.search_and_find * (1 - self.timestep / self.timestep_limit)
@@ -483,8 +482,15 @@ class DroneSwarmSearch(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
-        # TODO: If x and y are the observation, then this should the observation space
-        return MultiDiscrete([self.grid_size] * 2)
+        # Observation space for each agent:
+        # - MultiDiscrete: (x, y) position of the agent
+        # - Box: Probability matrix
+        return Tuple(
+            (
+                MultiDiscrete([self.grid_size, self.grid_size]),
+                Box(low=0, high=1, shape=(self.grid_size, self.grid_size), dtype=np.float32),
+            )
+        )
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
