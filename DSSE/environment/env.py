@@ -2,24 +2,16 @@ from random import random, randint
 import functools
 from copy import copy
 import numpy as np
-from collections import namedtuple
 from gymnasium.spaces import MultiDiscrete, Discrete, Box, Tuple
 from pettingzoo.utils.env import ParallelEnv
 from .generator.dynamic_probability import ProbabilityMatrix
-from .constants import RED, GREEN, Actions
+from .constants import RED, GREEN, Actions, Reward
 from .pygame_interface import PygameInterface
 from .drone import DroneData
 from .person import Person
 
 
-Reward = namedtuple('Reward', [
-            'default', 
-            'leave_grid', 
-            'exceed_timestep', 
-            'drones_collision', 
-            'search_cell', 
-            'search_and_find'
-        ])
+
 
 class DroneSwarmSearch(ParallelEnv):
     """
@@ -367,10 +359,10 @@ class DroneSwarmSearch(ParallelEnv):
             if drone_action != Actions.SEARCH.value:
                 new_position = self.move_drone((drone_x, drone_y), drone_action)
                 if not self.is_valid_position(new_position):
-                    rewards[agent] = self.reward_scheme["leave_grid"]
+                    rewards[agent] = self.reward_scheme.leave_grid
                 else:
                     self.agents_positions[agent] = new_position
-                    rewards[agent] = self.reward_scheme["default"]
+                    rewards[agent] = self.reward_scheme.default
 
             human_id = 0
             for i, human in enumerate(self.persons_list):
@@ -380,7 +372,6 @@ class DroneSwarmSearch(ParallelEnv):
                     break
 
             random_value = random()
-
             if drone_found_person and random_value <= self.persons_list[human_id].get_pod():
                 del self.persons_list[human_id]
                 time_reward_corrected = self.reward_scheme.search_and_find * (1 - self.timestep / self.timestep_limit)
@@ -447,11 +438,6 @@ class DroneSwarmSearch(ParallelEnv):
             else:
                 self.render()
 
-    def get_agents(self):
-        return self.possible_agents
-
-    def get_persons(self):
-        return self.persons_list
 
     def build_movement_matrix(self) -> np.array:
         """
@@ -480,6 +466,12 @@ class DroneSwarmSearch(ParallelEnv):
 
         return movement_map
 
+    def get_agents(self):
+        return self.possible_agents
+
+    def get_persons(self):
+        return self.persons_list
+    
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         # Observation space for each agent:
