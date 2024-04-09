@@ -293,4 +293,19 @@ def test_get_wrong_if_scale_pod_is_not_a_number(person_amount, pod):
             "individual_pods": pod
         }
         _ = env.reset(options=opt)
+
+@pytest.mark.parametrize("person_amount, pod", [
+    (1, [1.2]),
+    (2, [1, -0.8]),
+    (3, [1, 0.8, 1.7]),
+    (4, [1, 0.8, -0.7, 0.6]),
+    (5, [1, 0.8, 2.7, 0.6, 3.5]),
+])
+def test_get_wrong_if_scale_pod_is_not_between_0_and_1(person_amount, pod):
+    with pytest.raises(Exception):
+        env = init_drone_swarm_search(person_amount=person_amount)
+        opt = {
+            "individual_pods": pod
+        }
+        _ = env.reset(options=opt)
     
