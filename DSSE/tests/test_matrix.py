@@ -5,12 +5,12 @@ def create_prob_matrix(
     person_position: tuple = (10, 10),
     vector: list = [0.1, 0.1],
     grid_size: int = 40,
-    disperse_constant: int = 3,
+    disperse_inc: int = 0.1,
 ):
     prob_matrix = ProbabilityMatrix(
         40,
-        disperse_constant,
-        disperse_constant,
+        disperse_inc,
+        disperse_inc,
         vector,
         person_position,
         grid_size,

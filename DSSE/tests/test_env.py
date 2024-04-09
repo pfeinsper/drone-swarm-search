@@ -5,7 +5,7 @@ from DSSE.tests.drone_policy import policy
 from pettingzoo.test import parallel_api_test
 
 def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, render_gradient=True,
-                            vector=(3.5, -0.5), disperse_constant=5, 
+                            vector=(3.5, -0.5), disperse_inc=0.1, 
                             timestep_limit=200, person_amount=1, person_initial_position=None,
                             drone_amount=1, drone_speed=10,
                             probability_of_detection=0.9,
@@ -20,7 +20,7 @@ def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, 
             render_grid=render_grid,
             render_gradient=render_gradient,
             vector=vector,
-            disperse_constant=disperse_constant,
+            dispersion_inc=disperse_inc,
             timestep_limit=timestep_limit,
             person_amount=person_amount,
             person_initial_position=person_initial_position,
@@ -165,7 +165,7 @@ def test_position_drone_is_correct_after_reset(drone_amount, drones_positions):
     
     for i, position in enumerate(drones_positions):
         drone_id = f"drone{i}"
-        real_position_drone = observations[drone_id]["observation"][0]
+        real_position_drone = observations[drone_id][0]
         
         assert real_position_drone == position, f"Expected {drone_id}'s position to be {position} after reset, but was {real_position_drone}."
 
@@ -212,7 +212,7 @@ def test_with_the_observation_size_is_correct_for_all_drones(drone_amount, grid_
     
     for drone in range(drone_amount):
         drone_id = f"drone{drone}"
-        observation_matriz = observations[drone_id]["observation"][1]
+        observation_matriz = observations[drone_id][1]
         
         assert observation_matriz.shape == (grid_size, grid_size), f"The observation matrix for {drone_id} should have a shape of ({grid_size}, {grid_size}), but was {observation_matriz.shape}."
 
