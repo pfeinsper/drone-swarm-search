@@ -210,7 +210,8 @@ class DroneSwarmSearch(ParallelEnv):
                 raise ValueError("You are trying to place the drone in a invalid position")
         
         if individual_pods is not None:
-            self.is_valid_pod(individual_pods)
+            if not self.is_valid_pod(individual_pods):
+                raise ValueError("The pod scale is invalid. It must be between 0 and 1. and must be a number.")
 
         
         # Person initialization
@@ -264,10 +265,12 @@ class DroneSwarmSearch(ParallelEnv):
 
     def is_valid_pod(self, individual_pods: list[int]) -> bool:
         if len(individual_pods) != len(self.persons_list):
-            raise ValueError("The number of pods is different from the number of person.")
+            return False
         for pod in individual_pods:
+            if type(pod) == str:
+                return False
             if pod < 0 or pod > 1:
-                raise ValueError("You tried to put a invalid pod scale")
+                raise False
         return True
     
     def pre_search_simulate(self):
