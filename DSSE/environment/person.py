@@ -27,13 +27,14 @@ class Person():
     """
     angle_ranges_list = [(0, 45), (20, 55), (300, 360), (315, 360)]
     
-    # Escolhendo um intervalo aleatório da lista e armazenando como uma variável de classe
+    # Selecting a random range from the list and storing it as a class variable.
     angle_range = choice(angle_ranges_list)
     
     def __init__(
             self,
             initial_position: tuple[int, int],
-            grid_size: int,    
+            grid_size: int,
+            probability_of_detection: float = 0.9
         ):
 
         self.initial_position = initial_position
@@ -42,6 +43,7 @@ class Person():
         self.grid_size = grid_size
         self.time_step_counter = 0
         self.time_step_relation = 1
+        self.pod = probability_of_detection
         self.movement_vector = (0.0, 0.0)
 
     def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> None:
@@ -90,8 +92,6 @@ class Person():
         noised_vector = noised_direction * norm(primary_movement_vector) * speed_factor
 
         return tuple(noised_vector)
-
-
 
     def angle_between(self, movement: np.array, drift_vector: list[float]) -> float:
         direction_movement = self.get_unit_vector(movement)
@@ -264,3 +264,12 @@ class Person():
         x_direction = np.sign(cos_val) if abs(cos_val) > 0.0001 else 0
         y_direction = np.sign(sin_val) if abs(sin_val) > 0.0001 else 0
         return (magnitude, (x_direction, y_direction))
+    
+    def get_position(self) -> tuple[int]:
+        return (self.x, self.y)
+    
+    def set_pod(self, pod: int) -> None:
+        self.pod = pod
+    
+    def get_pod(self) -> int:
+        return self.pod

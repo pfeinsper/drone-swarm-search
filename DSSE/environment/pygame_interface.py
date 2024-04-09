@@ -35,6 +35,7 @@ class PygameInterface:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.close()
+        
         pygame.event.pump()
 
     def refresh_screen(self):
