@@ -42,8 +42,8 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         self.drone = DroneData(
             amount=drone_amount,
             speed=drone_speed,
-            probability_of_detection=drone_probability_of_detection,
         )
+        self.pod = drone_probability_of_detection
 
         # Error Checking
         if self.drone.amount > self.grid_size * self.grid_size:
@@ -95,7 +95,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         """
         return cell_size / (drone_max_speed - wind_resistance)  # in seconds
 
-    @abstractmethod
     def render(self):
         self.pygame_renderer.render_map()
         self.pygame_renderer.render_entities(self.agents_positions.values())
@@ -209,7 +208,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                 ):
                     truncations[drone_1_id] = True
                     terminations[drone_1_id] = True
-                    rewards[drone_1_id] = self.reward_scheme["drones_collision"]
+                    rewards[drone_1_id] = self.reward_scheme.drones_collision
     
     def move_drone(self, position, action):
         """
