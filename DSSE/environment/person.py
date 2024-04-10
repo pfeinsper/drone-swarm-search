@@ -27,7 +27,7 @@ class Person():
     """
     angle_ranges_list = [(0, 45), (20, 55), (300, 360), (315, 360)]
     
-    # Escolhendo um intervalo aleatório da lista e armazenando como uma variável de classe
+    # Selecting a random range from the list and storing it as a class variable.
     angle_range = choice(angle_ranges_list)
     
     def __init__(
@@ -108,10 +108,10 @@ class Person():
 
     def update_position(self, movement_map: np.array) -> None:
         if self.reached_time_step():
-            movement = self.update_shipwrecked_position(movement_map)
+            movement = self.update_shipwrecked_position(movement_map, prob_walk_weight=1.0)
             self.safe_position_update(movement)
     
-    def update_shipwrecked_position(self, movement_map: np.array) -> tuple[int]:
+    def update_shipwrecked_position(self, movement_map: np.array, prob_walk_weight: float = 1.0) -> tuple[int]:
         """
         Function that takes a 3x3 cut of the DynamicProbability matrix, multiplies it by a random numbers matrix [0, 1],
         and returns the column and line of the highest probability on the resulting matrix.
@@ -119,6 +119,7 @@ class Person():
         Output:
             (movement_x, movement_y): tuple[int]
         """
+        
         if abs(self.inc_x) >= 1:
             self.inc_x = 0
         if abs(self.inc_y) >= 1:
@@ -133,8 +134,9 @@ class Person():
             int(self.inc_y),
         )
 
-        prob_walk = 2
-        movement_map[movement[0] + 1][movement[1] + 1] = prob_walk
+        # TODO: Como somar o vetor de movimento à probabilidade?
+        # movement_map = np.full((3,3), 1/9)
+        # movement_map[movement[0] + 1][movement[1] + 1] = prob_walk_weight
         movement_map /= np.sum(movement_map)
         movement_index = np.random.choice(9, size=1, p=movement_map.flatten())[0]
         return self.movement_to_cartesian(movement_index)
@@ -253,3 +255,6 @@ class Person():
         x_direction = np.sign(cos_val) if abs(cos_val) > 0.0001 else 0
         y_direction = np.sign(sin_val) if abs(sin_val) > 0.0001 else 0
         return (magnitude, (x_direction, y_direction))
+    
+    def get_position(self) -> tuple[int]:
+        return (self.x, self.y)

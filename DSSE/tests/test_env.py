@@ -1,17 +1,18 @@
 import pytest
 from DSSE import DroneSwarmSearch
-from DSSE import Actions
+from DSSE.environment.constants import Actions
+from DSSE.tests.drone_policy import policy
 from pettingzoo.test import parallel_api_test
-
 
 def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, render_gradient=True,
                             vector=(3.5, -0.5), disperse_constant=5, 
                             timestep_limit=200, person_amount=1, person_initial_position=None,
                             drone_amount=1, drone_speed=10,
-                            drone_probability_of_detection=0.9):
+                            drone_probability_of_detection=0.9,
+                            pre_render_time = 0):
 
     if person_initial_position is None:
-        person_initial_position = (grid_size - 1, grid_size - 1)
+        person_initial_position = (grid_size - round(grid_size/2), grid_size - round(grid_size/2))
         
     return DroneSwarmSearch(
             grid_size=grid_size,
@@ -26,6 +27,7 @@ def init_drone_swarm_search(grid_size=20, render_mode="ansi", render_grid=True, 
             drone_amount=drone_amount,
             drone_speed=drone_speed,
             drone_probability_of_detection=drone_probability_of_detection,
+            pre_render_time = pre_render_time,
         )
 
 @pytest.mark.parametrize("grid_size, drone_amount", [
@@ -218,3 +220,61 @@ def test_petting_zoo_interface_works():
     env = init_drone_swarm_search()
     parallel_api_test(env)
     env.close()
+
+
+@pytest.mark.parametrize("person_initial_position, person_amount", [
+    ((10, 10), 10),
+    ((10, 10), 15),
+    ((10, 10), 20),
+    ((10, 10), 25),
+])
+def test_castaway_count_after_reset(person_initial_position, person_amount):
+    env = init_drone_swarm_search(person_amount=person_amount, person_initial_position=person_initial_position)
+    _ = env.reset()
+    
+    assert len(env.get_persons()) == person_amount, f"Should have {person_amount} castaways, but found {len(env.get_persons())}."
+
+
+@pytest.mark.parametrize("person_initial_position, person_amount, drone_amount", [
+    ((10, 10), 1, 1),
+    ((1, 10), 5, 1),
+    ((19, 5), 10, 1),
+    ((5, 16), 15, 1),
+])
+def test_castaway_count_after_reset(person_initial_position, person_amount, drone_amount):
+    env = init_drone_swarm_search(person_amount=person_amount, person_initial_position=person_initial_position, drone_amount=drone_amount)
+    observations = env.reset()
+    
+    rewards = 0
+    done = False
+    while not done:
+        actions = policy(observations, env.get_agents(), env)
+        observations, reward, _, done, info = env.step(actions)
+        rewards += sum(reward.values())
+        done = any(done.values())
+    
+    _ = env.reset()
+    
+    assert rewards >= DroneSwarmSearch.reward_scheme.search_and_find * person_amount, f"The total reward should be positive after finding all castaways. But the total reward was: {rewards}."
+    assert done, "The simulation should end after finding all castaways."
+    assert len(env.get_persons()) == person_amount, f"Should have {person_amount} castaways, but found {len(env.get_persons())}."
+    assert len(env.get_agents()) == drone_amount, f"Should have {drone_amount} drones, but found {len(env.get_agents())}."
+
+@pytest.mark.parametrize("pre_render_time, cell_size, drone_max_speed, wind_resistance", [
+    (1, 130, 10, 0.0),
+    (5, 130, 20, 0.0),
+    (10, 130, 30, 0.0),
+    (15, 130, 40, 0.0),
+    (20, 130, 50, 0.0),
+])
+def test_pre_render_work_after_reset(pre_render_time, cell_size, drone_max_speed, wind_resistance):
+    env = init_drone_swarm_search(pre_render_time=pre_render_time, drone_speed=drone_max_speed)
+    _ = env.reset()
+    pre_render_steps = round((pre_render_time * 60) / (cell_size / (drone_max_speed - wind_resistance)))
+    
+    assert env.pre_render_steps == pre_render_steps, f"The pre-render time should be {pre_render_steps}, but was {env.pre_render_time}."
+    
+    _ = env.reset()
+    
+    assert env.pre_render_steps == pre_render_steps, f"The pre-render time should be {pre_render_steps}, but was {env.pre_render_time}."
+    
