@@ -265,7 +265,7 @@ class DroneSwarmSearch(ParallelEnv):
             if type(pod) == str:
                 return False
             if pod < 0 or pod > 1:
-                raise False
+                return False
         return True
     
     def pre_search_simulate(self):
