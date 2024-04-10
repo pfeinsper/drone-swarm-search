@@ -10,7 +10,6 @@ env = DroneSwarmSearch(
     timestep_limit=200,
     person_amount=2,
     dispersion_inc=0.1,
-    timestep_limit=100,
     person_initial_position=(10, 10),
     drone_amount=1,
     drone_speed=10,
