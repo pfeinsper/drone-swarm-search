@@ -50,15 +50,15 @@ class Person():
         self.x, self.y = self.initial_position
         self.inc_x, self.inc_y = 0, 0
         self.grid_size = grid_size
-        self.time_step_counter = 0
         self.time_step_relation = 1
         self.pod = probability_of_detection
         self.movement_vector = (0.0, 0.0)
         self.angle_range = choice([(0, 45), (20, 55), (300, 360), (315, 360)])
 
     def step(self, movement_map: np.array) -> None:
-        movement = self.update_position(movement_map, dimension=movement_map.shape[0], prob_walk_weight=1.0)
-        self.safe_position_update(movement)
+        if self.will_move():
+            movement = self.update_position(movement_map, dimension=movement_map.shape[0], prob_walk_weight=0.1)
+            self.safe_position_update(movement)
 
     def update_position(
             self,
@@ -74,27 +74,27 @@ class Person():
         Output:
             (movement_x, movement_y): tuple[int]
         """
-
-        if abs(self.inc_x) >= 1:
-            self.inc_x -= 1
-        if abs(self.inc_y) >= 1:
-            self.inc_y -= 1
-
         self.increment_movement()
 
-        # TODO: Como somar o vetor de movimento à probabilidade?
         # On row, column notation (y, x) -> (row, column)
         movement = (
             int(self.inc_x),
             int(self.inc_y),
         )
 
-        # movement_map = np.full((3,3), 1/9)
-        movement_map[movement[0] + 1][movement[1] + 1] += prob_walk_weight
-        movement_map[dimension // 2][dimension // 2] = 0.05
+        # TODO: Como somar o vetor de movimento à probabilidade?
+        movement_map[np.sign(movement[0]) + 1][np.sign(movement[1]) + 1] += prob_walk_weight
         movement_map /= np.sum(movement_map)
         movement_index = np.random.choice(9, size=1, p=movement_map.flatten())[0]
-        return self.movement_to_cartesian(movement_index, dimension=dimension)
+
+        if abs(self.inc_x) >= 1:
+            self.inc_x -= np.sign(self.inc_x)
+        if abs(self.inc_y) >= 1:
+            self.inc_y -= np.sign(self.inc_y)
+
+        movement_cartesian = self.movement_to_cartesian(movement_index, dimension=dimension)
+
+        return movement_cartesian
 
     def movement_to_cartesian(self, movement_index: int, dimension: int = 3) -> tuple[int]:
         """
@@ -108,29 +108,34 @@ class Person():
         as the matrix that creates this indexes is only 3x3,
         just removing 1 converts it back to cartesian movement.
         """
-        x_component = (movement_index % dimension) - (dimension // 2)
-        y_component = (movement_index // dimension) - (dimension // 2)
+        x_component = (movement_index // dimension) - (dimension // 2)
+        y_component = (movement_index % dimension) - (dimension // 2)
 
         return x_component, y_component
-    
+
+    def will_move(self) -> bool:
+        if abs(self.inc_x) >= 1 or abs(self.inc_y) >= 1:
+            return True
+        self.increment_movement()
+        return False
+
     def increment_movement(self) -> None:
-        self.inc_x += self.movement_vector[0]
-        self.inc_y += self.movement_vector[1]
+        self.inc_x += self.movement_vector[0] / self.time_step_relation
+        self.inc_y += self.movement_vector[1] / self.time_step_relation
 
     def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> None:
         """
         Function that calculates the person's movement vector 
         based on the primary movement vector that is being applied 
         by the environment, that is the water drift vector.
+
+        The resulting movement vector is the average of the primary movement vector
+        and a noised version of it, simulating more natural or unpredictable motion.
         """
         noised_vector = self.noise_vector(primary_movement_vector)
-        summed_vector = (
-            (primary_movement_vector[0] + noised_vector[0]),
-            (primary_movement_vector[1] + noised_vector[1]),
-        )
         self.movement_vector = (
-            summed_vector[0] / norm(summed_vector),
-            summed_vector[1] / norm(summed_vector),
+            (primary_movement_vector[0] + noised_vector[0]) / 2,
+            (primary_movement_vector[1] + noised_vector[1]) / 2,
         )
 
     def noise_vector(
@@ -198,6 +203,45 @@ class Person():
 
     def is_safe_position(self, new_position: int) -> bool:
         return 0 <= new_position < self.grid_size
+
+    def update_time_step_relation(self, time_step: float, cell_size: float) -> None:
+        self.time_step_relation = self.calculate_time_step(time_step, self.movement_vector, cell_size)
+
+    def calculate_time_step(
+            self,
+            time_step: float,
+            speed: tuple[float],
+            cell_size: float
+        ) -> float:
+        """
+        Parameters:
+        ----------
+        time_step: float
+            Time step in seconds
+        person_speed: tuple[float]
+            Speed of the person in the water in m/s (x and y components)
+        cell_size: float
+            Size of the cells in meters
+
+        Returns:
+        -------
+        int
+            Time step realtion in number of iterations
+        """
+        speed_magnitude = self.calculate_vector_magnitude(speed)
+        return cell_size / speed_magnitude / time_step
+
+    def calculate_vector_magnitude(self, vector: tuple[float]) -> float:
+        """
+        Args:
+        vector: tuple[float]
+            Vector with x and y components
+
+        Returns:
+        magnitude : float
+            Magnitude is in m/s
+        """
+        return np.linalg.norm(vector)
 
     def reset_position(self):
         self.x, self.y = self.initial_position

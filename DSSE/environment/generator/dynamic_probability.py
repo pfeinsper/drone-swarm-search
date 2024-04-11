@@ -63,8 +63,7 @@ class ProbabilityMatrix:
         self.supposed_position = initial_position
         self.map = np.zeros((size, size), dtype=np.float32)
         self.map_prob = np.zeros((size, size), dtype=np.float32)
-        self.vector = vector
-        self.movement_vector = self.calculate_movement_vector(vector)
+        self.movement_vector = vector
 
         # These determine the movement of the target as well
         self.inc_x = 0
@@ -75,7 +74,6 @@ class ProbabilityMatrix:
         self.spacement = spacement_start
 
         # Time step control
-        self.time_step_counter = 0
         self.time_step_relation = 1
 
     def step(self) -> None:
@@ -83,11 +81,6 @@ class ProbabilityMatrix:
         self.diffuse_probability()
 
     def update_position(self) -> None:
-        if abs(self.inc_x) >= 1:
-            self.inc_x -= 1
-        if abs(self.inc_y) >= 1:
-            self.inc_y -= 1
-
         self.increment_movement()
 
         # On row, column notation (y, x)
@@ -98,6 +91,11 @@ class ProbabilityMatrix:
 
         if self.is_valid_position(new_position):
             self.supposed_position = new_position
+
+        if abs(self.inc_x) >= 1:
+            self.inc_x -= np.sign(self.inc_x)
+        if abs(self.inc_y) >= 1:
+            self.inc_y -= np.sign(self.inc_y)
 
     def is_valid_position(self, position: tuple[int]) -> bool:
         rows, columns = self.map.shape
@@ -122,19 +120,6 @@ class ProbabilityMatrix:
         self.map = map_copy
         self.spacement += self.spacement_inc
 
-    def reached_time_step(self) -> bool:
-        if self.time_step_counter >= self.time_step_relation:
-            self.reset_time_step_counter()
-            return True
-        self.increment_time_step_counter()
-        return False
-
-    def reset_time_step_counter(self) -> None:
-        self.time_step_counter = 0
-
-    def increment_time_step_counter(self) -> None:
-        self.time_step_counter += 1
-
     def will_move(self) -> bool:
         if abs(self.inc_x) >= 1 or abs(self.inc_y) >= 1:
             return True
@@ -142,8 +127,8 @@ class ProbabilityMatrix:
         return False
 
     def increment_movement(self) -> None:
-        self.inc_x += self.movement_vector[0]
-        self.inc_y += self.movement_vector[1]
+        self.inc_x += self.movement_vector[0] / self.time_step_relation
+        self.inc_y += self.movement_vector[1] / self.time_step_relation
 
     @staticmethod
     @njit(cache=True, fastmath=True)
@@ -165,14 +150,14 @@ class ProbabilityMatrix:
         return probabilities
 
     def update_time_step_relation(self, time_step: float, cell_size: float) -> None:
-        self.time_step_relation = self.calculate_time_step(time_step, self.vector, cell_size)
+        self.time_step_relation = self.calculate_time_step(time_step, self.movement_vector, cell_size)
 
     def calculate_time_step(
             self,
             time_step: float,
             speed: tuple[float],
             cell_size: float
-        ) -> int:
+        ) -> float:
         """
         Parameters:
         ----------
@@ -188,43 +173,20 @@ class ProbabilityMatrix:
         int
             Time step realtion in number of iterations
         """
-        speed_magnitude, _ = self.calculate_vector_magnitude_and_direction(speed)
-        return int(cell_size / speed_magnitude / time_step)
+        speed_magnitude = self.calculate_vector_magnitude(speed)
+        return cell_size / speed_magnitude / time_step
 
-    def calculate_vector_magnitude_and_direction(self, vector: tuple[float]) -> tuple[float, tuple[int]]:
+    def calculate_vector_magnitude(self, vector: tuple[float]) -> float:
         """
         Args:
         vector: tuple[float]
             Vector with x and y components
 
         Returns:
-        tuple[float]
-            Magnitude and direction of the vector
-        Magnitude is in m/s
-        Direction is in x and y components, a unit vector
+        magnitude : float
+            Magnitude is in m/s
         """
-        magnitude = np.linalg.norm(vector)
-        angle = np.arctan2(vector[1], vector[0])
-
-        # Calculate cosine and sine values
-        cos_val = np.cos(angle)
-        sin_val = np.sin(angle)
-
-        # Determine direction based on the sign of cosine and sine
-        x_direction = np.sign(cos_val) if abs(cos_val) > 0.0001 else 0
-        y_direction = np.sign(sin_val) if abs(sin_val) > 0.0001 else 0
-        return (magnitude, (x_direction, y_direction))
-    
-    def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> tuple[float]:
-        """
-        Function that calculates the person's movement vector 
-        based on the primary movement vector that is being applied 
-        by the environment, that is the water drift vector.
-        """
-        return (
-            primary_movement_vector[0] / norm(primary_movement_vector),
-            primary_movement_vector[1] / norm(primary_movement_vector),
-        )
+        return np.linalg.norm(vector)
 
     def get_matrix(self):
         return self.map_prob

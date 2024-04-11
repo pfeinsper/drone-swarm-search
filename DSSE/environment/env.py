@@ -205,10 +205,10 @@ class DroneSwarmSearch(ParallelEnv):
 
         # Person initialization
         self.persons_list = self.create_list_person()
-
         # reset target position
         for person in self.persons_list:
             person.reset_position()
+            person.update_time_step_relation(self.time_step_relation, self.cell_size)
 
         self.agents = copy(self.possible_agents)
         self.timestep = 0
@@ -271,15 +271,11 @@ class DroneSwarmSearch(ParallelEnv):
     def create_observations(self):
         observations = {}
 
-        # if self.probability_matrix.reached_time_step():
-        # if self.probability_matrix.will_move():
-        if self.probability_matrix.reached_time_step() and self.probability_matrix.will_move():
-            if len(self.persons_list) > 0:
-                for person in self.persons_list:
-                    movement_map = self.build_movement_matrix(person)
-                    person.step(movement_map)
+        for person in self.persons_list:
+            movement_map = self.build_movement_matrix(person)
+            person.step(movement_map)
 
-            self.probability_matrix.step()
+        self.probability_matrix.step()
 
         probability_matrix = self.probability_matrix.get_matrix()
         for agent in self.agents:
