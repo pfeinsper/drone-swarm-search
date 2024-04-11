@@ -271,8 +271,9 @@ class DroneSwarmSearch(ParallelEnv):
     def create_observations(self):
         observations = {}
 
-        if self.probability_matrix.reached_time_step():
+        # if self.probability_matrix.reached_time_step():
         # if self.probability_matrix.will_move():
+        if self.probability_matrix.reached_time_step() and self.probability_matrix.will_move():
             if len(self.persons_list) > 0:
                 for person in self.persons_list:
                     movement_map = self.build_movement_matrix(person)

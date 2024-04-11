@@ -64,6 +64,7 @@ class ProbabilityMatrix:
         self.map = np.zeros((size, size), dtype=np.float32)
         self.map_prob = np.zeros((size, size), dtype=np.float32)
         self.vector = vector
+        self.movement_vector = self.calculate_movement_vector(vector)
 
         # These determine the movement of the target as well
         self.inc_x = 0
@@ -87,8 +88,7 @@ class ProbabilityMatrix:
         if abs(self.inc_y) >= 1:
             self.inc_y -= 1
 
-        self.inc_x += self.vector[0] / norm(self.vector)
-        self.inc_y += self.vector[1] / norm(self.vector)
+        self.increment_movement()
 
         # On row, column notation (y, x)
         new_position = (
@@ -136,7 +136,14 @@ class ProbabilityMatrix:
         self.time_step_counter += 1
 
     def will_move(self) -> bool:
-        return self.inc_x >= 1 or self.inc_y >= 1
+        if abs(self.inc_x) >= 1 or abs(self.inc_y) >= 1:
+            return True
+        self.increment_movement()
+        return False
+
+    def increment_movement(self) -> None:
+        self.inc_x += self.movement_vector[0]
+        self.inc_y += self.movement_vector[1]
 
     @staticmethod
     @njit(cache=True, fastmath=True)
@@ -207,6 +214,17 @@ class ProbabilityMatrix:
         x_direction = np.sign(cos_val) if abs(cos_val) > 0.0001 else 0
         y_direction = np.sign(sin_val) if abs(sin_val) > 0.0001 else 0
         return (magnitude, (x_direction, y_direction))
+    
+    def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> tuple[float]:
+        """
+        Function that calculates the person's movement vector 
+        based on the primary movement vector that is being applied 
+        by the environment, that is the water drift vector.
+        """
+        return (
+            primary_movement_vector[0] / norm(primary_movement_vector),
+            primary_movement_vector[1] / norm(primary_movement_vector),
+        )
 
     def get_matrix(self):
         return self.map_prob

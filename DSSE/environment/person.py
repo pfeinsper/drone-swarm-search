@@ -80,8 +80,7 @@ class Person():
         if abs(self.inc_y) >= 1:
             self.inc_y -= 1
 
-        self.inc_x += self.movement_vector[0]
-        self.inc_y += self.movement_vector[1]
+        self.increment_movement()
 
         # TODO: Como somar o vetor de movimento à probabilidade?
         # On row, column notation (y, x) -> (row, column)
@@ -91,8 +90,8 @@ class Person():
         )
 
         # movement_map = np.full((3,3), 1/9)
-        # movement_map[movement[0] + 1][movement[1] + 1] += prob_walk_weight
-        # movement_map[dimension // 2][dimension // 2] = 0.05
+        movement_map[movement[0] + 1][movement[1] + 1] += prob_walk_weight
+        movement_map[dimension // 2][dimension // 2] = 0.05
         movement_map /= np.sum(movement_map)
         movement_index = np.random.choice(9, size=1, p=movement_map.flatten())[0]
         return self.movement_to_cartesian(movement_index, dimension=dimension)
@@ -113,6 +112,10 @@ class Person():
         y_component = (movement_index // dimension) - (dimension // 2)
 
         return x_component, y_component
+    
+    def increment_movement(self) -> None:
+        self.inc_x += self.movement_vector[0]
+        self.inc_y += self.movement_vector[1]
 
     def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> None:
         """
