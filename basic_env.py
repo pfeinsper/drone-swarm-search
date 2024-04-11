@@ -6,15 +6,15 @@ env = DroneSwarmSearch(
     render_mode="human",
     render_grid=True,
     render_gradient=True,
-    vector=(3.2, 3.1),
-    timestep_limit=200,
-    person_amount=2,
-    dispersion_inc=0.1,
+    vector=(1, 1),
+    timestep_limit=300,
+    person_amount=4,
+    dispersion_inc=0.05,
     person_initial_position=(10, 10),
     drone_amount=1,
     drone_speed=10,
     probability_of_detection=0.9,
-    pre_render_time = 0,
+    pre_render_time = 20,
 )
 
 def policy(obs, agents):
@@ -25,7 +25,7 @@ def policy(obs, agents):
 
 opt = {
     "drones_positions": [(0, 10)],
-    "individual_pods": [1, 0.5]
+    # "individual_pods": [1],
 }
 observations, info = env.reset(options=opt)
 
