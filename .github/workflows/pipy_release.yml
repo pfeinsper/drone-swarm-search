@@ -3,7 +3,7 @@ name: Publish Drone Swarm Search to PyPI 🚀
 on:
   push:
     tags:
-     - 'v*'
+     - '*'
 
 jobs:
   build-n-publish:
