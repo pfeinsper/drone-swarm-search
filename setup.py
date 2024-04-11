@@ -16,7 +16,7 @@ setup(name = 'DSSE',
     keywords = ['Reinforcement Learning', 'AI', 'SAR', 'Multi Agent'],
     download_url = f'https://github.com/pfeinsper/drone-swarm-search/archive/refs/tags/v{{VERSION_PLACEHOLDER}}.tar.gz',
     include_package_data=True, 
-    packages = ['DSSE', 'DSSE.core', 'DSSE.core.environment', 'DSSE.core.environment.generator', 'DSSE.core.environment.imgs'],
+    packages = find_packages(),
     install_requires = [
         'numpy',
         'gymnasium',
