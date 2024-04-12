@@ -1,8 +1,25 @@
 # Drone Swarm Search
 
-## Workflow Status: Automated Testing with Pytest
+Welcome to the Drone Swarm Search repository! Below are the status badges that reflect the current state of our workflows, helping you quickly understand what's happening in our project.
 
-[![Run Pytest](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml)
+## Workflow Status
+
+### Automated Testing
+Ensure the quality and stability of the code with our continuous integration tests.
+[![Tests Status](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml)
+
+### Documentation Deployment
+Check the deployment status of our latest documentation to GitHub Pages.
+[![Docs Deployment](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/deploy.yml/badge.svg?branch=vitepress_docs)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/deploy.yml)
+
+### Package Release
+Track the publishing process of our project on PyPI.
+[![PyPI Release](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/pipy_release.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/pipy_release.yml)
+
+## Get Involved!
+
+We appreciate your interest in our project. Feel free to contribute, and let's make Drone Swarm Search even better together! Check our [contributing guidelines](#) for more information on how to get started.
+
 
 ## Quick Start
 
