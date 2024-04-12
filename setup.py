@@ -10,7 +10,7 @@ download_url = (
 setup(
     name="DSSE",
     version="{{VERSION_PLACEHOLDER}}",
-    author="Luis Filipe Carrete, Manuel Castanares, Enrico Damiani, Leonardo Malta, Joras Oliveira, Ricardo Ribeiro Rodrigues, Renato Lafrachi Falcao, Pedro Andrade, Fabricio Barth",
+    author="Luis Filipe Carrete, Manuel Castanares, Enrico Damiani, Leonardo Malta, Jorás Oliveira, Ricardo Ribeiro Rodrigues, Renato Laffranchi Falcão, Pedro Henrique Britto Aragão Andrade, Fabricio Barth",
     description="An environment to train drones to search and find a shipwrecked person lost in the ocean using reinforcement learning.",
     long_description=long_description,
     long_description_content_type="text/markdown",
