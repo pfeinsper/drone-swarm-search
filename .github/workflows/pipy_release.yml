@@ -1,4 +1,4 @@
-name: Publish Drone Swarm Search to PyPI 🚀
+name: PyPI Release 🚀
 
 on:
   push:
