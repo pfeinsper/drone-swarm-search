@@ -1,10 +1,6 @@
-## Status deploy git hub pages
-
-[![Deploy VitePress site to Pages](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/deploy.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/deploy.yml)
+[![Tests Status 🧪](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml) [![Docs Deployment 📝](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/deploy.yml/badge.svg?branch=vitepress_docs)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/deploy.yml) [![PyPI Release 🚀](https://badge.fury.io/py/DSSE.svg)](https://badge.fury.io/py/DSSE) [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat)](https://github.com/pfeinsper/drone-swarm-search/blob/main/LICENSE)
 
 # Drone Swarm Search
-
-## About
 
 The Drone Swarm Search project is an environment, based on PettingZoo, that is to be used in conjunction with multi-agent (or single-agent) reinforcement learning algorithms. It is an environment in which the agents (drones), have to find the targets (shipwrecked people). The agents do not know the position of the target, and do not receive rewards related to their own distance to the target(s). However, the agents receive the probabilities of the target(s) being in a certain cell of the map. The aim of this project is to aid in the study of reinforcement learning algorithms that require dynamic probabilities as inputs. A visual representation of the environment is displayed below. To test the environment (without an algorithm), run `basic_env.py`.
 
@@ -12,68 +8,68 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
     <img src="https://raw.github.com/PFE-Embraer/drone-swarm-search/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
 </p>
 
-
-### Outcome
-
-| If drone is found            | If drone is not found  |
-:-------------------------:|:-------------------------:
-| ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/pics/fail_render.png) |
-
-
 ## Quick Start
 
 #### Install
 `pip install DSSE`
 
 #### Use
+`from DSSE.env import DroneSwarmSearch`
 
+#### PyPi Package Page
+
+https://pypi.org/project/DSSE/
+
+## Outcome
+
+| If drone is found            | If drone is not found  |
+:-------------------------:|:-------------------------:
+| ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/pics/fail_render.png) |
+
+
+## Basic Usage
 ```python
 from DSSE import DroneSwarmSearch
-from DSSE import Actions
 
 env = DroneSwarmSearch(
-    grid_size = 60,
-    render_mode = "human",
+    grid_size=50, 
+    render_mode="human", 
     render_grid = True,
     render_gradient = True,
-    vector = (3.2, 3.1),
-    disperse_constant = 5,
-    timestep_limit = 200,
-    person_amount = 1,
-    person_initial_position = (19, 19),
-    drone_amount = 2,
-    drone_speed = 10,
-    drone_probability_of_detection = 0.9,
-    pre_render_time = 0,
-)
+    n_drones=4, 
+    vector=[0.2, 0.2],
+    person_initial_position = [8, 8],
+    disperse_constant = 3)
 
-def policy(obs, agents):
-    actions = {}
-    for agent in agents:
-        actions[agent] = Actions.SEARCH.value
+def policy(obs, agent):
+    actions = {
+        "drone0": 1, # Right
+        "drone1": 3, # Down
+        "drone2": 0, # Left
+        "drone3": 2, # Up
+    }
+    
     return actions
 
 
-observations = env.reset(drones_positions = [(0, 10), (0, 11)])
-
+observations = env.reset(drones_positions=[[5, 5], [43, 5], [43, 43], [5, 43]])
 rewards = 0
 done = False
+
 while not done:
     actions = policy(observations, env.get_agents())
     observations, reward, _, done, info = env.step(actions)
     rewards += reward["total_reward"]
-    done = any(done.values())
+    done = True if True in [e for e in done.values()] else False
+
+print(rewards)
 ```
 
 ### Installing Dependencies
-Python version above or equal to 3.10.5.
 
-By default all dependencies should install with the pypi installation, in case something fails,  download the dependencies using the following command:
+Using Python version above or equal to 3.10.5.
 
-```bash
-pip install -r requirements.txt
-```
-
+In order to use the environment download the dependencies using the following command `pip install -r requirements.txt`.
 
 ### General Info
 
@@ -257,15 +253,6 @@ Info is a dictionary that contains a key called "Found" that contains a boolean 
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
 
-## PyPi Package 
-
-https://pypi.org/project/DSSE/
-
-## Workflow Status: Automated Testing with Pytest
-
-[![Run Pytest](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml)
-
-
 ## How to cite this work
 
 If you use this package, please consider citing it with this piece of BibTeX:
@@ -273,8 +260,8 @@ If you use this package, please consider citing it with this piece of BibTeX:
 ```
 @misc{castanares2023dsse,
       title={DSSE: a drone swarm search environment}, 
-      author={Jorás Oliveira, Pedro Andrade, Ricardo Rodrigues, Renato Laffranchi,Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
-      year={2024},
+      author={Manuel Castanares and Luis F. S. Carrete and Enrico F. Damiani and Leonardo D. M. de Abreu and José Fernando B. Brancalion and Fabrício J. Barth},
+      year={2023},
       eprint={2307.06240},
       archivePrefix={arXiv},
       primaryClass={cs.LG},
