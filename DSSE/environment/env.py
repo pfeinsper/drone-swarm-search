@@ -9,6 +9,7 @@ from .constants import RED, GREEN, Actions, Reward
 from .pygame_interface import PygameInterface
 from .drone import DroneData
 from .person import Person
+from DSSE.environment.time_step import calculate_simulation_time_step
 
 class DroneSwarmSearch(ParallelEnv):
     """
@@ -48,15 +49,10 @@ class DroneSwarmSearch(ParallelEnv):
         self.cell_size = 130  # in meters
         self.grid_size = grid_size
         self._was_reset = False
-        self.pre_render_steps = round(
-            (pre_render_time * 60) / (self.calculate_simulation_time_step(drone_speed, self.cell_size))
-        )
+
         self.person_amount = person_amount
         self.person_initial_position = person_initial_position
         self.probability_of_detection = probability_of_detection
-
-        print(f"Pre render time: {pre_render_time} minutes")
-        print(f"Pre render steps: {self.pre_render_steps}")
 
         if self.probability_of_detection < 0 or self.probability_of_detection > 1:
             raise ValueError("Probability of detection must be between 0 and 1")
@@ -80,10 +76,15 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.timestep = None
         self.timestep_limit = timestep_limit
-        self.time_step_relation = self.calculate_simulation_time_step(
+        self.time_step_relation = calculate_simulation_time_step(
             self.drone.speed,
             self.cell_size
         )
+
+        self.pre_render_steps = round((pre_render_time * 60) / self.time_step_relation)
+        print(f"Pre render time: {pre_render_time} minutes")
+        print(f"Pre render steps: {self.pre_render_steps}")
+
         self.dispersion_inc = dispersion_inc
         self.dispersion_start = dispersion_start
         self.vector = vector
@@ -286,31 +287,6 @@ class DroneSwarmSearch(ParallelEnv):
             observations[agent] = observation
 
         return observations
-
-    def calculate_simulation_time_step(
-            self,
-            drone_max_speed: float,
-            cell_size: float,
-            wind_resistance: float = 0.0
-        ) -> float:
-        """
-        Calculate the time step for the simulation based on the maximum speed of
-        the drones and the cell size.
-
-        Arguments:
-        ----------
-        drone_max_speed: float
-            Maximum speed of the drones in m/s
-        cell_size: float
-            Size of the cells in meters
-        wind_resistance: float
-            Wind resistance in m/s
-
-        Returns:
-        --------
-        float: The time in seconds that elapsed in real life for each simulation time step.
-        """
-        return cell_size / (drone_max_speed - wind_resistance)
 
     def move_drone(self, position, action):
         """
