@@ -16,10 +16,6 @@ Check the deployment status of our latest documentation to GitHub Pages.
 Track the publishing process of our project on PyPI.
 [![PyPI Release](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/pipy_release.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/pipy_release.yml)
 
-## Get Involved!
-
-We appreciate your interest in our project. Feel free to contribute, and let's make Drone Swarm Search even better together! Check our [contributing guidelines](#) for more information on how to get started.
-
 
 ## Quick Start
 
