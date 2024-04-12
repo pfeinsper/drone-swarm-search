@@ -1,31 +1,12 @@
-from random import randint, random, uniform, choice
+import numpy as np
+from random import uniform, choice
 from numpy.linalg import norm
 from math import cos, sin, radians, pi, exp
-import numpy as np
+from DSSE.environment.time_step import calculate_time_step
 
 class Person():
     """
     Class that represents a shipwrecked person in the environment.
-
-    Attributes:
-    -----------
-    amount: int
-        The number of shipwrecked people in the environment.
-    person_initial_position: tuple
-        The initial position of the shipwrecked people in the environment.
-    time_step_counter: int
-        The time step counter of the person in the environment.
-    time_step_relation: int
-        The number of time steps in relation
-        to the environment's time step. 
-        It defines the amount of environment's time steps that must 
-        occur in order to the person's time step to occur.
-    x: int
-        The x coordinate of the person in the environment.
-    y: int
-        The y coordinate of the person in the environment.
-    movement_vector: tuple
-        The vector that determines the movement of the person in the environment.
     """
     def __init__(
             self,
@@ -205,43 +186,7 @@ class Person():
         return 0 <= new_position < self.grid_size
 
     def update_time_step_relation(self, time_step: float, cell_size: float) -> None:
-        self.time_step_relation = self.calculate_time_step(time_step, self.movement_vector, cell_size)
-
-    def calculate_time_step(
-            self,
-            time_step: float,
-            speed: tuple[float],
-            cell_size: float
-        ) -> float:
-        """
-        Parameters:
-        ----------
-        time_step: float
-            Time step in seconds
-        person_speed: tuple[float]
-            Speed of the person in the water in m/s (x and y components)
-        cell_size: float
-            Size of the cells in meters
-
-        Returns:
-        -------
-        int
-            Time step realtion in number of iterations
-        """
-        speed_magnitude = self.calculate_vector_magnitude(speed)
-        return cell_size / speed_magnitude / time_step
-
-    def calculate_vector_magnitude(self, vector: tuple[float]) -> float:
-        """
-        Args:
-        vector: tuple[float]
-            Vector with x and y components
-
-        Returns:
-        magnitude : float
-            Magnitude is in m/s
-        """
-        return np.linalg.norm(vector)
+        self.time_step_relation = calculate_time_step(time_step, self.movement_vector, cell_size)
 
     def reset_position(self):
         self.x, self.y = self.initial_position
