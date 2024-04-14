@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from pettingzoo import ParallelEnv
 from .drone import DroneData
 from .pygame_interface import PygameInterface
-from .generator.dynamic_probability import ProbabilityMatrix
+from .simulation.dynamic_probability import ProbabilityMatrix
 from .constants import Actions
 from gymnasium.spaces import MultiDiscrete, Discrete, Tuple, Box
 from copy import copy
