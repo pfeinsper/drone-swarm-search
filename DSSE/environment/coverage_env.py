@@ -60,6 +60,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
     def reset(self, seed=None, options=None):
         obs, _ = super().reset(seed=seed, options=options)
         self.seen_states = {pos for pos in self.agents_positions.values()}
+        zero_states = np.where(self.probability_matrix.get_matrix() == 0)
+        print(zero_states)
         self.not_seen_states = self.all_states - self.seen_states
         infos = self.compute_infos(False)
         self.cumm_pos = 0

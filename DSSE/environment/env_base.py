@@ -5,20 +5,20 @@ from pettingzoo import ParallelEnv
 from .drone import DroneData
 from .pygame_interface import PygameInterface
 from .simulation.dynamic_probability import ProbabilityMatrix
+from .simulation.dynamic_probability import ProbabilityMatrix
 from .constants import Actions
 from gymnasium.spaces import MultiDiscrete, Discrete, Tuple, Box
 from copy import copy
 
 
 class DroneSwarmSearchBase(ABC, ParallelEnv):
-
     def __init__(
         self,
         grid_size=7,
         render_mode="ansi",
         render_grid=False,
         render_gradient=True,
-        vector=(-0.5, -0.5),
+        vector=(1, -0.5),
         dispersion_inc=0.1,
         dispersion_start=0.5,
         timestep_limit=100,
@@ -233,10 +233,10 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                 new_position = (position[0] + 1, position[1] + 1)
 
         return new_position
-    
+
     def get_agents(self):
         return self.possible_agents
-    
+
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         # Observation space for each agent:
@@ -245,7 +245,12 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         return Tuple(
             (
                 MultiDiscrete([self.grid_size, self.grid_size]),
-                Box(low=0, high=1, shape=(self.grid_size, self.grid_size), dtype=np.float32),
+                Box(
+                    low=0,
+                    high=1,
+                    shape=(self.grid_size, self.grid_size),
+                    dtype=np.float32,
+                ),
             )
         )
 

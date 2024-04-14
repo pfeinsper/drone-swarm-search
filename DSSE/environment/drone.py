@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class DroneData:
     """
@@ -12,6 +13,7 @@ class DroneData:
     speed: float
         The speed of the drone in m/s.
     """
+
     amount: int
     speed: float
 
