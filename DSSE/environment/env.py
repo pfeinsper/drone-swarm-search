@@ -52,25 +52,26 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         if person_amount <= 0:
             raise ValueError("The number of persons must be greater than 0.")
         self.person_amount = person_amount
-        
+
         super().__init__(
-            grid_size,
-            render_mode,
-            render_grid,
-            render_gradient,
-            vector,
-            dispersion_inc,
-            dispersion_start,
-            timestep_limit,
-            drone_amount,
-            drone_speed,
-            probability_of_detection,
-            pre_render_time,
+            grid_size=grid_size,
+            render_mode=render_mode,
+            render_grid=render_grid,
+            render_gradient=render_gradient,
+            vector=vector,
+            dispersion_inc=dispersion_inc,
+            dispersion_start=dispersion_start,
+            timestep_limit=timestep_limit,
+            disaster_position=person_initial_position,
+            drone_amount=drone_amount,
+            drone_speed=drone_speed,
+            probability_of_detection=probability_of_detection,
+            pre_render_time=pre_render_time,
         )
 
         # Person initialization
         self.person_initial_position = person_initial_position
-        self.persons_list = self.create_list_person()
+        self.persons_set = self.create_persons_set()
 
         # Initializing render
         self.rewards_sum = {a: 0 for a in self.possible_agents}
@@ -84,26 +85,26 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             agent: self.observation_space(agent) for agent in self.possible_agents
         }
 
-    def create_list_person(self) -> list[Person]:
-        list_person = []
+    def create_persons_set(self) -> set[Person]:
+        persons_set = set()
         position = self.create_random_positions_person(
             self.person_initial_position, self.person_amount
         )
 
         for i in range(self.person_amount):
-            list_person.append(
-                Person(
-                    initial_position=position[i],
-                    grid_size=self.grid_size,
-                    probability_of_detection=self.probability_of_detection,
-                )
+            person = Person(
+                index=i,
+                initial_position=position[i],
+                grid_size=self.grid_size,
+                probability_of_detection=self.probability_of_detection,
             )
-            list_person[i].calculate_movement_vector(self.vector)
+            person.calculate_movement_vector(self.vector)
+            persons_set.add(person)
 
-            if not self.is_valid_position(list_person[i].initial_position):
+            if not self.is_valid_position(person.initial_position):
                 raise ValueError("Person initial position is out of the matrix")
 
-        return list_person
+        return persons_set
 
     def create_random_positions_person(
         self, central_position: tuple[int, int], amount: int, max_distance: int = 2
@@ -133,7 +134,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
     def render(self):
         self.pygame_renderer.render_map()
-        self.pygame_renderer.render_entities(self.persons_list)
+        self.pygame_renderer.render_entities(self.persons_set)
         self.pygame_renderer.render_entities(self.agents_positions.values())
         self.pygame_renderer.refresh_screen()
 
@@ -161,9 +162,9 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                 )
 
         # Person initialization
-        self.persons_list = self.create_list_person()
+        self.persons_set = self.create_persons_set()
         # reset target position
-        for person in self.persons_list:
+        for person in self.persons_set:
             person.reset_position()
             person.update_time_step_relation(self.time_step_relation, self.cell_size)
 
@@ -178,8 +179,8 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             self.dispersion_inc,
             self.vector,
             [
-                self.persons_list[0].initial_position[1],
-                self.persons_list[0].initial_position[0],
+                self.person_initial_position[1],
+                self.person_initial_position[0],
             ],
             self.grid_size,
         )
@@ -194,8 +195,8 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             self.required_drone_positions(drones_positions)
 
         if individual_pods is not None:
-            for i, pod in enumerate(individual_pods):
-                self.persons_list[i].set_pod(pod)
+            for person, pod in zip(self.persons_set, individual_pods):
+                person.set_pod(pod)
 
         if self.render_mode == "human":
             self.pygame_renderer.probability_matrix = self.probability_matrix
@@ -208,7 +209,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         return observations, infos
 
     def is_valid_pod(self, individual_pods: list[int]) -> bool:
-        if len(individual_pods) != len(self.persons_list):
+        if len(individual_pods) != len(self.persons_set):
             return False
         for pod in individual_pods:
             if not isinstance(pod, (int, float)) or pod < 0 or pod > 1:
@@ -224,7 +225,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     def create_observations(self):
         observations = {}
 
-        for person in self.persons_list:
+        for person in self.persons_set:
             movement_map = self.build_movement_matrix(person)
             person.step(movement_map)
 
@@ -260,6 +261,16 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             if drone_action not in self.action_space(agent):
                 raise ValueError("Invalid action for " + agent)
 
+            # Check truncation conditions (overwrites termination conditions)
+            if self.timestep >= self.timestep_limit:
+                # TODO: Check if is really necessary to add rewards_sum into this reward
+                rewards[agent] = self.reward_scheme.exceed_timestep
+                if self.rewards_sum[agent] > 0:
+                    rewards[agent] += self.rewards_sum[agent] // 2
+                truncations[agent] = True
+                terminations[agent] = True
+                continue
+
             drone_x, drone_y = self.agents_positions[agent]
             is_searching = drone_action == Actions.SEARCH.value
 
@@ -270,22 +281,20 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                 else:
                     self.agents_positions[agent] = new_position
                     rewards[agent] = self.reward_scheme.default
-
-            human_id = 0
-            for i, human in enumerate(self.persons_list):
+                self.rewards_sum[agent] += rewards[agent]
+                continue
+                
+            drone_found_person = False
+            for human in self.persons_set:
                 drone_found_person = (
                     human.x == drone_x and human.y == drone_y and is_searching
                 )
                 if drone_found_person:
-                    human_id = i
                     break
 
             random_value = random()
-            if (
-                drone_found_person
-                and random_value <= self.persons_list[human_id].get_pod()
-            ):
-                del self.persons_list[human_id]
+            if drone_found_person and random_value <= human.get_pod():
+                self.persons_set.remove(human)
                 time_reward_corrected = self.reward_scheme.search_and_find * (
                     1 - self.timestep / self.timestep_limit
                 )
@@ -293,7 +302,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                     self.reward_scheme.search_and_find + time_reward_corrected
                 )
 
-                if len(self.persons_list) == 0:
+                if len(self.persons_set) == 0:
                     person_found = True
                     for agent in self.agents:
                         terminations[agent] = True
@@ -305,15 +314,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                     if prob_matrix[drone_y][drone_x] * 100 > 1
                     else -100
                 )
-
-            # Check truncation conditions (overwrites termination conditions)
-            if self.timestep >= self.timestep_limit:
-                # TODO: Check if is really necessary to add rewards_sum into this reward
-                rewards[agent] = self.reward_scheme.exceed_timestep 
-                if self.rewards_sum[agent] > 0:
-                    rewards[agent] += self.rewards_sum[agent] // 2
-                truncations[agent] = True
-                terminations[agent] = True
 
             self.rewards_sum[agent] += rewards[agent]
 
@@ -377,7 +377,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         return movement_map
 
     def get_persons(self):
-        return self.persons_list
+        return self.persons_set
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):

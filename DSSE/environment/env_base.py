@@ -25,7 +25,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         disaster_position=(0, 0),
         drone_amount=1,
         drone_speed=10,
-        drone_probability_of_detection=0.9,
+        probability_of_detection=0.9,
         pre_render_time=0,
     ) -> None:
         self.cell_size = 130  # in meters
@@ -43,7 +43,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
             amount=drone_amount,
             speed=drone_speed,
         )
-        self.pod = drone_probability_of_detection
+        self.probability_of_detection = probability_of_detection
 
         # Error Checking
         if self.drone.amount > self.grid_size * self.grid_size:

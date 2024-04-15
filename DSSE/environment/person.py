@@ -12,6 +12,7 @@ class Person:
 
     def __init__(
         self,
+        index: int,
         initial_position: tuple[int, int],
         grid_size: int,
         probability_of_detection: float = 0.9,
@@ -28,7 +29,7 @@ class Person:
         probability_of_detection: float
             The probability of detection of the shipwrecked person in the environment.
         """
-
+        self.index = index
         self.initial_position = initial_position
         self.x, self.y = self.initial_position
         self.inc_x, self.inc_y = 0, 0
@@ -67,7 +68,6 @@ class Person:
             round(self.inc_y),
         )
 
-        # TODO: Como somar o vetor de movimento à probabilidade?
         row_mov = np.sign(movement[1]) + 1
         col_mov = np.sign(movement[0]) + 1
         movement_map[row_mov][col_mov] += prob_walk_weight
@@ -215,3 +215,6 @@ class Person:
 
     def get_pod(self) -> int:
         return self.pod
+
+    def __hash__(self) -> int:
+        return hash(self.index)
