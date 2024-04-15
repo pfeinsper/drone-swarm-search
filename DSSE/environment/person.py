@@ -38,7 +38,7 @@ class Person():
 
     def step(self, movement_map: np.array) -> None:
         if self.will_move():
-            movement = self.update_position(movement_map, dimension=movement_map.shape[0], prob_walk_weight=0.1)
+            movement = self.update_position(movement_map, dimension=movement_map.shape[0], prob_walk_weight=0.05)
             self.safe_position_update(movement)
 
     def update_position(
@@ -59,12 +59,14 @@ class Person():
 
         # On row, column notation (y, x) -> (row, column)
         movement = (
-            int(self.inc_x),
-            int(self.inc_y),
+            round(self.inc_x),
+            round(self.inc_y),
         )
 
         # TODO: Como somar o vetor de movimento à probabilidade?
-        movement_map[np.sign(movement[0]) + 1][np.sign(movement[1]) + 1] += prob_walk_weight
+        row_mov = np.sign(movement[1]) + 1
+        col_mov = np.sign(movement[0]) + 1
+        movement_map[row_mov][col_mov] += prob_walk_weight
         movement_map /= np.sum(movement_map)
         movement_index = np.random.choice(9, size=1, p=movement_map.flatten())[0]
 
@@ -74,7 +76,6 @@ class Person():
             self.inc_y -= np.sign(self.inc_y)
 
         movement_cartesian = self.movement_to_cartesian(movement_index, dimension=dimension)
-
         return movement_cartesian
 
     def movement_to_cartesian(self, movement_index: int, dimension: int = 3) -> tuple[int]:
@@ -89,8 +90,8 @@ class Person():
         as the matrix that creates this indexes is only 3x3,
         just removing 1 converts it back to cartesian movement.
         """
-        x_component = (movement_index // dimension) - (dimension // 2)
-        y_component = (movement_index % dimension) - (dimension // 2)
+        x_component = (movement_index % dimension) - (dimension // 2)
+        y_component = (movement_index // dimension) - (dimension // 2)
 
         return x_component, y_component
 

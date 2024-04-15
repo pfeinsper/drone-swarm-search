@@ -120,12 +120,6 @@ class ProbabilityMatrix:
         self.map = map_copy
         self.spacement += self.spacement_inc
 
-    def will_move(self) -> bool:
-        if abs(self.inc_x) >= 1 or abs(self.inc_y) >= 1:
-            return True
-        self.increment_movement()
-        return False
-
     def increment_movement(self) -> None:
         self.inc_x += self.movement_vector[0] / self.time_step_relation
         self.inc_y += self.movement_vector[1] / self.time_step_relation

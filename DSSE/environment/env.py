@@ -98,7 +98,7 @@ class DroneSwarmSearch(ParallelEnv):
 
         self.render_mode = render_mode
         self.probability_matrix = None
-
+        
         # Person initialization
         self.persons_list = self.create_list_person()
 
@@ -135,14 +135,14 @@ class DroneSwarmSearch(ParallelEnv):
 
     def create_list_person(self) -> list[Person]:
         list_person = []
-        self.position = self.create_random_positions_person(
+        position = self.create_random_positions_person(
             self.person_initial_position, self.person_amount
         )
 
         for i in range(self.person_amount):
             list_person.append(
                 Person(
-                    initial_position=self.position[i],
+                    initial_position=position[i],
                     grid_size=self.grid_size,
                     probability_of_detection=self.probability_of_detection,
                 )
@@ -226,7 +226,6 @@ class DroneSwarmSearch(ParallelEnv):
         )
 
         self.probability_matrix.update_time_step_relation(self.time_step_relation, self.cell_size)
-        self.probability_matrix.step()
 
         if drones_positions is None:
             self.default_drones_positions()
