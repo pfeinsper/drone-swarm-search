@@ -76,7 +76,7 @@ export default defineConfig({
     pt: {
         label: 'Português',
         lang: 'pt-br',
-        link: '/pt-br/',
+        link: '/pt/',
       },
   },
 })
