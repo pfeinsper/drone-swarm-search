@@ -135,3 +135,34 @@ dmypy.json
 #VitePress
 docs/.vitepress/dist
 docs/.vitepress/cache
+
+
+# Arquivos de configuração do sistema
+.DS_Store
+Thumbs.db
+
+# Diretórios de dependências
+node_modules/
+
+# Pastas de build
+dist/
+.out/
+
+# Arquivos de log
+*.log
+
+# Arquivos ambientais
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Diretórios de cache
+.cache/
+.temp/
+
+# Arquivos específicos que podem ser gerados pelo IDE ou editores
+.vscode/
+.idea/
+*.sublime-workspace
