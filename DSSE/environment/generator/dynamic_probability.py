@@ -13,9 +13,9 @@ class ProbabilityMatrix:
         Amplitude of the gaussian function
     supposed_position : tuple
         Center of the gaussian function
-    map : np.array
+    map, map_prob : np.array
         Matrix that represents the probability of finding a target in a certain position
-    vector : tuple
+    movement_vector : tuple
         Vector that determines the movement of the matrix
     inc_x : float
         Increment of the x position of the matrix
@@ -25,8 +25,6 @@ class ProbabilityMatrix:
         Increment of the spacement of the gaussian function
     spacement : float
         Spacement of the gaussian function
-    time_step_counter : int
-        Counter to keep track of the time steps
     time_step_relation : int
         Relation between the matrix time step and the drone time step
     """
