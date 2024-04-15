@@ -4,7 +4,7 @@ env = CoverageDroneSwarmSearch(
     grid_size=40,
     drone_amount=3,
     dispersion_inc=0.1,
-    vector=(3.2, 3.1),
+    vector=(1, 1),
     render_mode="human",
 )
 

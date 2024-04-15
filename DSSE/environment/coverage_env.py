@@ -1,6 +1,7 @@
 from gymnasium.spaces import Discrete
 from .env_base import DroneSwarmSearchBase
-from .constants import Actions, Reward
+from .constants import Reward
+import numpy as np
 
 
 # TODO: Match env_base to conv_env -> If using particle sim, redo __init__ and reset.
@@ -60,9 +61,10 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
     def reset(self, seed=None, options=None):
         obs, _ = super().reset(seed=seed, options=options)
         self.seen_states = {pos for pos in self.agents_positions.values()}
-        zero_states = np.where(self.probability_matrix.get_matrix() == 0)
-        print(zero_states)
         self.not_seen_states = self.all_states - self.seen_states
+        mat = self.probability_matrix.get_matrix()
+        close_to_zero = np.argwhere(np.abs(mat) < 1e-10)
+        print(close_to_zero)
         infos = self.compute_infos(False)
         self.cumm_pos = 0
         self.repeated_coverage = 0
@@ -70,7 +72,6 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def create_observations(self):
         observations = {}
-        # self.probability_matrix.step(self.drone.speed)
 
         probability_matrix = self.probability_matrix.get_matrix()
         for agent in self.agents:
@@ -84,7 +85,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def pre_search_simulate(self):
         for _ in range(self.pre_render_steps):
-            self.probability_matrix.step(self.drone.speed)
+            self.probability_matrix.step()
 
     def step(self, actions: dict[str, int]) -> tuple:
         if not self._was_reset:

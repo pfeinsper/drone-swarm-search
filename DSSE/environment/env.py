@@ -51,7 +51,8 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     ):
         if person_amount <= 0:
             raise ValueError("The number of persons must be greater than 0.")
-
+        self.person_amount = person_amount
+        
         super().__init__(
             grid_size,
             render_mode,

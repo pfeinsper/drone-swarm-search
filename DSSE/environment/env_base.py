@@ -132,6 +132,10 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
             self.grid_size,
         )
 
+        self.probability_matrix.update_time_step_relation(
+            self.time_step_relation, self.cell_size
+        )
+
         if drones_positions is None:
             self.default_drones_positions()
         else:
