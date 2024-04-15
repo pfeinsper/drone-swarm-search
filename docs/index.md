@@ -31,8 +31,6 @@ features:
   #   details: Product Development Engineer, Embraer
   #   link: https://www.linkedin.com/in/jose-fernando-basso-brancalion/
     linkText: Linkein
-  # - title: Feature C
-  #   details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 
 members:
   - avatar: 'https://github.com/JorasOliveira.png'
@@ -45,7 +43,7 @@ members:
       link: https://www.linkedin.com/in/jorasoliveira/
 
   - avatar: 'https://www.github.com/Pedro2712.png'
-    name: 'Pedro Andrade'
+    name: 'Pedro Henrique Britto Aragão Andrade'
     title: 'Author'
     links:
     - icon: 'github' 
@@ -54,7 +52,7 @@ members:
       link: 'https://www.linkedin.com/in/pedro-henrique-britto-aragao-andrade/'
 
   - avatar: 'https://github.com/RicardoRibeiroRodrigues.png'
-    name: 'Ricardo Rodrigues'
+    name: 'Ricardo Ribeiro Rodrigues'
     title: 'Author'
     links:
     - icon: 'github' 
@@ -63,7 +61,7 @@ members:
       link: 'https://www.linkedin.com/in/ricardo-ribeiro-rodrigues-983b94196/'
 
   - avatar: 'https://github.com/renatex333.png'
-    name: 'Renato Laffranchi.'
+    name: 'Renato Laffranchi'
     title: 'Author'
     links:
     - icon: 'github' 
