@@ -105,7 +105,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
     def reset(
         self,
         seed=None,
-        return_info=False,
         options=None,
     ):
         vector = options.get("vector") if options else None
