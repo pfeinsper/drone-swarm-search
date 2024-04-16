@@ -20,11 +20,11 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def __init__(
         self,
-        grid_size=7,
+        grid_size=20,
         render_mode="ansi",
         render_grid=True,
         render_gradient=True,
-        vector=(3.1, 3.2),
+        vector=(1, 0.8),
         dispersion_inc=0.1,
         dispersion_start=0.5,
         timestep_limit=100,

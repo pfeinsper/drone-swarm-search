@@ -28,11 +28,11 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
     def __init__(
         self,
-        grid_size=7,
+        grid_size=20,
         render_mode="ansi",
         render_grid=False,
         render_gradient=True,
-        vector=(-0.5, -0.5),
+        vector=(1.1, 1),
         dispersion_inc=0.1,
         dispersion_start=0.5,
         timestep_limit=100,
