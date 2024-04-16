@@ -1,4 +1,4 @@
-"""Core module of the project. Contains the main logic of the application."""
+"""DSSE: A Multi-Agent Reinforcement Learning Environment for SAR missions using drone swarms."""
 
 from .environment.env import DroneSwarmSearch
 from .environment.coverage_env import CoverageDroneSwarmSearch

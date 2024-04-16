@@ -1,7 +1,5 @@
 from DSSE import DroneSwarmSearch
-from DSSE import Actions
 from DSSE.tests.drone_policy import random_policy
-from recorder import PygameRecord
 
 env = DroneSwarmSearch(
     grid_size=40,
