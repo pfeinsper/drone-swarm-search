@@ -42,6 +42,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         self.drone = DroneData(
             amount=drone_amount,
             speed=drone_speed,
+            pod=probability_of_detection,
         )
         self.probability_of_detection = probability_of_detection
 

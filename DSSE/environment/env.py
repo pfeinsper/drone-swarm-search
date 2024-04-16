@@ -294,7 +294,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
             random_value = random()
             if drone_found_person:
-                max_detection_probability = min(human.get_mult() * self.probability_of_detection, 1)
+                max_detection_probability = min(human.get_mult() * self.drone.pod, 1)
                 
                 if random_value <= max_detection_probability:
                     self.persons_set.remove(human)
