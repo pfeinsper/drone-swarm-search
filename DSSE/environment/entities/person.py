@@ -53,9 +53,9 @@ class Person:
         prob_walk_weight: float = 1.0,
     ) -> tuple[int]:
         """
-        Function that takes a 3x3 cut of the DynamicProbability matrix, multiplies it by a
-        random numbers matrix [0, 1], and returns the column and line of the highest
-        probability on the resulting matrix.
+        Function that takes a cut of the DynamicProbability matrix,
+        along with the dimension of the matrix and the probability of walking,
+        that will be used to wheight the decision of walking towards the person's movement vector.
 
         Output:
             (movement_x, movement_y): tuple[int]
