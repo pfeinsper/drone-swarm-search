@@ -107,9 +107,9 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         seed=None,
         options=None,
     ):
+        self._was_reset = True
         vector = options.get("vector") if options else None
         drones_positions = options.get("drones_positions") if options else None
-        self._was_reset = True
 
         if drones_positions is not None:
             if not self.is_valid_position_drones(drones_positions):
