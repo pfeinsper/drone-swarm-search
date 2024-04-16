@@ -142,61 +142,21 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         seed=None,
         options=None,
     ):
-        self._was_reset = True
         self.persons_set = self.create_persons_set()
         for person in self.persons_set:
             person.reset_position()
             person.update_time_step_relation(self.time_step_relation, self.cell_size)
 
-        vector = options.get("vector") if options else None
-        drones_positions = options.get("drones_positions") if options else None
         pod_multiplier = options.get("person_pod_multipliers") if options else None
-
-        if drones_positions is not None:
-            if not self.is_valid_position_drones(drones_positions):
-                raise ValueError(
-                    "You are trying to place the drone in a invalid position"
-                )
 
         if pod_multiplier is not None:
             self.raise_if_unvalid_mult(pod_multiplier)
             for person, mult in zip(self.persons_set, pod_multiplier):
                 person.set_mult(mult)
 
-        self.agents = copy(self.possible_agents)
-        self.timestep = 0
-        self.vector = vector if vector else self.vector
+        observations, infos = super().reset(seed=seed, options=options)
         self.rewards_sum = {a: 0 for a in self.agents}
         self.rewards_sum["total"] = 0
-        self.probability_matrix = ProbabilityMatrix(
-            40,
-            self.dispersion_start,
-            self.dispersion_inc,
-            self.vector,
-            [
-                self.person_initial_position[1],
-                self.person_initial_position[0],
-            ],
-            self.grid_size,
-        )
-
-        self.probability_matrix.update_time_step_relation(
-            self.time_step_relation, self.cell_size
-        )
-
-        if drones_positions is None:
-            self.default_drones_positions()
-        else:
-            self.required_drone_positions(drones_positions)
-
-        if self.render_mode == "human":
-            self.pygame_renderer.probability_matrix = self.probability_matrix
-            self.pygame_renderer.enable_render()
-            self.render()
-
-        self.pre_search_simulate()
-        observations = self.create_observations()
-        infos = {drone: {"Found": False} for drone in self.agents}
         return observations, infos
 
     def raise_if_unvalid_mult(self, individual_multiplication: list[int]) -> bool:
@@ -329,7 +289,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
         # Get observations
         observations = self.create_observations()
-        # If terminted, reset the agents (pettingzoo parallel env requirement)
+        # If terminated, reset the agents (pettingzoo parallel env requirement)
         if any(terminations.values()) or any(truncations.values()):
             self.agents = []
         return observations, rewards, terminations, truncations, infos
