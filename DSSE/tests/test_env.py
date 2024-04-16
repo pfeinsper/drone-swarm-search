@@ -395,7 +395,7 @@ def test_pre_render_work_after_reset(
 
 
 @pytest.mark.parametrize(
-    "person_amount, pod",
+    "person_amount, mult",
     [
         (1, ["1"]),
         (2, [1, "0.8"]),
@@ -404,32 +404,32 @@ def test_pre_render_work_after_reset(
         (5, ["1", "0.8", "0.7", "0.6", "0.5"]),
     ],
 )
-def test_get_wrong_if_scale_pod_is_not_a_number(person_amount, pod):
+def test_get_wrong_if_scale_pod_is_not_a_number(person_amount, mult):
     with pytest.raises(Exception):
         env = init_drone_swarm_search(person_amount=person_amount)
-        opt = {"individual_pods": pod}
+        opt = {"individual_multiplication": mult}
         _ = env.reset(options=opt)
 
 
 @pytest.mark.parametrize(
-    "person_amount, pod",
+    "person_amount, mult",
     [
-        (1, [1.2]),
+        (1, [-1.2]),
         (2, [1, -0.8]),
-        (3, [1, 0.8, 1.7]),
+        (3, [1, -0.8, 1.7]),
         (4, [1, 0.8, -0.7, 0.6]),
-        (5, [1, 0.8, 2.7, 0.6, 3.5]),
+        (5, [1, 0.8, -0, 0.6, -3.5]),
     ],
 )
-def test_get_wrong_if_scale_pod_is_not_between_0_and_1(person_amount, pod):
+def test_get_wrong_if_scale_mult_is_not_greater_than_0(person_amount, mult):
     with pytest.raises(Exception):
         env = init_drone_swarm_search(person_amount=person_amount)
-        opt = {"individual_pods": pod}
+        opt = {"individual_multiplication": mult}
         _ = env.reset(options=opt)
 
 
 @pytest.mark.parametrize(
-    "person_amount, pod",
+    "person_amount, mult",
     [
         (1, [1, 0.1]),
         (2, [1]),
@@ -438,8 +438,8 @@ def test_get_wrong_if_scale_pod_is_not_between_0_and_1(person_amount, pod):
         (5, [1, 0.8, 0.7, 0.6, 0.5, 0.6, 0.5]),
     ],
 )
-def test_get_wrong_if_number_of_pods_is_not_equal_to_person_amount(person_amount, pod):
+def test_get_wrong_if_number_of_mults_is_not_equal_to_person_amount(person_amount, mult):
     with pytest.raises(Exception):
         env = init_drone_swarm_search(person_amount=person_amount)
-        opt = {"individual_pods": pod}
+        opt = {"individual_multiplication": mult}
         _ = env.reset(options=opt)

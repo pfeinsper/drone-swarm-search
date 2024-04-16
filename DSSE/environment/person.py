@@ -15,7 +15,7 @@ class Person:
         index: int,
         initial_position: tuple[int, int],
         grid_size: int,
-        probability_of_detection: float = 0.9,
+        mult: float = 1,
     ):
         """
         Class that represents a shipwrecked person in the environment.
@@ -26,8 +26,8 @@ class Person:
             The initial position of the shipwrecked person in the environment.
         grid_size: int
             The size of the grid that represents the environment (grid_size x grid_size).
-        probability_of_detection: float
-            The probability of detection of the shipwrecked person in the environment.
+        mult: float, optional
+            The multiplication factor that adjusts the probability of the person's finding.
         """
         self.index = index
         self.initial_position = initial_position
@@ -35,7 +35,7 @@ class Person:
         self.inc_x, self.inc_y = 0, 0
         self.grid_size = grid_size
         self.time_step_relation = 1
-        self.pod = probability_of_detection
+        self.mult = mult
         self.movement_vector = (0.0, 0.0)
         self.angle_range = choice([(0, 45), (20, 55), (300, 360), (315, 360)])
 
@@ -210,11 +210,11 @@ class Person:
     def get_position(self) -> tuple[int]:
         return (self.x, self.y)
 
-    def set_pod(self, pod: int) -> None:
-        self.pod = pod
+    def set_mult(self, mult: int) -> None:
+        self.mult = mult
 
-    def get_pod(self) -> int:
-        return self.pod
+    def get_mult(self) -> int:
+        return self.mult
 
     def __hash__(self) -> int:
         return hash(self.index)

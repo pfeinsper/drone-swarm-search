@@ -25,7 +25,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         disaster_position=(0, 0),
         drone_amount=1,
         drone_speed=10,
-        probability_of_detection=0.9,
+        probability_of_detection=1,
         pre_render_time=0,
     ) -> None:
         self.cell_size = 130  # in meters
