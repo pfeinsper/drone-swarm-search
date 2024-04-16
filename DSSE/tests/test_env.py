@@ -407,7 +407,7 @@ def test_pre_render_work_after_reset(
 def test_get_wrong_if_scale_pod_is_not_a_number(person_amount, mult):
     with pytest.raises(Exception):
         env = init_drone_swarm_search(person_amount=person_amount)
-        opt = {"individual_multiplication": mult}
+        opt = {"person_pod_multipliers": mult}
         _ = env.reset(options=opt)
 
 
@@ -424,7 +424,7 @@ def test_get_wrong_if_scale_pod_is_not_a_number(person_amount, mult):
 def test_get_wrong_if_scale_mult_is_not_greater_than_0(person_amount, mult):
     with pytest.raises(Exception):
         env = init_drone_swarm_search(person_amount=person_amount)
-        opt = {"individual_multiplication": mult}
+        opt = {"person_pod_multipliers": mult}
         _ = env.reset(options=opt)
 
 
@@ -441,5 +441,5 @@ def test_get_wrong_if_scale_mult_is_not_greater_than_0(person_amount, mult):
 def test_get_wrong_if_number_of_mults_is_not_equal_to_person_amount(person_amount, mult):
     with pytest.raises(Exception):
         env = init_drone_swarm_search(person_amount=person_amount)
-        opt = {"individual_multiplication": mult}
+        opt = {"person_pod_multipliers": mult}
         _ = env.reset(options=opt)
