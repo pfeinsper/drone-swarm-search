@@ -46,7 +46,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         person_initial_position=(0, 0),
         drone_amount=1,
         drone_speed=10,
-        probability_of_detection=0.9,
+        probability_of_detection=1,
         pre_render_time=0,
     ):
         if person_amount <= 0:
@@ -96,7 +96,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                 index=i,
                 initial_position=position[i],
                 grid_size=self.grid_size,
-                probability_of_detection=self.probability_of_detection,
             )
             person.calculate_movement_vector(self.vector)
             persons_set.add(person)
@@ -144,9 +143,17 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         return_info=False,
         options=None,
     ):
+        # Person initialization
+        self.persons_set = self.create_persons_set()
+        
+        # reset target position
+        for person in self.persons_set:
+            person.reset_position()
+            person.update_time_step_relation(self.time_step_relation, self.cell_size)
+        
         vector = options.get("vector") if options else None
         drones_positions = options.get("drones_positions") if options else None
-        individual_pods = options.get("individual_pods") if options else None
+        individual_multiplication = options.get("individual_multiplication") if options else None
         self._was_reset = True
 
         if drones_positions is not None:
@@ -155,18 +162,11 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                     "You are trying to place the drone in a invalid position"
                 )
 
-        if individual_pods is not None:
-            if not self.is_valid_pod(individual_pods):
+        if individual_multiplication is not None:
+            if not self.is_valid_mult(individual_multiplication):
                 raise ValueError(
-                    "The pod scale is invalid. It must be between 0 and 1. and must be a number."
+                    "The mult scale value must be a number and equal to or greater than 0."
                 )
-
-        # Person initialization
-        self.persons_set = self.create_persons_set()
-        # reset target position
-        for person in self.persons_set:
-            person.reset_position()
-            person.update_time_step_relation(self.time_step_relation, self.cell_size)
 
         self.agents = copy(self.possible_agents)
         self.timestep = 0
@@ -194,9 +194,9 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         else:
             self.required_drone_positions(drones_positions)
 
-        if individual_pods is not None:
-            for person, pod in zip(self.persons_set, individual_pods):
-                person.set_pod(pod)
+        if individual_multiplication is not None:
+            for person, mult in zip(self.persons_set, individual_multiplication):
+                person.set_mult(mult)
 
         if self.render_mode == "human":
             self.pygame_renderer.probability_matrix = self.probability_matrix
@@ -208,11 +208,11 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         infos = {drone: {"Found": False} for drone in self.agents}
         return observations, infos
 
-    def is_valid_pod(self, individual_pods: list[int]) -> bool:
-        if len(individual_pods) != len(self.persons_set):
+    def is_valid_mult(self, individual_multiplication: list[int]) -> bool:
+        if len(individual_multiplication) != len(self.persons_set):
             return False
-        for pod in individual_pods:
-            if not isinstance(pod, (int, float)) or pod < 0 or pod > 1:
+        for mult in individual_multiplication:
+            if not isinstance(mult, (int, float)) or mult < 0:
                 return False
         return True
 
@@ -293,20 +293,23 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                     break
 
             random_value = random()
-            if drone_found_person and random_value <= human.get_pod():
-                self.persons_set.remove(human)
-                time_reward_corrected = self.reward_scheme.search_and_find * (
-                    1 - self.timestep / self.timestep_limit
-                )
-                rewards[agent] = (
-                    self.reward_scheme.search_and_find + time_reward_corrected
-                )
+            if drone_found_person:
+                max_detection_probability = min(human.get_mult() * self.drone.pod, 1)
+                
+                if random_value <= max_detection_probability:
+                    self.persons_set.remove(human)
+                    
+                    time_decay_factor = 1 - (self.timestep / self.timestep_limit)
+                    time_reward_corrected = self.reward_scheme.search_and_find * time_decay_factor
+                    
+                    rewards[agent] = self.reward_scheme.search_and_find + time_reward_corrected
 
                 if len(self.persons_set) == 0:
                     person_found = True
                     for agent in self.agents:
                         terminations[agent] = True
                         truncations[agent] = True
+                        
             elif is_searching:
                 prob_matrix = self.probability_matrix.get_matrix()
                 rewards[agent] = (
