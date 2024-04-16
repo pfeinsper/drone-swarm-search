@@ -140,21 +140,17 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     def reset(
         self,
         seed=None,
-        return_info=False,
         options=None,
     ):
-        # Person initialization
+        self._was_reset = True
         self.persons_set = self.create_persons_set()
-        
-        # reset target position
         for person in self.persons_set:
             person.reset_position()
             person.update_time_step_relation(self.time_step_relation, self.cell_size)
-        
+
         vector = options.get("vector") if options else None
         drones_positions = options.get("drones_positions") if options else None
-        individual_multiplication = options.get("individual_multiplication") if options else None
-        self._was_reset = True
+        pod_multiplier = options.get("person_pod_multipliers") if options else None
 
         if drones_positions is not None:
             if not self.is_valid_position_drones(drones_positions):
@@ -162,11 +158,10 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                     "You are trying to place the drone in a invalid position"
                 )
 
-        if individual_multiplication is not None:
-            if not self.is_valid_mult(individual_multiplication):
-                raise ValueError(
-                    "The mult scale value must be a number and equal to or greater than 0."
-                )
+        if pod_multiplier is not None:
+            self.raise_if_unvalid_mult(pod_multiplier)
+            for person, mult in zip(self.persons_set, pod_multiplier):
+                person.set_mult(mult)
 
         self.agents = copy(self.possible_agents)
         self.timestep = 0
@@ -194,10 +189,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         else:
             self.required_drone_positions(drones_positions)
 
-        if individual_multiplication is not None:
-            for person, mult in zip(self.persons_set, individual_multiplication):
-                person.set_mult(mult)
-
         if self.render_mode == "human":
             self.pygame_renderer.probability_matrix = self.probability_matrix
             self.pygame_renderer.enable_render()
@@ -208,13 +199,15 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         infos = {drone: {"Found": False} for drone in self.agents}
         return observations, infos
 
-    def is_valid_mult(self, individual_multiplication: list[int]) -> bool:
+    def raise_if_unvalid_mult(self, individual_multiplication: list[int]) -> bool:
         if len(individual_multiplication) != len(self.persons_set):
-            return False
+            raise ValueError(
+                "The number of multipliers must be equal to the number of persons."
+            )
+
         for mult in individual_multiplication:
             if not isinstance(mult, (int, float)) or mult < 0:
-                return False
-        return True
+                raise ValueError("The multiplier must be a positive number.")
 
     def pre_search_simulate(self):
         for _ in range(self.pre_render_steps):
@@ -283,7 +276,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                     rewards[agent] = self.reward_scheme.default
                 self.rewards_sum[agent] += rewards[agent]
                 continue
-                
+
             drone_found_person = False
             for human in self.persons_set:
                 drone_found_person = (
@@ -295,21 +288,23 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             random_value = random()
             if drone_found_person:
                 max_detection_probability = min(human.get_mult() * self.drone.pod, 1)
-                
+
                 if random_value <= max_detection_probability:
                     self.persons_set.remove(human)
-                    
+
                     time_decay_factor = 1 - (self.timestep / self.timestep_limit)
-                    time_reward_corrected = self.reward_scheme.search_and_find * time_decay_factor
-                    
-                    rewards[agent] = self.reward_scheme.search_and_find + time_reward_corrected
+                    time_reward_corrected = (
+                        self.reward_scheme.search_and_find * time_decay_factor
+                    )
+                    rewards[agent] = (
+                        self.reward_scheme.search_and_find + time_reward_corrected
+                    )
 
                 if len(self.persons_set) == 0:
                     person_found = True
                     for agent in self.agents:
                         terminations[agent] = True
                         truncations[agent] = True
-                        
             elif is_searching:
                 prob_matrix = self.probability_matrix.get_matrix()
                 rewards[agent] = (

@@ -26,7 +26,7 @@ def policy(obs, agents):
 
 opt = {
     "drones_positions": [(10, 0), (10, 10)],
-    "individual_multiplication": [0.1, 0.4, 0.5, 1.2],
+    "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
 }
 observations, info = env.reset(options=opt)
 
