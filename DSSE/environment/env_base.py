@@ -2,7 +2,7 @@ import functools
 import numpy as np
 from abc import ABC, abstractmethod
 from pettingzoo import ParallelEnv
-from .drone import DroneData
+from .entities.drone import DroneData
 from .pygame_interface import PygameInterface
 from .simulation.dynamic_probability import ProbabilityMatrix
 from .simulation.dynamic_probability import ProbabilityMatrix

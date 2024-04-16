@@ -1,16 +1,10 @@
 from random import random, randint
 import functools
-from copy import copy
 import numpy as np
 from gymnasium.spaces import MultiDiscrete, Discrete, Box, Tuple
-from pettingzoo.utils.env import ParallelEnv
-from .simulation.dynamic_probability import ProbabilityMatrix
 from .constants import RED, GREEN, Actions, Reward
-from .pygame_interface import PygameInterface
-from .drone import DroneData
-from .person import Person
+from .entities.person import Person
 from .env_base import DroneSwarmSearchBase
-from DSSE.environment.time_step import calculate_simulation_time_step
 
 
 class DroneSwarmSearch(DroneSwarmSearchBase):

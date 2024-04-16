@@ -1,6 +1,6 @@
 import numpy as np
 from numba import njit
-from DSSE.environment.time_step import calculate_time_step
+from .time_step import calculate_time_step
 
 
 class ProbabilityMatrix:

@@ -2,7 +2,7 @@ import numpy as np
 from random import uniform, choice
 from numpy.linalg import norm
 from math import cos, sin, radians, pi, exp
-from DSSE.environment.time_step import calculate_time_step
+from DSSE.environment.simulation.time_step import calculate_time_step
 
 
 class Person:
