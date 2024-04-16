@@ -213,7 +213,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                     truncations[drone_1_id] = True
                     terminations[drone_1_id] = True
                     rewards[drone_1_id] = self.reward_scheme.drones_collision
-    
+
     def move_drone(self, position, action):
         """
         Returns a tuple with (is_terminal, new_position, reward)

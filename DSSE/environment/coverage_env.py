@@ -67,7 +67,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         self.repeated_coverage = 0
         infos = self.compute_infos(False)
         return obs, infos
-    
+
     def reset_search_state(self):
         # This is in (x, y)
         self.seen_states = {pos for pos in self.agents_positions.values()}
@@ -75,13 +75,12 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         mat = self.probability_matrix.get_matrix()
         # (row, col)
         close_to_zero = np.argwhere(np.abs(mat) < 1e-10)
-        
+
         # Remove the need to visit cells with POC near to 0
         for y, x in close_to_zero:
             self.seen_states.add((x, y))
-        
-        self.not_seen_states = self.all_states - self.seen_states
 
+        self.not_seen_states = self.all_states - self.seen_states
 
     def create_observations(self):
         observations = {}
@@ -173,4 +172,4 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         return {drone: infos for drone in self.agents}
 
     def action_space(self, agent):
-        return Discrete(8) 
+        return Discrete(8)

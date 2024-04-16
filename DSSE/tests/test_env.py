@@ -1,7 +1,7 @@
 import pytest
 from DSSE import DroneSwarmSearch
 from DSSE.environment.constants import Actions
-from DSSE.tests.drone_policy import policy
+from DSSE.tests.drone_policy import random_policy
 from pettingzoo.test import parallel_api_test
 
 
@@ -343,7 +343,7 @@ def test_castaway_count_after_reset(
     rewards = 0
     done = False
     while not done:
-        actions = policy(observations, env.get_agents(), env)
+        actions = random_policy(observations, env.get_agents(), env)
         observations, reward, _, done, info = env.step(actions)
         rewards += sum(reward.values())
         done = any(done.values())
@@ -438,7 +438,9 @@ def test_get_wrong_if_scale_mult_is_not_greater_than_0(person_amount, mult):
         (5, [1, 0.8, 0.7, 0.6, 0.5, 0.6, 0.5]),
     ],
 )
-def test_get_wrong_if_number_of_mults_is_not_equal_to_person_amount(person_amount, mult):
+def test_get_wrong_if_number_of_mults_is_not_equal_to_person_amount(
+    person_amount, mult
+):
     with pytest.raises(Exception):
         env = init_drone_swarm_search(person_amount=person_amount)
         opt = {"person_pod_multipliers": mult}
