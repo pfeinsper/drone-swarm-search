@@ -18,6 +18,5 @@ while env.agents:
     step += 1
     actions = {agent: env.action_space(agent).sample() for agent in env.agents}
     observations, rewards, terminations, truncations, infos = env.step(actions)
-    print(f"Step: {step}")
 
 print(infos["drone0"])
