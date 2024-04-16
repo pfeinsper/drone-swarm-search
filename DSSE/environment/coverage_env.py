@@ -14,8 +14,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         leave_grid=-100,
         exceed_timestep=-100,
         drones_collision=-100,
-        search_cell=0,
-        search_and_find=10000,
+        search_cell=10,
+        search_and_find=100,
     )
 
     def __init__(
@@ -60,15 +60,28 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def reset(self, seed=None, options=None):
         obs, _ = super().reset(seed=seed, options=options)
-        self.seen_states = {pos for pos in self.agents_positions.values()}
-        self.not_seen_states = self.all_states - self.seen_states
-        mat = self.probability_matrix.get_matrix()
-        close_to_zero = np.argwhere(np.abs(mat) < 1e-10)
-        print(close_to_zero)
-        infos = self.compute_infos(False)
+
+        self.reset_search_state()
+
         self.cumm_pos = 0
         self.repeated_coverage = 0
+        infos = self.compute_infos(False)
         return obs, infos
+    
+    def reset_search_state(self):
+        # This is in (x, y)
+        self.seen_states = {pos for pos in self.agents_positions.values()}
+
+        mat = self.probability_matrix.get_matrix()
+        # (row, col)
+        close_to_zero = np.argwhere(np.abs(mat) < 1e-10)
+        
+        # Remove the need to visit cells with POC near to 0
+        for y, x in close_to_zero:
+            self.seen_states.add((x, y))
+        
+        self.not_seen_states = self.all_states - self.seen_states
+
 
     def create_observations(self):
         observations = {}
@@ -124,7 +137,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
                 self.seen_states.add(new_position)
                 self.not_seen_states.remove(new_position)
                 # Probability of sucess (POS) = POC * POD
-                self.cumm_pos += prob_matrix[new_y, new_x] * self.pod
+                self.cumm_pos += prob_matrix[new_y, new_x] * self.drone.pod
             else:
                 self.repeated_coverage += 1
 
@@ -149,14 +162,15 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def compute_infos(self, is_completed: bool) -> dict[str, dict]:
         # TODO: Is this the best way to inform the coverage rate, Cum_pos and repetitions?
-        coverage_rate = len(self.seen_states) / len(self.all_states)
+        total_states = len(self.seen_states) + len(self.not_seen_states)
+        coverage_rate = len(self.seen_states) / total_states
         infos = {
             "is_completed": is_completed,
             "coverage_rate": coverage_rate,
-            "repeated_coverage": self.repeated_coverage / len(self.all_states),
+            "repeated_coverage": self.repeated_coverage / total_states,
             "acumulated_pos": self.cumm_pos,
         }
         return {drone: infos for drone in self.agents}
 
     def action_space(self, agent):
-        return Discrete(8)
+        return Discrete(8) 
