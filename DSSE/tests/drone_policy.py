@@ -41,7 +41,7 @@ def distance(point1, point2):
     return distance
 
 
-def random_policy(obs, agents, env):
+def policy(obs, agents, env):
     actions = {}
     for agent in agents:
         castaways_positions = [person.get_position() for person in env.get_persons()]

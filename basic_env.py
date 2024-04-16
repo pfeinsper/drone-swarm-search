@@ -1,5 +1,4 @@
 from DSSE import DroneSwarmSearch
-from DSSE.tests.drone_policy import random_policy
 
 env = DroneSwarmSearch(
     grid_size=40,

@@ -1,7 +1,7 @@
 import pytest
 from DSSE import DroneSwarmSearch
 from DSSE.environment.constants import Actions
-from DSSE.tests.drone_policy import random_policy
+from DSSE.tests.drone_policy import policy
 from pettingzoo.test import parallel_api_test
 
 
@@ -343,7 +343,7 @@ def test_castaway_count_after_reset(
     rewards = 0
     done = False
     while not done:
-        actions = random_policy(observations, env.get_agents(), env)
+        actions = policy(observations, env.get_agents(), env)
         observations, reward, _, done, info = env.step(actions)
         rewards += sum(reward.values())
         done = any(done.values())
