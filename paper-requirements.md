@@ -39,7 +39,7 @@
 - [ ] O paper não deve focar nos resultados obtidos com o software.
 - [ ] Explicar as funcionalidades e domínio de aplicação para um leitor não-especialista.
 - [ ] Explicar as aplicações do software.
-- [ ]Paper de 250 a 1000 palavres
+- [ ] Paper de 250 a 1000 palavres
 - [ ] Lista de autores e suas afiliações.
 - [ ] Um sumário em alto-nivel das funcionalidades do software para um leitor não-especialista (introdução).
 - [ ] "Statement of need": seção para ilustrar claramente o propósito do software e contextualiza o trabalho relacionado.
