@@ -142,7 +142,9 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
         # Get dummy infos
         is_completed = len(self.not_seen_states) == 0
-        self.render()
+        if self.render_mode == "human":
+            self.render()
+        
         if is_completed:
             # TODO: Proper define reward for completing the search (R_done)
             rewards = {
