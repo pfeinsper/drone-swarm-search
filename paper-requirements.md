@@ -2,11 +2,11 @@
 
 ## Requisitos de Software
 
-- [X] Software é Open Source segundo a [deifinção formal](https://opensource.org/osd).
-- [X] Software é hospedado de forma que não requer aprovação ou pagamentos.
-- [X] Software possui aplicação óbvia em pesquisa. (No nosso caso, "supports the functioning of research instruments or the execution of research experiments".)
-- [X] O *submitter* deve ser contribuidor majoritário. (Não menos de 3 meses de trabalho.)
-- [X] Repositório pode ser clonado sem registro.
+- [x] Software é Open Source segundo a [deifinção formal](https://opensource.org/osd).
+- [x] Software é hospedado de forma que não requer aprovação ou pagamentos.
+- [x] Software possui aplicação óbvia em pesquisa. (No nosso caso, "supports the functioning of research instruments or the execution of research experiments".)
+- [x] O *submitter* deve ser contribuidor majoritário. (Não menos de 3 meses de trabalho.)
+- [x] Repositório pode ser clonado sem registro.
 - [x] Repositório pode ser encontrado através de navegação online sem registro.
 - [x] Ter um *issue tracker* que possa ser acessado/lido sem registro.
 - [x] Permitir que pessoas criem issues/file tickets contra o repositório.
@@ -17,9 +17,9 @@
 - Número de commits.
 - Número de autores.
 - [x] Número de linhas de código (ter mais de 1000 é desejável).
-- [X] Se o software já foi citado em papers acadêmicos.
-- [ ] Se o software é útil o suficiente, com chances de ser citado "by your peer group" (não entendi se é o grupo de autores ou o grupo que estará revisando.)
-- [ ] Ser [feature-complete](https://scrumdictionary.com/term/feature-complete/) (não querem soluções pela metade.)
+- [x] Se o software já foi citado em papers acadêmicos.
+- [x] Se o software é útil o suficiente, com chances de ser citado "by your peer group" (não entendi se é o grupo de autores ou o grupo que estará revisando.)
+- [x] Ser [feature-complete](https://scrumdictionary.com/term/feature-complete/) (não querem soluções pela metade.)
 - [x] Estar disponibilizado em um pacote que segue o padrão do Python.
 - [x] Ter um design para receber manutenção (não ser só uma modificação pontual de um software já existente.)
 
