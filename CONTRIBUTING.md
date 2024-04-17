@@ -1,43 +1,75 @@
-# How to contribute
+## How to Contribute
 
-I'm really glad you're reading this, because we need volunteer developers to help this project come to fruition.
+**Welcome to the Drone Swarm Search Environment project!**
 
-If you haven't already, come find us in IRC ([#opengovernment](irc://chat.freenode.net/opengovernment) on freenode). We want you working on things you're excited about.
+We're thrilled that you're interested in contributing to our project. Your involvement is essential for keeping up to date with the most recent reinforcement learning community study & research needs. Whether you're fixing a bug, adding a feature, or improving the documentation, your contributions are welcome!
 
-Here are some important resources:
+Here’s how you can contribute:
 
-  * [OpenGovernment for Developers](http://opengovernment.org/pages/developer) tells you where we are,
-  * [Our roadmap](http://opengovernment.org/pages/wish-list) is the 10k foot view of where we're going, and
-  * [Pivotal Tracker](http://pivotaltracker.com/projects/64842) is our day-to-day project management space.
-  * Mailing list: Join our [developer list](http://groups.google.com/group/opengovernment/)
-  * Bugs? [Lighthouse](https://participatorypolitics.lighthouseapp.com/projects/47665-opengovernment/overview) is where to report them
-  * IRC: chat.freenode.net channel [#opengovernment](irc://chat.freenode.net/opengovernment). We're usually there during business hours.
+1. **Explore our issues**: Start by looking through the [issues](https://github.com/pfeinsper/drone-swarm-search/issues) on our GitHub repository.
+
+2. **Fork and clone the repository**: Once you've found an issue to work on, fork the repository and then clone it to your local machine so you can start your work.
+
+3. **Set up your environment**: We strongly recommend using [Python's Virtual Environment](https://docs.python.org/3/library/venv.html) to manage your dependencies. Setting up a virtual environment helps isolate and manage the packages specific to our project, ensuring compatibility and preventing conflicts with other projects.
+
+4. **Make your changes**: Create a new branch for your changes. This keeps the work organized and makes it easy for you to start different contributions on new branches without conflicts.
+
+5. **Test your changes**: Before submitting your pull request, make sure your changes do not break any existing functionality. We appreciate if you add tests to cover new code or bugs.
+
+6. **Submit a pull request**: Push your changes to your fork and submit a pull request to the main project. Fill in the provided PR template with all requested details. Explain the reason for your changes and how they improve the project.
+
+7. **Review process**: The maintainers will review your pull request as soon as possible. Participate in the discussion, and make any requested changes. We aim to work collaboratively to ensure that every contribution is of high quality.
+
+8. **Stay involved**: Contributions don’t end with a pull request! You can help out by reviewing other people's pull requests, providing constructive feedback, and engaging in discussions to make the project better for everyone.
 
 ## Testing
 
-We have a handful of 
+**Ensuring Quality with Automated Tests**
 
-## Submitting changes
+In our project, we maintain high standards of quality and reliability by rigorously testing our code. We use [Pytest](https://docs.pytest.org/en/latest/), a powerful testing framework for Python, to write and run our tests.
 
-Please send a [GitHub Pull Request to opengovernment](https://github.com/opengovernment/opengovernment/pull/new/master) with a clear list of what you've done (read more about [pull requests](http://help.github.com/pull-requests/)). When you send a pull request, we will love you forever if you include RSpec examples. We can always use more test coverage. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
+All of our tests are located in the `DSSE/tests` directory. This structure helps keep the tests organized and separate from the main codebase.
 
-Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
+Before you submit your changes, you must run the existing tests to ensure that your contributions do not break any current functionality. To run the tests, follow these steps:
 
-    $ git commit -m "A brief summary of the commit
-    > 
-    > A paragraph describing what changed and its impact."
+1. **Navigate to the project root**: Change to the directory where your project is located.
+   
+2. **Activate your virtual environment**: Ensure that your virtual environment is active to use the project-specific dependencies.
 
-## Coding conventions
+3. **Run the tests**: Execute the following command to run all tests:
+   ```
+   pytest
+   ```
 
-Start reading our code and you'll get the hang of it. We optimize for readability:
+## Coding Conventions
 
-  * We indent using two spaces (soft tabs)
-  * We use HAML for all views
-  * We avoid logic in views, putting HTML generators into helpers
-  * We ALWAYS put spaces after list items and method parameters (`[1, 2, 3]`, not `[1,2,3]`), around operators (`x += 1`, not `x+=1`), and around hash arrows.
-  * This is open source software. Consider the people who will read your code, and make it look nice for them. It's sort of like driving a car: Perhaps you love doing donuts when you're alone, but with passengers the goal is to make the ride as smooth as possible.
-  * So that we can consistently serve images from the CDN, always use image_path or image_tag when referring to images. Never prepend "/images/" when using image_path or image_tag.
-  * Also for the CDN, always use cwd-relative paths rather than root-relative paths in image URLs in any CSS. So instead of url('/images/blah.gif'), use url('../images/blah.gif').
+**Maintaining Code Quality**
 
-Thanks,
-Carl Tashian, Participatory Politics Foundation
+In our project, we strive for excellence in our codebase and uphold high standards for readability, maintainability, and efficiency. To achieve this, we base our coding conventions on the principles found in *Clean Code: A Handbook of Agile Software Craftsmanship* by Robert C. Martin.
+
+### Why Clean Code?
+
+*Clean Code* provides guidelines and best practices designed to improve the overall quality of software. Adhering to these principles aids in producing code that is not only functional but also clean and understandable to others. Here are a few key conventions we follow:
+
+1. **Meaningful Names**: Use descriptive, specific names for variables, functions, and classes. Names should clearly reflect their function and the data they hold.
+
+2. **Functions Should Do One Thing**: Functions must be small and focused. They should perform one task and do it well, which simplifies testing, debugging, and maintenance.
+
+3. **Clean Tests**: Just as with production code, cleanliness is crucial in test code. Tests should be concise, expressive, and cover both expected and edge case scenarios.
+
+4. **Handling Errors**: Error handling is important for maintaining the integrity of the application. It should be clear, concise, and must not obscure logic.
+
+5. **Code Formatting**: Consistent formatting is not just aesthetic; it promotes readability and reduces the cognitive load for all developers. Follow the format settings in our repository to ensure consistency.
+
+If you have any questions or need assistance with your contributions, please don't hesitate to reach out to our community for help. We aim to make your experience as enjoyable and productive as possible!
+
+Thank you for contributing to our project! We truly appreciate your efforts and are excited to see what you build with us.
+
+Best regards,
+
+**The Development Team:**
+
+- **Renato Laffranchi**, Computer Engineer
+- **Pedro Andrade**, Computer Engineer
+- **Ricardo Rodrigues**, Computer Engineer
+- **Jorás Oliveira**, Computer Engineer
