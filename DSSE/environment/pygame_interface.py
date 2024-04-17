@@ -20,7 +20,7 @@ class PygameInterface:
         self.render_gradient = render_gradient
         self.render_grid = render_grid
         self.window_size = 700
-        self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
+        self.screen = None
         self.render_on = False
         self.probability_matrix = None
 
@@ -45,6 +45,7 @@ class PygameInterface:
         if self.render_on:
             return
 
+        self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
         self.screen = pygame.display.set_mode(self.screen.get_size())
 
         current_directory = os.path.dirname(os.path.abspath(__file__))

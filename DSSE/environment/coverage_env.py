@@ -70,7 +70,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def reset_search_state(self):
         # This is in (x, y)
-        self.seen_states = {pos for pos in self.agents_positions.values()}
+        self.seen_states = {pos for pos in self.agents_positions}
 
         mat = self.probability_matrix.get_matrix()
         # (row, col)
@@ -86,9 +86,9 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         observations = {}
 
         probability_matrix = self.probability_matrix.get_matrix()
-        for agent in self.agents:
+        for idx, agent in enumerate(self.agents):
             observation = (
-                (self.agents_positions[agent][0], self.agents_positions[agent][1]),
+                self.agents_positions[idx],
                 probability_matrix,
             )
             observations[agent] = observation
@@ -109,7 +109,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         self.timestep += 1
 
         prob_matrix = self.probability_matrix.get_matrix()
-        for agent in self.agents:
+        for idx, agent in enumerate(self.agents):
             if agent not in actions:
                 raise ValueError("Missing action for " + agent)
 
@@ -122,13 +122,13 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
                 truncations[agent] = True
                 continue
 
-            drone_x, drone_y = self.agents_positions[agent]
+            drone_x, drone_y = self.agents_positions[idx]
             new_position = self.move_drone((drone_x, drone_y), drone_action)
             if not self.is_valid_position(new_position):
                 rewards[agent] = self.reward_scheme.leave_grid
                 continue
 
-            self.agents_positions[agent] = new_position
+            self.agents_positions[idx] = new_position
             new_x, new_y = new_position
             if new_position in self.not_seen_states:
                 reward_poc = 1 / (self.timestep) * prob_matrix[new_y, new_x] * 1_000

@@ -66,11 +66,10 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         self.disaster_position = disaster_position
 
         self.possible_agents = []
-        self.agents_positions = {}
+        self.agents_positions = [(None, None)] * self.drone.amount
         for i in range(self.drone.amount):
             agent_name = "drone" + str(i)
             self.possible_agents.append(agent_name)
-            self.agents_positions[agent_name] = (None, None)
 
         self.render_mode = render_mode
         self.probability_matrix = None
@@ -98,7 +97,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
 
     def render(self):
         self.pygame_renderer.render_map()
-        self.pygame_renderer.render_entities(self.agents_positions.values())
+        self.pygame_renderer.render_entities(self.agents_positions)
         self.pygame_renderer.refresh_screen()
 
     @abstractmethod
@@ -167,11 +166,11 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
     def default_drones_positions(self):
         counter_x = 0
         counter_y = 0
-        for agent in self.agents:
+        for agent_index in range(len(self.agents)):
             if counter_x >= self.grid_size:
                 counter_x = 0
                 counter_y += 1
-            self.agents_positions[agent] = (counter_x, counter_y)
+            self.agents_positions[agent_index] = (counter_x, counter_y)
             counter_x += 1
 
     def required_drone_positions(self, drones_positions: list):
@@ -183,7 +182,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
             )
         for i in range(len(drones_positions)):
             x, y = drones_positions[i]
-            self.agents_positions[self.possible_agents[i]] = (x, y)
+            self.agents_positions[i] = (x, y)
 
     @abstractmethod
     def pre_search_simulate(self):
@@ -201,8 +200,8 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         """
         Check for drone collision and compute terminations, rewards and truncations.
         """
-        for drone_1_id, drone_1_position in self.agents_positions.items():
-            for drone_2_id, drone_2_position in self.agents_positions.items():
+        for drone_1_id, drone_1_position in enumerate(self.agents_positions):
+            for drone_2_id, drone_2_position in enumerate(self.agents_positions):
                 if drone_1_id == drone_2_id:
                     continue
 

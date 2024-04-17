@@ -43,10 +43,10 @@ def distance(point1, point2):
 
 def policy(obs, agents, env):
     actions = {}
-    for agent in agents:
+    for idx, agent in enumerate(agents):
         castaways_positions = [person.get_position() for person in env.get_persons()]
 
-        drone_position = env.agents_positions[agent]
+        drone_position = env.agents_positions[idx]
 
         nearest_castaway = min(
             castaways_positions, key=lambda pos: distance(drone_position, pos)
