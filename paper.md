@@ -14,21 +14,31 @@ authors:
     corresponding: true
     equal-contrib: true
     affiliation: 1
-  - name: Author
+  - name: Jorás
     orcid: 0000-0000-0000-0000
     equal-contrib: true
     affiliation: 1
-  - name: Author
+  - name: Pedro
     orcid: 0000-0000-0000-0000
     equal-contrib: true
     affiliation: 1
-  - name: Author
+  - name: Ricardo
     orcid: 0000-0000-0000-0000
     equal-contrib: true
     affiliation: 1
+  - name: Fabrício Jailson Barth
+    orcid: 0000-0000-0000-0000
+    equal-contrib: true
+    affiliation: 1
+  - name: José Fernando
+    orcid: 0000-0000-0000-0000
+    equal-contrib: true
+    affiliation: 2
 affiliations:
  - name: Insper, Brazil
    index: 1
+ - name: Embraer, Brazil
+   index: 2
 date: XX April 2024
 bibliography: paper.bib
 
@@ -36,7 +46,7 @@ bibliography: paper.bib
 
 # Summary
 
-Maritime navigation plays a crucial role across various domains, including leisure activities and commercial fishing. However, maritime transportation is particularly significant as it accounts for 80% to 90% of global trade [@allianz:2023]. Therefore, with maritime safety is on focus, the importance of optimizing search and rescue (SAR) missions has grown / the urge to optimize search and rescue (SAR) missions has grown.
+
 
 The forces on stars, galaxies, and dark matter under external gravitational
 fields lead to the dynamical evolution of structures in the universe. The orbits
@@ -50,9 +60,17 @@ performing numerical orbit integration).
 
 # Statement of need
 
-`Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for `Gala` was
+Maritime navigation plays a crucial role across various domains, including leisure activities and commercial fishing. However, maritime transportation is particularly significant as it accounts for 80% to 90% of global trade [@allianz]. Therefore, maritime safety is essential, demanding significant enhancements in search and rescue (SAR) missions. It is imperative that SAR missions minimize the search area and maximize the chances of locating the search object.
+
+To achieve this objective, traditional SAR operations used methods
+such as parallel track, crawl line, extended square, and sector searches
+(IAMSAR, 2016; Koopman, 1957). Recently, there has been a surge in
+research aimed at enhancing traditional search methods. 
+Ramirez et al.(2011) = https://ieeexplore.ieee.org/document/6003509
+
+`DSSE` is a Python package that provides a simulation environment using the PettingZoo interface with the purpose of training and evaluating single or multi-agent reinforcement learning algorithms. The API was designed to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning.
+
+The API for `Gala` was
 designed to provide a class-based and user-friendly interface to fast (C or
 Cython-optimized) implementations of common operations such as gravitational
 potential and force evaluation, orbit integration, dynamical transformations,
