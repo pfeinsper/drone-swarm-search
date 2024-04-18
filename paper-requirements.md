@@ -33,8 +33,8 @@
 
 ## Escrita do paper
 
+- [x] Seguir o [template](https://joss.readthedocs.io/en/latest/submitting.html#example-paper-and-bibliography).
 - [ ] Deve ser escrito em MarkDown e compilado com Pandoc (criar uma [GitHub Action](https://joss.readthedocs.io/en/latest/submitting.html#github-action)).
-- [ ] Seguir o [template](https://joss.readthedocs.io/en/latest/submitting.html#example-paper-and-bibliography).
 - [ ] (Opcional) Criar um arquivo de metadados utilizando o [script](https://gist.github.com/arfon/478b2ed49e11f984d6fb).
 - [ ] O paper não deve focar nos resultados obtidos com o software.
 - [ ] Explicar as funcionalidades e domínio de aplicação para um leitor não-especialista.
