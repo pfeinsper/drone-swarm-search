@@ -26,3 +26,17 @@ def calculate_bounding_rectangle(coordinates):
         max_lon = max(max_lon, lon)
 
     return min_lat, max_lat, min_lon, max_lon
+
+def convert_lat_lon_to_xy(coordinates, map_size):
+    min_lat, max_lat, min_lon, max_lon = calculate_bounding_rectangle(coordinates)
+    width = max_lon - min_lon
+    height = max_lat - min_lat
+    map_width, map_height = map_size
+
+    cartesian_coordinates = []
+    for lat, lon in coordinates:
+        x = round((lon - min_lon) / width * map_width)
+        y = round((lat - min_lat) / height * map_height)
+        cartesian_coordinates.append((x, y))
+
+    return cartesian_coordinates
