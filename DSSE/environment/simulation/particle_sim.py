@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta
+from typing import List, Tuple, str
 from opendrift.models.oceandrift import OceanDrift
 
 
-def open_drift(lat, lon, time, number, radius, duration, outfile):
+def open_drift(lat: float, lon: float, time: datetime, number: int, radius: int, duration: timedelta, outfile: str) -> List[Tuple[float, float]]:
     o = OceanDrift()
     o.add_readers_from_list(
         ["https://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0/uv3z"]
@@ -15,19 +17,7 @@ def open_drift(lat, lon, time, number, radius, duration, outfile):
 
     return list(zip(lat_final, lon_final))
 
-def calculate_bounding_rectangle(coordinates):
-    min_lat = max_lat = coordinates[0][0]
-    min_lon = max_lon = coordinates[0][1]
-
-    for lat, lon in coordinates:
-        min_lat = min(min_lat, lat)
-        max_lat = max(max_lat, lat)
-        min_lon = min(min_lon, lon)
-        max_lon = max(max_lon, lon)
-
-    return min_lat, max_lat, min_lon, max_lon
-
-def convert_lat_lon_to_xy(coordinates, map_size):
+def convert_lat_lon_to_xy(coordinates: List[Tuple[float, float]], map_size: Tuple[int, int]) -> List[Tuple[int, int]]:
     min_lat, max_lat, min_lon, max_lon = calculate_bounding_rectangle(coordinates)
     width = max_lon - min_lon
     height = max_lat - min_lat
@@ -40,3 +30,11 @@ def convert_lat_lon_to_xy(coordinates, map_size):
         cartesian_coordinates.append((x, y))
 
     return cartesian_coordinates
+
+def calculate_bounding_rectangle(coordinates: List[Tuple[float, float]]) -> Tuple[float, float, float, float]:
+    latitudes, longitudes = zip(*coordinates)
+
+    min_lat, max_lat = min(latitudes), max(latitudes)
+    min_lon, max_lon = min(longitudes), max(longitudes)
+
+    return min_lat, max_lat, min_lon, max_lon
