@@ -2,6 +2,7 @@ from gymnasium.spaces import Discrete
 from .env_base import DroneSwarmSearchBase
 from .constants import Reward
 import numpy as np
+import functools
 
 
 # TODO: Match env_base to conv_env -> If using particle sim, redo __init__ and reset.
@@ -153,7 +154,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             terminations = {drone: True for drone in self.agents}
         infos = self.compute_infos(is_completed)
 
-        self.compute_drone_collision(terminations, rewards, truncations)
+        self.compute_drone_collision(terminations, rewards)
         # Get observations
         observations = self.create_observations()
         # If terminted, reset the agents (pettingzoo parallel env requirement)
@@ -173,5 +174,6 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         }
         return {drone: infos for drone in self.agents}
 
+    @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
         return Discrete(8)
