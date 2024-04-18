@@ -2,6 +2,7 @@ from gymnasium.spaces import Discrete
 from .env_base import DroneSwarmSearchBase
 from .constants import Reward
 import numpy as np
+import functools
 
 
 # TODO: Match env_base to conv_env -> If using particle sim, redo __init__ and reset.
@@ -70,7 +71,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def reset_search_state(self):
         # This is in (x, y)
-        self.seen_states = {pos for pos in self.agents_positions.values()}
+        self.seen_states = {pos for pos in self.agents_positions}
 
         mat = self.probability_matrix.get_matrix()
         # (row, col)
@@ -86,9 +87,9 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         observations = {}
 
         probability_matrix = self.probability_matrix.get_matrix()
-        for agent in self.agents:
+        for idx, agent in enumerate(self.agents):
             observation = (
-                (self.agents_positions[agent][0], self.agents_positions[agent][1]),
+                self.agents_positions[idx],
                 probability_matrix,
             )
             observations[agent] = observation
@@ -109,7 +110,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         self.timestep += 1
 
         prob_matrix = self.probability_matrix.get_matrix()
-        for agent in self.agents:
+        for idx, agent in enumerate(self.agents):
             if agent not in actions:
                 raise ValueError("Missing action for " + agent)
 
@@ -122,13 +123,13 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
                 truncations[agent] = True
                 continue
 
-            drone_x, drone_y = self.agents_positions[agent]
+            drone_x, drone_y = self.agents_positions[idx]
             new_position = self.move_drone((drone_x, drone_y), drone_action)
             if not self.is_valid_position(new_position):
                 rewards[agent] = self.reward_scheme.leave_grid
                 continue
 
-            self.agents_positions[agent] = new_position
+            self.agents_positions[idx] = new_position
             new_x, new_y = new_position
             if new_position in self.not_seen_states:
                 reward_poc = 1 / (self.timestep) * prob_matrix[new_y, new_x] * 1_000
@@ -142,7 +143,9 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
         # Get dummy infos
         is_completed = len(self.not_seen_states) == 0
-        self.render()
+        if self.render_mode == "human":
+            self.render()
+        
         if is_completed:
             # TODO: Proper define reward for completing the search (R_done)
             rewards = {
@@ -151,7 +154,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             terminations = {drone: True for drone in self.agents}
         infos = self.compute_infos(is_completed)
 
-        self.compute_drone_collision(terminations, rewards, truncations)
+        self.compute_drone_collision(terminations, rewards)
         # Get observations
         observations = self.create_observations()
         # If terminted, reset the agents (pettingzoo parallel env requirement)
@@ -171,5 +174,6 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         }
         return {drone: infos for drone in self.agents}
 
+    @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
         return Discrete(8)

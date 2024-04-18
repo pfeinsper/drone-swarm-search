@@ -128,7 +128,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     def render(self):
         self.pygame_renderer.render_map()
         self.pygame_renderer.render_entities(self.persons_set)
-        self.pygame_renderer.render_entities(self.agents_positions.values())
+        self.pygame_renderer.render_entities(self.agents_positions)
         self.pygame_renderer.refresh_screen()
 
     def reset(
@@ -179,9 +179,9 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         self.probability_matrix.step()
 
         probability_matrix = self.probability_matrix.get_matrix()
-        for agent in self.agents:
+        for idx, agent in enumerate(self.agents):
             observation = (
-                (self.agents_positions[agent][0], self.agents_positions[agent][1]),
+                self.agents_positions[idx],
                 probability_matrix,
             )
             observations[agent] = observation
@@ -200,7 +200,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         truncations = {a: False for a in self.agents}
         person_found = False
 
-        for agent in self.agents:
+        for idx, agent in enumerate(self.agents):
             if agent not in actions:
                 raise ValueError("Missing action for " + agent)
 
@@ -218,7 +218,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                 terminations[agent] = True
                 continue
 
-            drone_x, drone_y = self.agents_positions[agent]
+            drone_x, drone_y = self.agents_positions[idx]
             is_searching = drone_action == Actions.SEARCH.value
 
             if drone_action != Actions.SEARCH.value:
@@ -226,7 +226,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                 if not self.is_valid_position(new_position):
                     rewards[agent] = self.reward_scheme.leave_grid
                 else:
-                    self.agents_positions[agent] = new_position
+                    self.agents_positions[idx] = new_position
                     rewards[agent] = self.reward_scheme.default
                 self.rewards_sum[agent] += rewards[agent]
                 continue
@@ -274,7 +274,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         infos = {drone: {"Found": person_found} for drone in self.agents}
 
         # CHECK COLISION - Drone
-        self.compute_drone_collision(terminations, rewards, truncations)
+        self.compute_drone_collision(terminations, rewards)
         # TODO: Check real usage of this, gives error when using w/ RL libs
         # rewards["total_reward"] = sum(rewards.values())
         # self.rewards_sum["total"] += rewards["total_reward"]
