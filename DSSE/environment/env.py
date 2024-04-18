@@ -269,7 +269,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         infos = {drone: {"Found": person_found} for drone in self.agents}
 
         # CHECK COLISION - Drone
-        self.compute_drone_collision(terminations, rewards, truncations)
+        self.compute_drone_collision(terminations, rewards)
         # TODO: Check real usage of this, gives error when using w/ RL libs
         # rewards["total_reward"] = sum(rewards.values())
         # self.rewards_sum["total"] += rewards["total_reward"]

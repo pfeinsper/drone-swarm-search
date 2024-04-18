@@ -1,6 +1,7 @@
 import pytest
 from DSSE import CoverageDroneSwarmSearch
 from DSSE.environment.constants import Actions
+from pettingzoo.test import parallel_api_test
 
 
 def init_drone_swarm_search(
@@ -74,8 +75,8 @@ def test_drone_collision_termination(drone_amount, drones_positions):
     done = False
     while not done:
         actions = {"drone0": Actions.RIGHT.value, "drone1": Actions.LEFT.value}
-        _, reward, terminations, done, _ = env.step(actions)
-        done = any(done.values())
+        _, reward, terminations, truncations, _ = env.step(actions)
+        done = any(terminations.values()) or any(truncations.values())
 
         assert done, "The simulation should terminate upon drone collision."
         assert any(
@@ -220,7 +221,7 @@ def test_with_the_observation_size_is_correct_for_all_drones(drone_amount, grid_
         ), f"The observation matrix for {drone_id} should have a shape of ({grid_size}, {grid_size}), but was {observation_matriz.shape}."
 
 
-# def test_petting_zoo_interface_works():
-#     env = init_drone_swarm_search()
-#     parallel_api_test(env)
-#     env.close()
+def test_petting_zoo_interface_works():
+    env = init_drone_swarm_search()
+    parallel_api_test(env)
+    env.close()
