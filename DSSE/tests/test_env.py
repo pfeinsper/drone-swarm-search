@@ -310,7 +310,7 @@ def test_petting_zoo_interface_works():
         ((10, 10), 25),
     ],
 )
-def test_castaway_count_after_reset(person_initial_position, person_amount):
+def test_castaway_count_number_after_reset(person_initial_position, person_amount):
     env = init_drone_swarm_search(
         person_amount=person_amount, person_initial_position=person_initial_position
     )
@@ -334,9 +334,11 @@ def test_castaway_count_after_reset(
     person_initial_position, person_amount, drone_amount
 ):
     env = init_drone_swarm_search(
+        render_mode="ansi",
         person_amount=person_amount,
         person_initial_position=person_initial_position,
         drone_amount=drone_amount,
+        timestep_limit=10000,
     )
     observations = env.reset()
 
@@ -350,9 +352,10 @@ def test_castaway_count_after_reset(
 
     _ = env.reset()
 
+    reward_scheme = DroneSwarmSearch.reward_scheme.search_and_find * person_amount
     assert (
-        rewards >= DroneSwarmSearch.reward_scheme.search_and_find * person_amount
-    ), f"The total reward should be positive after finding all castaways. But the total reward was: {rewards}."
+        rewards >= reward_scheme
+    ), f"The total reward should be positive and greater or equal to {reward_scheme} after finding all castaways. But the total reward was: {rewards}."
     assert done, "The simulation should end after finding all castaways."
     assert (
         len(env.get_persons()) == person_amount
