@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from opendrift.models.oceandrift import OceanDrift
 
 
@@ -9,11 +8,21 @@ def open_drift(lat, lon, time, number, radius, duration, outfile):
     )
     o.seed_elements(lat=lat, lon=lon, time=time, number=number, radius=radius)
 
-    # Running the model
     o.run(duration=duration, outfile=outfile)
 
     lat_final = o.elements.lat
     lon_final = o.elements.lon
 
-    # Return final positions as list of tuples (latitude, longitude)
     return list(zip(lat_final, lon_final))
+
+def calculate_bounding_rectangle(coordinates):
+    min_lat = max_lat = coordinates[0][0]
+    min_lon = max_lon = coordinates[0][1]
+
+    for lat, lon in coordinates:
+        min_lat = min(min_lat, lat)
+        max_lat = max(max_lat, lat)
+        min_lon = min(min_lon, lon)
+        max_lon = max(max_lon, lon)
+
+    return min_lat, max_lat, min_lon, max_lon
