@@ -1,10 +1,9 @@
 from numpy.linalg import norm
 
+
 def calculate_simulation_time_step(
-        drone_max_speed: float,
-        cell_size: float,
-        wind_resistance: float = 0.0
-    ) -> float:
+    drone_max_speed: float, cell_size: float, wind_resistance: float = 0.0
+) -> float:
     """
     Calculate the time step for the simulation based on the maximum speed of
     the drones and the cell size.
@@ -24,18 +23,17 @@ def calculate_simulation_time_step(
     """
     return cell_size / (drone_max_speed - wind_resistance)
 
+
 def calculate_time_step(
-        time_step: float,
-        person_speed: tuple[float],
-        cell_size: float
-    ) -> float:
+    time_step: float, person_speed: tuple[float], cell_size: float
+) -> float:
     """
     Parameters:
     ----------
     time_step: float
         Time step in seconds
     person_speed: tuple[float]
-        Speed of the person-in-water in m/s (x and y components) 
+        Speed of the person-in-water in m/s (x and y components)
     cell_size: float
         Size of the cells in meters
 
