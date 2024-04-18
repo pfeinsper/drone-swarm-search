@@ -94,8 +94,8 @@ def test_drone_collision_termination(drone_amount):
     done = False
     while not done:
         actions = {"drone0": Actions.SEARCH.value, "drone1": Actions.LEFT.value}
-        _, reward, terminations, done, _ = env.step(actions)
-        done = any(done.values())
+        _, reward, terminations, truncations, _ = env.step(actions)
+        done = any(truncations.values()) or any(terminations.values())
 
         assert done, "The simulation should terminate upon drone collision."
         assert any(
