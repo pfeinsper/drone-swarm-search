@@ -10,7 +10,7 @@ class PygameInterface:
     Class for rendering the grafical interface of the simulation
     """
 
-    FPS = 3
+    FPS = 5
 
     def __init__(
         self, grid_size: int, render_gradient: bool, render_grid: bool
@@ -20,7 +20,7 @@ class PygameInterface:
         self.render_gradient = render_gradient
         self.render_grid = render_grid
         self.window_size = 700
-        self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
+        self.screen = None
         self.render_on = False
         self.probability_matrix = None
 
@@ -35,7 +35,7 @@ class PygameInterface:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.close()
-        
+
         pygame.event.pump()
 
     def refresh_screen(self):
@@ -45,11 +45,16 @@ class PygameInterface:
         if self.render_on:
             return
 
+        self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
         self.screen = pygame.display.set_mode(self.screen.get_size())
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
-        self.drone_img = self.load_and_scale_image(f"{current_directory}/imgs/drone.png")
-        self.person_img = self.load_and_scale_image(f"{current_directory}/imgs/person-swimming.png")
+        self.drone_img = self.load_and_scale_image(
+            f"{current_directory}/imgs/drone.png"
+        )
+        self.person_img = self.load_and_scale_image(
+            f"{current_directory}/imgs/person-swimming.png"
+        )
 
         self.clock = pygame.time.Clock()
         self.render_on = True
@@ -71,10 +76,9 @@ class PygameInterface:
             else:
                 rectangle = self.get_position_rectangle((entity.x, entity.y))
                 image = self.person_img
-            
+
             # Renders the entity.
             self.screen.blit(image, rectangle)
-
 
     def get_position_rectangle(self, position: tuple[int, int]) -> pygame.Rect:
         x = 10 + self.block_size * position[0]
@@ -138,4 +142,3 @@ class PygameInterface:
             pygame.event.pump()
             pygame.display.quit()
             self.render_on = False
-    

@@ -2,30 +2,30 @@ import functools
 import numpy as np
 from abc import ABC, abstractmethod
 from pettingzoo import ParallelEnv
-from .drone import DroneData
+from .entities.drone import DroneData
 from .pygame_interface import PygameInterface
-from .generator.dynamic_probability import ProbabilityMatrix
+from .simulation.dynamic_probability import ProbabilityMatrix
+from .simulation.dynamic_probability import ProbabilityMatrix
 from .constants import Actions
 from gymnasium.spaces import MultiDiscrete, Discrete, Tuple, Box
 from copy import copy
 
 
 class DroneSwarmSearchBase(ABC, ParallelEnv):
-
     def __init__(
         self,
         grid_size=7,
         render_mode="ansi",
         render_grid=False,
         render_gradient=True,
-        vector=(-0.5, -0.5),
+        vector=(1, -0.5),
         dispersion_inc=0.1,
         dispersion_start=0.5,
         timestep_limit=100,
         disaster_position=(0, 0),
         drone_amount=1,
         drone_speed=10,
-        drone_probability_of_detection=0.9,
+        probability_of_detection=1,
         pre_render_time=0,
     ) -> None:
         self.cell_size = 130  # in meters
@@ -42,8 +42,9 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         self.drone = DroneData(
             amount=drone_amount,
             speed=drone_speed,
-            probability_of_detection=drone_probability_of_detection,
+            pod=probability_of_detection,
         )
+        self.probability_of_detection = probability_of_detection
 
         # Error Checking
         if self.drone.amount > self.grid_size * self.grid_size:
@@ -65,11 +66,10 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         self.disaster_position = disaster_position
 
         self.possible_agents = []
-        self.agents_positions = {}
+        self.agents_positions = [(None, None)] * self.drone.amount
         for i in range(self.drone.amount):
             agent_name = "drone" + str(i)
             self.possible_agents.append(agent_name)
-            self.agents_positions[agent_name] = (None, None)
 
         self.render_mode = render_mode
         self.probability_matrix = None
@@ -95,22 +95,20 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         """
         return cell_size / (drone_max_speed - wind_resistance)  # in seconds
 
-    @abstractmethod
     def render(self):
         self.pygame_renderer.render_map()
-        self.pygame_renderer.render_entities(self.agents_positions.values())
+        self.pygame_renderer.render_entities(self.agents_positions)
         self.pygame_renderer.refresh_screen()
 
     @abstractmethod
     def reset(
         self,
         seed=None,
-        return_info=False,
         options=None,
     ):
+        self._was_reset = True
         vector = options.get("vector") if options else None
         drones_positions = options.get("drones_positions") if options else None
-        self._was_reset = True
 
         if drones_positions is not None:
             if not self.is_valid_position_drones(drones_positions):
@@ -131,6 +129,10 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                 self.disaster_position[0],
             ],
             self.grid_size,
+        )
+
+        self.probability_matrix.update_time_step_relation(
+            self.time_step_relation, self.cell_size
         )
 
         if drones_positions is None:
@@ -164,11 +166,11 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
     def default_drones_positions(self):
         counter_x = 0
         counter_y = 0
-        for agent in self.agents:
+        for agent_index in range(len(self.agents)):
             if counter_x >= self.grid_size:
                 counter_x = 0
                 counter_y += 1
-            self.agents_positions[agent] = (counter_x, counter_y)
+            self.agents_positions[agent_index] = (counter_x, counter_y)
             counter_x += 1
 
     def required_drone_positions(self, drones_positions: list):
@@ -180,7 +182,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
             )
         for i in range(len(drones_positions)):
             x, y = drones_positions[i]
-            self.agents_positions[self.possible_agents[i]] = (x, y)
+            self.agents_positions[i] = (x, y)
 
     @abstractmethod
     def pre_search_simulate(self):
@@ -194,23 +196,21 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
     def step(self, actions):
         raise NotImplementedError("Method not implemented")
 
-    def compute_drone_collision(self, terminations, rewards, truncations):
+    def compute_drone_collision(self, terminations, rewards):
         """
         Check for drone collision and compute terminations, rewards and truncations.
         """
-        for drone_1_id, drone_1_position in self.agents_positions.items():
-            for drone_2_id, drone_2_position in self.agents_positions.items():
-                if drone_1_id == drone_2_id:
-                    continue
+        for drone_1_id in range(len(self.agents)):
+            for drone_2_id in range(drone_1_id + 1, len(self.agents)):
+                drone_1_name = self.agents[drone_1_id]
+                drone_2_name = self.agents[drone_2_id]
+                if self.agents_positions[drone_1_id] == self.agents_positions[drone_2_id]:
+                    terminations[drone_1_name] = True
+                    terminations[drone_2_name] = True
+                    rewards[drone_1_name] = self.reward_scheme.drones_collision
+                    rewards[drone_2_name] = self.reward_scheme.drones_collision
 
-                if (
-                    drone_1_position[0] == drone_2_position[0]
-                    and drone_1_position[1] == drone_2_position[1]
-                ):
-                    truncations[drone_1_id] = True
-                    terminations[drone_1_id] = True
-                    rewards[drone_1_id] = self.reward_scheme["drones_collision"]
-    
+
     def move_drone(self, position, action):
         """
         Returns a tuple with (is_terminal, new_position, reward)
@@ -234,10 +234,10 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                 new_position = (position[0] + 1, position[1] + 1)
 
         return new_position
-    
+
     def get_agents(self):
         return self.possible_agents
-    
+
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         # Observation space for each agent:
@@ -246,7 +246,12 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         return Tuple(
             (
                 MultiDiscrete([self.grid_size, self.grid_size]),
-                Box(low=0, high=1, shape=(self.grid_size, self.grid_size), dtype=np.float32),
+                Box(
+                    low=0,
+                    high=1,
+                    shape=(self.grid_size, self.grid_size),
+                    dtype=np.float32,
+                ),
             )
         )
 
