@@ -11,15 +11,21 @@ tags:
 authors:
   - name: Renato Laffranchi Falcão
     orcid: 0009-0001-5943-0481
+    corresponding: true
     equal-contrib: true
     affiliation: 1
-  - name: Author Without ORCID
-    orcid: 0000-0000-0000-0000 # Recomendo todos fazerem cadastro na ORCID
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Author with no affiliation
-    corresponding: true # (This is how to denote the corresponding author)
-    affiliation: 3
+  - name: Author
+    orcid: 0000-0000-0000-0000
+    equal-contrib: true
+    affiliation: 1
+  - name: Author
+    orcid: 0000-0000-0000-0000
+    equal-contrib: true
+    affiliation: 1
+  - name: Author
+    orcid: 0000-0000-0000-0000
+    equal-contrib: true
+    affiliation: 1
 affiliations:
  - name: Insper, Brazil
    index: 1
@@ -29,6 +35,8 @@ bibliography: paper.bib
 ---
 
 # Summary
+
+Maritime navigation plays a crucial role across various domains, including leisure activities and commercial fishing. However, maritime transportation is particularly significant as it accounts for 80% to 90% of global trade [@allianz:2023]. Therefore, with maritime safety is on focus, the importance of optimizing search and rescue (SAR) missions has grown / the urge to optimize search and rescue (SAR) missions has grown.
 
 The forces on stars, galaxies, and dark matter under external gravitational
 fields lead to the dynamical evolution of structures in the universe. The orbits
