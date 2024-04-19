@@ -1,5 +1,5 @@
 ---
-title: 'DSSE: An environment for simulation of drone swarm maritime search and rescue missions'
+title: 'DSSE: An environment for simulation of reinforcement learning-empowered drone swarm maritime search and rescue missions'
 tags:
   - Python
   - PettingZoo
@@ -14,15 +14,15 @@ authors:
     corresponding: true
     equal-contrib: true
     affiliation: 1
-  - name: Jorás
+  - name: Jorás Custódio Campos de Oliveira
     orcid: 0000-0000-0000-0000
     equal-contrib: true
     affiliation: 1
-  - name: Pedro
+  - name: Pedro Henrique Britto Aragão Andrade
     orcid: 0000-0000-0000-0000
     equal-contrib: true
     affiliation: 1
-  - name: Ricardo
+  - name: Ricardo Ribeiro Rodrigues
     orcid: 0000-0000-0000-0000
     equal-contrib: true
     affiliation: 1
@@ -30,7 +30,7 @@ authors:
     orcid: 0000-0000-0000-0000
     equal-contrib: true
     affiliation: 1
-  - name: José Fernando
+  - name: José Fernando Basso Brancalion
     orcid: 0000-0000-0000-0000
     equal-contrib: true
     affiliation: 2
@@ -39,98 +39,33 @@ affiliations:
    index: 1
  - name: Embraer, Brazil
    index: 2
-date: XX April 2024
+date: 19 April 2024
 bibliography: paper.bib
 
 ---
 
 # Summary
 
-
-
-The forces on stars, galaxies, and dark matter under external gravitational
-fields lead to the dynamical evolution of structures in the universe. The orbits
-of these bodies are therefore key to understanding the formation, history, and
-future state of galaxies. The field of "galactic dynamics," which aims to model
-the gravitating components of galaxies to study their structure and evolution,
-is now well-established, commonly taught, and frequently used in astronomy.
-Aside from toy problems and demonstrations, the majority of problems require
-efficient numerical tools, many of which require the same base code (e.g., for
-performing numerical orbit integration).
+The goal of this project is to contribute to the research of solutions that employ reinforcement learning techniques to maritime search and rescue missions of shipwrecked people. The software equip researchers with a simulation of shipwrecked people casting away accordingly to maritime currents to produce an stochastic environment to be used to train and evaluate autonomous agents.
 
 # Statement of need
 
 Maritime navigation plays a crucial role across various domains, including leisure activities and commercial fishing. However, maritime transportation is particularly significant as it accounts for 80% to 90% of global trade [@allianz]. Therefore, maritime safety is essential, demanding significant enhancements in search and rescue (SAR) missions. It is imperative that SAR missions minimize the search area and maximize the chances of locating the search object.
 
-To achieve this objective, traditional SAR operations used methods
-such as parallel track, crawl line, extended square, and sector searches
-(IAMSAR, 2016; Koopman, 1957). Recently, there has been a surge in
-research aimed at enhancing traditional search methods. 
-Ramirez et al.(2011) = https://ieeexplore.ieee.org/document/6003509
+To achieve this objective, traditional SAR operations used methods such as parallel sweep, expanding square, and sector searches [@iamsar]. But recent researches propose a different approach to this problem using reinforcement learning techniques over pre-determined path planning algorithms [@AI2021110098; @WU2024116403].
 
-`DSSE` is a Python package that provides a simulation environment using the PettingZoo interface with the purpose of training and evaluating single or multi-agent reinforcement learning algorithms. The API was designed to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning.
+In order to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning, the `DSSE`, distributed as a Python package, was designed to provide a simulation environment using the PettingZoo interface with the purpose of training and evaluating single or multi-agent reinforcement learning algorithms.
 
-The API for `Gala` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. `Gala` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the `Astropy` package [@astropy] (`astropy.units` and
-`astropy.coordinates`).
+![Simulation environment showcasing the algorithm's execution.\label{fig:example}](docs/pics/dsse-example.png){ width=50% }
 
-`Gala` was designed to be used by both astronomical researchers and by
-students in courses on gravitational dynamics or astronomy. It has already been
-used in a number of scientific publications [@Pearson:2017] and has also been
-used in graduate courses on Galactic dynamics to, e.g., provide interactive
-visualizations of textbook material [@Binney:2008]. The combination of speed,
-design, and support for Astropy functionality in `Gala` will enable exciting
-scientific explorations of forthcoming data releases from the *Gaia* mission
-[@gaia] by students and experts alike.
+The environment, as illustrated in \autoref{fig:example}, consists of a grid, a probability matrix, the drones and the person-in-water (PIW). The PIW movement is guided by, but not equal to, the movement of the probability matrix, which simulates the drift of sea currents acting upon the PIW [@WU2023113444]. The grid is divided in square cells that would represent quadrants of 130 meters of side in the real world. This relation with the real world is of extreme importance to create agents that can learn from realistic motion. As for the drones, they are the agents to be controlled by the reinforcement learning algorithms. They have nominal speeds defined by the user during the instantiation of the environment and is capable of moving orthogonally and diagonally, as well as searching the cell for the presence of the PIW.
 
-# Mathematics
+`DSSE` was originally proposed as part of a Capstone project at Insper in a partnership with Embraer, in order to research the viabillity of exploring and rescuing shipwrecked people with reinforcement learning-empowered drone swarms [@dsse2023]. Since there is no available environment for such purpose and considering that the multi-agent reinforcement learning field of study is recent, it was decided to continue with the development of the project, aiming to enhance even further the realism of the simulation and to promote the research.
 
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
-
-Double dollars make self-standing equations:
-
-$$\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.$$
-
-You can also use plain \LaTeX for equations
-\begin{equation}\label{eq:fourier}
-\hat f(\omega) = \int_{-\infty}^{\infty} f(x) e^{i\omega x} dx
-\end{equation}
-and refer to \autoref{eq:fourier} from text.
-
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for @fidgit.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Figures
-
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
+Currently, the `DSSE` is being enhanced and used by students as part of a Capstone project at Insper in a partnership with Embraer to implement and evaluate new reinforcement learning algorithms such as Deep Q-Networks (DQN) [@dqn2015] and Proximal Policy Optimization (PPO) [@ppo2017]. Also, it is receiving further study on how to establish information exchanging mechanisms to increase the collaboration between the agents.
 
 # Acknowledgements
 
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
+We acknowledge contributions and mentoring from Prof. Dr. Fabrício J. Barth and from Dr. José Fernando B. Brancalion, who have been extremely enthusiastic and engaged with the advance of the project.
 
 # References
