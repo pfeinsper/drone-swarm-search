@@ -66,6 +66,6 @@ Currently, the `DSSE` is being enhanced and used by students as part of a Capsto
 
 # Acknowledgements
 
-We acknowledge contributions and mentoring from Prof. Dr. Fabrício J. Barth and from Dr. José Fernando B. Brancalion, who have been extremely enthusiastic and engaged with the advance of the project.
+We acknowledge intellectual contributions and mentoring from Prof. Dr. Fabrício J. Barth and from Dr. José Fernando B. Brancalion, who have been extremely enthusiastic and engaged with the advance of the project.
 
 # References
