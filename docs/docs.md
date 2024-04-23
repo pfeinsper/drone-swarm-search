@@ -22,43 +22,45 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
 `pip install DSSE`
 
 #### Use
-
 ```python
 from DSSE import DroneSwarmSearch
-from DSSE import Actions
 
 env = DroneSwarmSearch(
-    grid_size = 60,
-    render_mode = "human",
-    render_grid = True,
-    render_gradient = True,
-    vector = (3.2, 3.1),
-    disperse_constant = 5,
-    timestep_limit = 200,
-    person_amount = 1,
-    person_initial_position = (19, 19),
-    drone_amount = 2,
-    drone_speed = 10,
-    drone_probability_of_detection = 0.9,
-    pre_render_time = 0,
+    grid_size=40,
+    render_mode="human",
+    render_grid=True,
+    render_gradient=True,
+    vector=(1, 1),
+    dispersion_inc=0.05,
+    timestep_limit=300,
+    person_amount=4,
+    person_initial_position=(15, 15),
+    drone_amount=2,
+    drone_speed=10,
+    probability_of_detection=0.9,
+    pre_render_time=0,
 )
 
-def policy(obs, agents):
+
+def random_policy(obs, agents):
     actions = {}
     for agent in agents:
-        actions[agent] = Actions.SEARCH.value
+        actions[agent] = env.action_space(agent).sample()
     return actions
 
 
-observations = env.reset(drones_positions = [(0, 10), (0, 11)])
+opt = {
+    "drones_positions": [(10, 5), (10, 10)],
+    "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
+}
+observations, info = env.reset(options=opt)
 
 rewards = 0
 done = False
 while not done:
-    actions = policy(observations, env.get_agents())
-    observations, reward, _, done, info = env.step(actions)
-    rewards += reward["total_reward"]
-    done = any(done.values())
+    actions = random_policy(observations, env.get_agents())
+    observations, rewards, terminations, truncations, infos = env.step(actions)
+    done = any(terminations.values()) or any(truncations.values())
 ```
 
 ### Installing Dependencies
@@ -97,55 +99,51 @@ pip install -r requirements.txt
 ### Inputs
 | Inputs                    | Possible Values       | Default Values            |
 | -------------             | -------------         | -------------             |
-| `grid_size`               | `int(N)`              | `7`                       |
+| `grid_size`               | `int(N)`              | `20`                      |
 | `render_mode`             | `"ansi" or "human"`   | `"ansi"`                  |
 | `render_grid`             | `bool`                | `False`                   |
 | `render_gradient`         | `bool`                | `True`                    |
-| `n_drones`                | `int(N)`              | `1`                       |
-| `vector`                  | `[float(x), float(y)` | `(-0.5, -0.5)`            |
-| `person_initial_position` | `[int(x), int(y)]`    | `[0, 0]`                  |
-| `disperse_constant`       | `float`               | `10`                      |
+| `vector`                  | `[float(x), float(y)` | `(1.1, 1)`                |
+| `dispersion_inc`          | `float`               | `0.1`                     |
+| `dispersion_start`        | `float`               | `0.5`                     |
 | `timestep_limit`          | `int`                 | `100`                     |
+| `person_amount`           | `int`                 | `1`                       |
+| `person_initial_position` | `[int(x), int(y)]`    | `[0, 0]`                  |
+| `drone_amount`            | `int`                 | `1`                       |
+| `drone_speed`             | `int`                 | `10`                      |
+| `probability_of_detection`| `int`                 | `1`                       |
+| `pre_render_time`         | `int`                 | `0`                       |
 
-### `grid_size`:
+- `grid_size`: The `grid_size` defines the area in which the search will happen. It should always be an integer greater than one.
 
-The grid size defines the area in which the search will happen. It should always be an integer greater than one.
+- `render_mode`: There are two available render modes: *ansi* and *human*.
 
-### `render_mode`:
+    - **Ansi**: This mode presents no visualization and is intended to train the reinforcement learning algorithm.
+    - **Human**: This mode presents a visualization of the drones actively searching the target, as well as the visualization of the person moving according to the input vector. 
 
-There are two available render modes, *ansi*  and *human*.
+- `render_grid`: The `render_grid` variable is a boolean. If set to **True** along with `render_mode = "human"`, the visualization will be rendered with a grid. If set to **False**, there will be no grid when rendering.   
 
-**Ansi**: This mode presents no visualization and is intended to train the reinforcement learning algorithm.
+- `render_gradient`: The `render_gradient` variable is a boolean. If set to **True** along with `render_mode = "human"`, the colors in the visualization will be interpolated according to the probability of the cell. Otherwise, the color of the cell will be solid according to the following values, considering the values of the matrix are normalized between 0 and 1: `1 > value >= 0.75` the cell will be *green* |` 0.75 > value >= 0.25` the cell will be *yellow* | `0.25 > value` the cell will be *red*.
 
-**Human**: This mode presents a visualization of the drones actively searching the target, as well as the visualization of the person moving according to the input vector. 
+- `vector`: The `vector` is a list with two values that defines the direction in which the person will drift over time. It is a list with two components where the first value of the list is the displacement in the `x axis` and the second value is the displacement in the `y axis`. A positive x value will result in a displacement to the right and vice versa, and a positive y value will result in a displacement downward. A value equal to 1 will result in a displacement of 1 cell per timestamp, a value of 0.5 will result in a displacement of 1 cell every 2 timesteps, and so on. 
 
-### `render_grid`:
+- `dispersion_inc`: The `dispersion_inc` is a float that defines the dispersion of the probability matrix. It must be a float greater or equal to zero. The greater the number, the quicker the probability matrix will disperse.
 
-The *render_grid* variable is a simple boolean that if set to **True** along with the `render_mode = “human”` the visualization will be rendered with a grid, if it is set to **False** there will be no grid when rendering.   
+- `dispersion_start`: The `dispersion_start` defines the starting value for the dispersion matrix size. It must be a float greater or equal to zero. By default, it is 0.5.
 
-### `render_gradient`:
+- `timestep_limit`: The `timestep_limit` is an integer that defines the length of an episode. This means that the `timestep_limit` is essentially the number of steps that can be done without resetting or ending the environment.
 
-The *render_gradient* variable is a simple boolean that if set to **True** along with the `render_mode = “human”` the colors in the visualization will be interpolated according to the probability of the cell. Otherwise the color of the cell will be solid according to the following values, considering the values of the matrix are normalized between 0 and 1: `1 > value >= 0.75` the cell will be *green* |` 0.75 > value >= 0.25` the cell will be *yellow* | `0.25 > value` the cell will be *red*.
+- `person_amount`: The `person_amount` defines the number of persons in water. It must be an integer greater or equal to 1. By default, it is 1.
 
-### `n_drones`:
+- `person_initial_position`: The `person_initial_position` defines the starting point of the target. It should be a list with two values where the first component is the `x axis` and the second component is the `y axis`. The `y axis` is directed downward. The values have to be integers.
 
-The `n_drones` input defines the number of drones that will be involved in the search. It needs to be an integer greater than one.
+- `drone_amount`: This parameter of type `int` defaults to `1`. It represents the number of drones to be used in the simulation. Adjusting this value allows the user to simulate scenarios with varying numbers of drones.
 
-### `vector`:
+- `drone_speed`: This `int` parameter defaults to `10`. It denotes the speed of the drones in the simulation, measured in units of meters per second (m/s). By modifying this value, users can simulate drones with different speeds.
 
-The `vector` is a list with two values that defines the direction in which the person will drift over time. It is a list with two components where the first value of the list is the displacement in the `x axis` and the second value is the displacement in the `y axis`. A positive x value will result in a displacement to the right and vice versa, and a positive y value will result in a displacement downward. A value equal to 1 will result in a displacement of 1 cell per timestamp, a value of 0.5 will result in a displacement of 1 cell every 2 timesteps, and so on. 
+- `probability_of_detection`: This `int` parameter defaults to `1`. It signifies the probability of a drone detecting an object of interest. Changing this value allows the user to simulate different detection probabilities.
 
-### `person_initial_position`:
-
-The `person_initial_position` defines the starting point of the target, it should be a list with two values where the first component is the `x axis` and the second component is the `y axis`. The `y axis` is directed downward. The values have to be integers.
-
-### `disperse_constant`:
-
-The `disperse_constant` is a float that defines the dispersion of the probability matrix. The greater the number the quicker the probability matrix will disperse.
-
-### `timestep_limit`:
-
-The `timestep_limit` is an integer that defines the length of an episode. This means that the `timestep_limit` is essentially the amount of steps that can be done without resetting or ending the environment.
+- `pre_render_time`: This `int` parameter defaults to `0`. It specifies the amount of time to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
 ## Built in Functions:
 
@@ -225,21 +223,20 @@ The reward returns a dictionary with the drones names as keys and their respectf
 
 The rewards values goes as follows:
 
-- **1** for every action by default
-- **-100000** if the drone leaves the grid 
-- **(*sum_of_rewards* * -1) -100000** if the drone does not find the person after timestep exceeds timestep_limit
-- **-100000** if the drones collide 
-- ***(probability of cell * 10000) if (probability of cell * 100 > 1) else -100*** for searching a cell
-- ***10000 + 10000 * (1 - timestep / timestep_limit)*** if the drone searches the cell in which the person is located
+- **0.1** for every action by default
+- **-200** if the drone leaves the grid 
+- **-200** if the drone does not find the person after timestep exceeds timestep_limit
+- **-200** if the drones collide 
+- ***[0:p] where p is the probability of the searched cell*** for searching a cell
+- ***200 * ( (1 - timestep) /timestep )*** if the drone searches the cell in which the person is located
 
 #### Termination & Truncation:
 
 The termination and truncation variables return a dictionary with all drones as keys and boolean as values. For example `{'drone0': False, 'drone1': False, 'drone2': False}`. The booleans will be False by default and will turn True in the event of the conditions below:
 
 - If two or more drones collide
-- If one of the drones leave the grid 
 - If timestep exceeds timestep_limit
-- If a drone searches the cell in which the person is located
+- If all PIW have been found
 
 #### Info:
 
