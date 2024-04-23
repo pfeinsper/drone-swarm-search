@@ -19,20 +19,17 @@ hero:
       link: https://pypi.org/project/DSSE/
 
 features:
-  - title: Based on petting zoo and OpenAI Gymmnasium
-    details: Compatible with know RL libraries
-  - title: FLOSS
-    details: maybe the only FLOSS env for maritime SAR operations?
-  # - title: Fabrício Barth
-  #   details: PhD, Computer Engineering
-  #   link: https://github.com/fbarth
-  #   linkText: GitHub
-  # - title: Jose Fernando Basso Brancalion
-  #   details: Product Development Engineer, Embraer
-  #   link: https://www.linkedin.com/in/jose-fernando-basso-brancalion/
-    linkText: Linkein
-  # - title: Feature C
-  #   details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Based on Petting Zoo and OpenAI Gym
+    icon: 🦁
+    details: Compatible with leading reinforcement learning libraries
+    link: https://farama.org/projects
+    linkText: Farama
+
+  - title: FLOSS for Maritime SAR
+    icon: 🌊
+    details: Possibly the only free/libre and open-source environment for maritime search and rescue operations.
+    link: https://www.flossmanuals.net/
+    linkText: Learn More
 
 members:
   - avatar: 'https://github.com/JorasOliveira.png'
@@ -45,7 +42,7 @@ members:
       link: https://www.linkedin.com/in/jorasoliveira/
 
   - avatar: 'https://www.github.com/Pedro2712.png'
-    name: 'Pedro Andrade'
+    name: 'Pedro Henrique Britto Aragão Andrade'
     title: 'Author'
     links:
     - icon: 'github' 
@@ -54,7 +51,7 @@ members:
       link: 'https://www.linkedin.com/in/pedro-henrique-britto-aragao-andrade/'
 
   - avatar: 'https://github.com/RicardoRibeiroRodrigues.png'
-    name: 'Ricardo Rodrigues'
+    name: 'Ricardo Ribeiro Rodrigues'
     title: 'Author'
     links:
     - icon: 'github' 
@@ -63,7 +60,7 @@ members:
       link: 'https://www.linkedin.com/in/ricardo-ribeiro-rodrigues-983b94196/'
 
   - avatar: 'https://github.com/renatex333.png'
-    name: 'Renato Laffranchi.'
+    name: 'Renato Laffranchi'
     title: 'Author'
     links:
     - icon: 'github' 
@@ -79,7 +76,7 @@ members:
       link: 'https://github.com/enricofd'
 
   - avatar: 'https://github.com/Manuel-castanares.png'
-    name: 'Manuel-castanares'
+    name: 'Manuel castanares'
     title: 'Author'
     links:
     - icon: 'github' 
