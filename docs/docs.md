@@ -228,7 +228,7 @@ The rewards values goes as follows:
 - **-200** if the drone does not find the person after timestep exceeds timestep_limit
 - **-200** if the drones collide 
 - ***[0:p] where p is the probability of the searched cell*** for searching a cell
-- ***200 * ( (1 - timestep) /timestep )*** if the drone searches the cell in which the person is located
+- ***200 * ( (1 - timestep) /timestep_limit)*** if the drone searches the cell in which the person is located
 
 #### Termination & Truncation:
 
