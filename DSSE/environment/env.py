@@ -18,12 +18,12 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     }
 
     reward_scheme = Reward(
-        default=1,
-        leave_grid=-100_000,
-        exceed_timestep=-100_000,
-        drones_collision=-100_000,
+        default=0,
+        leave_grid=-200,
+        exceed_timestep=-200,
+        drones_collision=-200,
         search_cell=1,
-        search_and_find=100_000,
+        search_and_find=200,
     )
 
     def __init__(
@@ -262,9 +262,10 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             elif is_searching:
                 prob_matrix = self.probability_matrix.get_matrix()
                 rewards[agent] = (
-                    prob_matrix[drone_y][drone_x] * 10000
-                    if prob_matrix[drone_y][drone_x] * 100 > 1
-                    else -100
+                    # prob_matrix[drone_y][drone_x] * 10000
+                    # if prob_matrix[drone_y][drone_x] * 100 > 1
+                    # else -100
+                    prob_matrix[drone_y][drone_x]
                 )
 
             self.rewards_sum[agent] += rewards[agent]
