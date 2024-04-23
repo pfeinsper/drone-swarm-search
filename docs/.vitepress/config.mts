@@ -55,14 +55,22 @@ export default defineConfig({
                     ]
                 },
     
-                {
-                  collapsed: true,
-                  text: 'Algorithms',
-                  items: [
-                        { text: 'Item A da Seção A', link: '...' },
-                        { text: 'Item B da Seção B', link: '...' },
-                  ]
-                }
+              //   {
+              //     collapsed: true,
+              //     text: 'Coverage Environment',
+              //     items: [
+              //           { text: 'Item A da Seção A', link: '...' },
+              //           { text: 'Item B da Seção B', link: '...' },
+              //     ]
+              //   }
+              //   {
+              //     collapsed: true,
+              //     text: 'Algorithms',
+              //     items: [
+              //           { text: 'Item A da Seção A', link: '...' },
+              //           { text: 'Item B da Seção B', link: '...' },
+              //     ]
+              //   }
               ]
             }
           ],
