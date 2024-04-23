@@ -1,6 +1,9 @@
 name: Draft PDF 📄
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'paper-writing'
 
 jobs:
   paper:
