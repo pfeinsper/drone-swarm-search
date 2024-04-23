@@ -10,6 +10,11 @@ class AllPositionsWrapper(BaseParallelWrapper):
     """
     def __init__(self, env: DroneSwarmSearch):
         super().__init__(env)
+
+        self.observation_spaces = {
+            agent: self.observation_space(agent)
+            for agent in self.env.possible_agents
+        }
     
     def step(self, actions):
         obs, reward, terminated, truncated, infos = self.env.step(actions)
@@ -17,13 +22,12 @@ class AllPositionsWrapper(BaseParallelWrapper):
         return obs, reward, terminated, truncated, infos
     
     def add_other_positions_obs(self, obs):
-        prob_matrix = obs["drone0"][1]
-        for idx, agent in enumerate(self.env.agents):
+        for idx, agent in enumerate(obs.keys()):
             agents_positions = np.array(self.env.agents_positions, dtype=np.int64)
             agents_positions[[0, idx]] = agents_positions[[idx, 0]]            
             obs[agent] = (
-                agents_positions,
-                prob_matrix
+                agents_positions.flatten(),
+                obs[agent][1]
             )
 
     
@@ -35,7 +39,7 @@ class AllPositionsWrapper(BaseParallelWrapper):
     def observation_space(self, agent):
         return Tuple(
             (
-                Box(0, self.env.grid_size, shape=(len(self.env.possible_agents), 2), dtype=np.int64),
+                Box(0, self.env.grid_size, shape=(len(self.env.possible_agents) * 2, ), dtype=np.int64),
                 Box(
                     low=0,
                     high=1,
