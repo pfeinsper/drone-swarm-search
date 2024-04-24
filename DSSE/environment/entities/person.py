@@ -2,51 +2,56 @@ import numpy as np
 from random import uniform, choice
 from numpy.linalg import norm
 from math import cos, sin, radians, pi, exp
-from DSSE.environment.time_step import calculate_time_step
+from DSSE.environment.simulation.time_step import calculate_time_step
 
-class Person():
+
+class Person:
     """
     Class that represents a shipwrecked person in the environment.
     """
+
     def __init__(
-            self,
-            initial_position: tuple[int, int],
-            grid_size: int,
-            probability_of_detection: float = 0.9,
-        ):
+        self,
+        index: int,
+        initial_position: tuple[int, int],
+        grid_size: int,
+        mult: float = 1,
+    ):
         """
         Class that represents a shipwrecked person in the environment.
-        
+
         Parameters:
         -----------
         initial_position: tuple
             The initial position of the shipwrecked person in the environment.
         grid_size: int
             The size of the grid that represents the environment (grid_size x grid_size).
-        probability_of_detection: float
-            The probability of detection of the shipwrecked person in the environment.
+        mult: float, optional
+            The multiplication factor that adjusts the probability of the person's finding.
         """
-
+        self.index = index
         self.initial_position = initial_position
         self.x, self.y = self.initial_position
         self.inc_x, self.inc_y = 0, 0
         self.grid_size = grid_size
         self.time_step_relation = 1
-        self.pod = probability_of_detection
+        self.mult = mult
         self.movement_vector = (0.0, 0.0)
         self.angle_range = choice([(0, 45), (20, 55), (300, 360), (315, 360)])
 
     def step(self, movement_map: np.array) -> None:
         if self.will_move():
-            movement = self.update_position(movement_map, dimension=movement_map.shape[0], prob_walk_weight=0.05)
+            movement = self.update_position(
+                movement_map, dimension=movement_map.shape[0], prob_walk_weight=0.05
+            )
             self.safe_position_update(movement)
 
     def update_position(
-            self,
-            movement_map: np.array,
-            dimension: int = 3,
-            prob_walk_weight: float = 1.0,
-        ) -> tuple[int]:
+        self,
+        movement_map: np.array,
+        dimension: int = 3,
+        prob_walk_weight: float = 1.0,
+    ) -> tuple[int]:
         """
         Function that takes a cut of the DynamicProbability matrix,
         along with the dimension of the matrix and the probability of walking,
@@ -74,12 +79,16 @@ class Person():
         if abs(self.inc_y) >= 1:
             self.inc_y -= np.sign(self.inc_y)
 
-        movement_cartesian = self.movement_to_cartesian(movement_index, dimension=dimension)
+        movement_cartesian = self.movement_to_cartesian(
+            movement_index, dimension=dimension
+        )
         return movement_cartesian
 
-    def movement_to_cartesian(self, movement_index: int, dimension: int = 3) -> tuple[int]:
+    def movement_to_cartesian(
+        self, movement_index: int, dimension: int = 3
+    ) -> tuple[int]:
         """
-        The movement of the shipwrecked person on the input follows the scheme 
+        The movement of the shipwrecked person on the input follows the scheme
         (for the value of line and column):
             - if 0 -> Move to the left (x - 1) or to the top (y - 1).
             - if 1 -> No movement.
@@ -106,8 +115,8 @@ class Person():
 
     def calculate_movement_vector(self, primary_movement_vector: tuple[float]) -> None:
         """
-        Function that calculates the person's movement vector 
-        based on the primary movement vector that is being applied 
+        Function that calculates the person's movement vector
+        based on the primary movement vector that is being applied
         by the environment, that is the water drift vector.
 
         The resulting movement vector is the average of the primary movement vector
@@ -120,18 +129,18 @@ class Person():
         )
 
     def noise_vector(
-            self,
-            primary_movement_vector: tuple[float],
-            speed_factor_range: tuple[float, float] = (0.5, 1.5)
-        ) -> tuple[float]:
+        self,
+        primary_movement_vector: tuple[float],
+        speed_factor_range: tuple[float, float] = (0.5, 1.5),
+    ) -> tuple[float]:
         """
-        Generates a 'noised' version of a given primary movement vector, 
+        Generates a 'noised' version of a given primary movement vector,
         simulating more natural or unpredictable motion.
 
         The function introduces variability to the vector's direction and magnitude by
         applying a randomly chosen angle and an inverse exponential adjustment based on
         the angle's deviation from a base angle (90 degrees).
-        A speed factor, influenced by the angle's normalized deviation, scales the 
+        A speed factor, influenced by the angle's normalized deviation, scales the
         vector's magnitude within a specified range.
 
         Parameters:
@@ -161,11 +170,16 @@ class Person():
         normalized_angle_diff = abs(angle - angle_base) / pi
 
         speed_factor = speed_factor_range[0] + (
-            exp(-normalized_angle_diff) * (speed_factor_range[1] - speed_factor_range[0])
+            exp(-normalized_angle_diff)
+            * (speed_factor_range[1] - speed_factor_range[0])
         )
 
-        primary_direction = np.array(primary_movement_vector) / norm(primary_movement_vector)
-        rotation_matrix = np.array([[cos(angle), -sin(angle)], [sin(angle), cos(angle)]])
+        primary_direction = np.array(primary_movement_vector) / norm(
+            primary_movement_vector
+        )
+        rotation_matrix = np.array(
+            [[cos(angle), -sin(angle)], [sin(angle), cos(angle)]]
+        )
         noised_direction = np.dot(rotation_matrix, primary_direction)
         noised_vector = noised_direction * norm(primary_movement_vector) * speed_factor
 
@@ -186,7 +200,9 @@ class Person():
         return 0 <= new_position < self.grid_size
 
     def update_time_step_relation(self, time_step: float, cell_size: float) -> None:
-        self.time_step_relation = calculate_time_step(time_step, self.movement_vector, cell_size)
+        self.time_step_relation = calculate_time_step(
+            time_step, self.movement_vector, cell_size
+        )
 
     def reset_position(self):
         self.x, self.y = self.initial_position
@@ -194,8 +210,11 @@ class Person():
     def get_position(self) -> tuple[int]:
         return (self.x, self.y)
 
-    def set_pod(self, pod: int) -> None:
-        self.pod = pod
+    def set_mult(self, mult: int) -> None:
+        self.mult = mult
 
-    def get_pod(self) -> int:
-        return self.pod
+    def get_mult(self) -> int:
+        return self.mult
+
+    def __hash__(self) -> int:
+        return hash(self.index)

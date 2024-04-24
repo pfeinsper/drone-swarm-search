@@ -1,6 +1,6 @@
 import numpy as np
 from numba import njit
-from DSSE.environment.time_step import calculate_time_step
+from .time_step import calculate_time_step
 
 
 class ProbabilityMatrix:
@@ -142,7 +142,9 @@ class ProbabilityMatrix:
         return probabilities
 
     def update_time_step_relation(self, time_step: float, cell_size: float) -> None:
-        self.time_step_relation = calculate_time_step(time_step, self.movement_vector, cell_size)
+        self.time_step_relation = calculate_time_step(
+            time_step, self.movement_vector, cell_size
+        )
 
     def get_matrix(self):
         return self.map_prob

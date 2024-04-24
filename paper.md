@@ -19,15 +19,15 @@ authors:
     equal-contrib: true
     affiliation: 1
   - name: Pedro Henrique Britto Aragão Andrade
-    orcid: 0000-0000-0000-0000
+    orcid: 0009-0000-0056-4322
     equal-contrib: true
     affiliation: 1
   - name: Ricardo Ribeiro Rodrigues
-    orcid: 0000-0000-0000-0000
+    orcid: 0009-0008-1237-3353
     equal-contrib: true
     affiliation: 1
   - name: Fabrício Jailson Barth
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0001-6263-121X
     equal-contrib: true
     affiliation: 1
   - name: José Fernando Basso Brancalion
@@ -66,6 +66,6 @@ Currently, the `DSSE` is being enhanced and used by students as part of a Capsto
 
 # Acknowledgements
 
-We acknowledge contributions and mentoring from Prof. Dr. Fabrício J. Barth and from Dr. José Fernando B. Brancalion, who have been extremely enthusiastic and engaged with the advance of the project.
+We acknowledge intellectual contributions and mentoring from Prof. Dr. Fabrício J. Barth and from Dr. José Fernando B. Brancalion, who have been extremely enthusiastic and engaged with the advance of the project.
 
 # References
