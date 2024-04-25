@@ -106,3 +106,19 @@ print(infos["drone0"])
 ## Support
 
 If you encounter any issues or have questions, please file an issue on our [GitHub issues page](https://github.com/pfeinsper/drone-swarm-search/issues).
+
+## How to cite this work
+
+If you use this package, please consider citing it with this piece of BibTeX:
+
+```
+@misc{castanares2023dsse,
+      title={DSSE: a drone swarm search environment}, 
+      author={Jorás Oliveira, Pedro Andrade, Ricardo Rodrigues, Renato Laffranchi,Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
+      year={2024},
+      eprint={2307.06240},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      doi={https://doi.org/10.48550/arXiv.2307.06240}
+}
+```
