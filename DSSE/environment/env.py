@@ -18,7 +18,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     }
 
     reward_scheme = Reward(
-        default=0,
+        default=0.1,
         leave_grid=-200,
         exceed_timestep=-200,
         drones_collision=-200,
