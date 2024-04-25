@@ -12,9 +12,9 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
     }
     reward_scheme = Reward(
         default=0,
-        leave_grid=-100,
+        leave_grid=-10,
         exceed_timestep=-100,
-        drones_collision=-100,
+        drones_collision=-10,
         search_cell=10,
         search_and_find=100,
     )
@@ -132,7 +132,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             self.agents_positions[idx] = new_position
             new_x, new_y = new_position
             if new_position in self.not_seen_states:
-                reward_poc = 1 / (self.timestep) * prob_matrix[new_y, new_x] * 1_000
+                reward_poc = (1 / (self.timestep)) * prob_matrix[new_y, new_x] * 1_000
                 rewards[agent] = self.reward_scheme.search_cell + reward_poc
                 self.seen_states.add(new_position)
                 self.not_seen_states.remove(new_position)
