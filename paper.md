@@ -46,7 +46,7 @@ bibliography: paper.bib
 
 # Summary
 
-The goal of this project is to contribute to the research of solutions that employ reinforcement learning techniques to maritime search and rescue missions of shipwrecked people. The software equip researchers with a simulation of shipwrecked people casting away accordingly to maritime currents to produce an stochastic environment to be used to train and evaluate autonomous agents.
+The goal of this project is to contribute to the research of solutions that employ reinforcement learning techniques to maritime search and rescue missions of shipwrecked people. The software equip's researchers with a simulation of shipwrecked people casted away according to maritime currents to producing a stochastic environment to be used to train and evaluate autonomous agents.
 
 # Statement of need
 
