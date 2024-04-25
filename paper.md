@@ -50,7 +50,7 @@ The goal of this project is to contribute to the research of solutions that empl
 
 # Statement of need
 
-Maritime navigation plays a crucial role across various domains, including leisure activities and commercial fishing. However, maritime transportation is particularly significant as it accounts for 80% to 90% of global trade [@allianz]. Therefore, maritime safety is essential, demanding significant enhancements in search and rescue (SAR) missions. It is imperative that SAR missions minimize the search area and maximize the chances of locating the search object.
+Maritime navigation plays a crucial role across various domains, including leisure activities and commercial fishing. However, maritime transportation is particularly significant as it accounts for 80% to 90% of global trade [@allianz]. While maritime navigation is essential for global trade, it also poses significant safety risks, as evidenced by the World Health Organization's report [@who] of approximately 236,000 annual drowning deaths worldwide. Therefore, maritime safety is essential, demanding significant enhancements in search and rescue (SAR) missions. It is imperative that SAR missions minimize the search area and maximize the chances of locating the search object.
 
 To achieve this objective, traditional SAR operations used path planning algorithms such as parallel sweep, expanding square, and sector searches [@iamsar]. But recent researches propose a different approach to this problem using reinforcement learning techniques over pre-determined search patterns [@AI2021110098; @WU2024116403].
 
