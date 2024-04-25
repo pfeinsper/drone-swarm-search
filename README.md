@@ -5,7 +5,7 @@
 [![PettingZoo version dependency](https://img.shields.io/badge/PettingZoo-v1.22.3-blue)]()
 ![GitHub stars](https://img.shields.io/github/stars/pfeinsper/drone-swarm-search)
 
-## Documentation Links
+## 📚 Documentation Links
 
 - **[Documentation Site](https://pfeinsper.github.io/drone-swarm-search/)**: Access comprehensive documentation including tutorials, and usage examples for the Drone Swarm Search Environment (DSSE). Ideal for users seeking detailed information about the project's capabilities and how to integrate them into their own applications.
 
@@ -13,29 +13,29 @@
 
 - **[PyPI Repository](https://pypi.org/project/DSSE/)**: Visit the PyPI page for DSSE to download the latest release, view release histories, and read additional installation instructions.
 
-## Visual Demonstrations
+## 🎥 Visual Demonstrations
 <p align="center">
     <img src="https://raw.github.com/PFE-Embraer/drone-swarm-search/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
     <br>
     <em>Above: A simulation showing how drones adjust their search pattern over a grid.</em>
 </p>
 
-## Quick Start
+## ⚡Quick Start
 
-### Installation
+### ⚙️ Installation
 Install DSSE quickly with pip:
 ```bash
 pip install DSSE
 ````
 
-## Outcome
+## 🎯 Outcome
 
 | If drone is found            | If drone is not found  |
 :-------------------------:|:-------------------------:
 | ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/fail_render.png) |
 
 
-## Basic Env Usage
+## 🛠️ Basic Env Usage
 ```python
 from DSSE import DroneSwarmSearch
 
@@ -77,7 +77,7 @@ while not done:
     done = any(terminations.values()) or any(truncations.values())
 ```
 
-## Basic Covarage Usage
+## 🛠️ Basic Covarage Usage
 ```python
 from DSSE import CoverageDroneSwarmSearch
 
@@ -103,11 +103,11 @@ while env.agents:
 print(infos["drone0"])
 ```
 
-## Support
+## 🆘 Support
 
 If you encounter any issues or have questions, please file an issue on our [GitHub issues page](https://github.com/pfeinsper/drone-swarm-search/issues).
 
-## How to cite this work
+## 📖 How to cite this work
 
 If you use this package, please consider citing it with this piece of BibTeX:
 
