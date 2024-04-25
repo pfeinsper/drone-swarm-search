@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.5",
+    "gh-pages": "^6.1.1",
+    "vitepress": "^1.1.3"
+  }
+}
