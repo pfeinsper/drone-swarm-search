@@ -262,9 +262,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             elif is_searching:
                 prob_matrix = self.probability_matrix.get_matrix()
                 rewards[agent] = (
-                    # prob_matrix[drone_y][drone_x] * 10000
-                    # if prob_matrix[drone_y][drone_x] * 100 > 1
-                    # else -100
                     prob_matrix[drone_y][drone_x]
                 )
 
