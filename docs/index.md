@@ -19,10 +19,10 @@ hero:
       link: https://pypi.org/project/DSSE/
 
 features:
-  - title: Based on Petting Zoo and OpenAI Gym
+  - title: Based on Farama.org and Petting Zoo
     icon: 🦁
     details: Compatible with leading reinforcement learning libraries
-    link: https://farama.org/projects
+    link: https://pettingzoo.farama.org/
     linkText: Farama
 
   - title: FLOSS for Maritime SAR
@@ -30,6 +30,20 @@ features:
     details: Possibly the only free/libre and open-source environment for maritime search and rescue operations.
     link: https://www.flossmanuals.net/
     linkText: Learn More
+
+  - title: INSPER's College
+    icon: 🏢
+    details: >
+      INSPER is a Brazilian higher education institution focused on business, economics, engineering, and law.
+    link: https://www.insper.edu.br/
+    linkText: INSPER Site
+
+  - title: Partner Company - EMBRAER
+    icon: ✈️
+    details: >
+      EMBRAER is a Brazilian aerospace company that produces commercial, military, executive and agricultural aircraft and provides aeronautical services.
+    link: https://embraer.com/br/pt
+    linkText: EMBRAER Site
 
 members:
   - avatar: 'https://github.com/JorasOliveira.png'
