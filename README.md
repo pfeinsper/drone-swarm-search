@@ -35,7 +35,7 @@ pip install DSSE
 
 ## 🎯 Outcome
 
-| If drone is target            | If drone is not target  |
+| If target is found       | If target is not found   |
 :-------------------------:|:-------------------------:
 | ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/fail_render.png) |
 
