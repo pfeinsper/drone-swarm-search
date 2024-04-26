@@ -5,21 +5,15 @@ from pettingzoo.test import parallel_api_test
 
 
 def init_drone_swarm_search(
-    grid_size=20,
     drone_amount=1,
-    dispersion_inc=0.1,
-    vector=(1, 1),
     render_mode="ansi",
 ):
     
     return CoverageDroneSwarmSearch(
-        grid_size=grid_size,
         drone_amount=drone_amount,
-        dispersion_inc=dispersion_inc,
-        vector=vector,
         render_mode=render_mode,
+        pre_render_time=12,
     )
-
 
 
 @pytest.mark.parametrize(

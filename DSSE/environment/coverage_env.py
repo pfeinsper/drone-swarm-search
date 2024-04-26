@@ -1,5 +1,6 @@
 from gymnasium.spaces import Discrete
 from .env_base import DroneSwarmSearchBase
+from .simulation.particle_simulation import ParticleSimulation
 from .constants import Reward
 import numpy as np
 import functools
@@ -21,35 +22,36 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def __init__(
         self,
-        grid_size=20,
         render_mode="ansi",
         render_grid=True,
         render_gradient=True,
-        vector=(1, 0.8),
-        dispersion_inc=0.1,
-        dispersion_start=0.5,
         timestep_limit=100,
-        disaster_position=(0, 0),
+        disaster_position=(-24.04, -46.17),
         drone_amount=1,
         drone_speed=10,
         drone_probability_of_detection=0.9,
         pre_render_time=10,
     ) -> None:
-        super().__init__(
-            grid_size,
-            render_mode,
-            render_grid,
-            render_gradient,
-            vector,
-            dispersion_inc,
-            dispersion_start,
-            timestep_limit,
-            disaster_position,
-            drone_amount,
-            drone_speed,
-            drone_probability_of_detection,
-            pre_render_time,
+        # Prob matrix
+        self.probability_matrix = ParticleSimulation(
+            disaster_lat=disaster_position[0],
+            disaster_long=disaster_position[1],
+            duration_hours=pre_render_time,
         )
+        self.probability_matrix.run_or_get_simulation()
+        grid_size = self.probability_matrix.get_map_size()
+
+        super().__init__(
+            grid_size=grid_size,
+            render_mode=render_mode,
+            render_grid=render_grid,
+            render_gradient=render_gradient,
+            timestep_limit=timestep_limit,
+            drone_amount=drone_amount,
+            drone_speed=drone_speed,
+            probability_of_detection=drone_probability_of_detection,
+        )
+        self.disaster_position = disaster_position
         # Sets used to keep track of the seen and not seen states for reward calculation
         self.seen_states = None
         self.not_seen_states = None
@@ -97,8 +99,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         return observations
 
     def pre_search_simulate(self):
-        for _ in range(self.pre_render_steps):
-            self.probability_matrix.step()
+        self.probability_matrix.run_or_get_simulation()
 
     def step(self, actions: dict[str, int]) -> tuple:
         if not self._was_reset:
@@ -145,7 +146,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         is_completed = len(self.not_seen_states) == 0
         if self.render_mode == "human":
             self.render()
-        
+
         if is_completed:
             # TODO: Proper define reward for completing the search (R_done)
             rewards = {
