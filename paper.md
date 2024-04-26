@@ -56,9 +56,9 @@ To achieve this objective, traditional SAR operations used path planning algorit
 
 In order to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning, the `DSSE`, distributed as a Python package, was designed to provide a training environment using the PettingZoo [@terry2021pettingzoo] interface with the purpose of training and evaluating single or multi-agent reinforcement learning algorithms.
 
-$$
-\parbox[t]{5cm}{
 Using this environment, any researcher or practitioner can write code and execute an agent's training, such as the source code presented below.
+
+\parbox[t]{5cm}{
 
 ```python
 from DSSE import DroneSwarmSearch
@@ -74,7 +74,6 @@ while not done:
       done = any(terminations.values()) or any(truncations.values())
 ```
 }
-$$
 
 ![Simulation environment showcasing the algorithm's execution.\label{fig:example}](docs/pics/dsse-example.png){ width=50% }
 
