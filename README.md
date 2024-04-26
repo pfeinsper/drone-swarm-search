@@ -77,7 +77,7 @@ while not done:
     done = any(terminations.values()) or any(truncations.values())
 ```
 
-## 🛠️ Basic Covarage Usage
+## 🛠️ Basic Coverage Usage
 ```python
 from DSSE import CoverageDroneSwarmSearch
 
