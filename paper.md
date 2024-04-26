@@ -58,6 +58,7 @@ In order to contribute to researches on the effectiveness of integrating reinfor
 
 Using this environment, any researcher or practitioner can write code and execute an agent's training, such as the source code presented below.
 
+\begin{minipage}
 ```python
 from DSSE import DroneSwarmSearch
 
@@ -71,6 +72,7 @@ while not done:
       observations, rewards, terminations, truncations, infos = env.step(actions) 
       done = any(terminations.values()) or any(truncations.values())
 ```
+\end{minipage}
 
 ![Simulation environment showcasing the algorithm's execution.\label{fig:example}](docs/pics/dsse-example.png){ width=50% }
 
