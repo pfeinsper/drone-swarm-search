@@ -1,0 +1,33 @@
+name: PyPI Release 🚀
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-n-publish:
+    name: Publish Drone Swarm Search to PyPI 🚀
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.*'  # This will use the latest Python 3.x version available
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel setuptools twine
+
+      - name: Update version in setup.py
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          sed -i "s/{{VERSION_PLACEHOLDER}}/$VERSION/g" setup.py
+
+      - name: Build and publish
+        run: |
+          python setup.py sdist bdist_wheel
+          twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}

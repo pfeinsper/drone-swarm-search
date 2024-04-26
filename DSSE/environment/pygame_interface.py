@@ -10,7 +10,7 @@ class PygameInterface:
     Class for rendering the grafical interface of the simulation
     """
 
-    FPS = 3
+    FPS = 5
 
     def __init__(
         self, grid_size: int, render_gradient: bool, render_grid: bool
@@ -20,7 +20,7 @@ class PygameInterface:
         self.render_gradient = render_gradient
         self.render_grid = render_grid
         self.window_size = 700
-        self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
+        self.screen = None
         self.render_on = False
         self.probability_matrix = None
 
@@ -35,6 +35,7 @@ class PygameInterface:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.close()
+
         pygame.event.pump()
 
     def refresh_screen(self):
@@ -44,11 +45,16 @@ class PygameInterface:
         if self.render_on:
             return
 
+        self.screen = pygame.Surface([self.window_size + 20, self.window_size + 20])
         self.screen = pygame.display.set_mode(self.screen.get_size())
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
-        self.drone_img = self.load_and_scale_image(f"{current_directory}/imgs/drone.png")
-        self.person_img = self.load_and_scale_image(f"{current_directory}/imgs/person-swimming.png")
+        self.drone_img = self.load_and_scale_image(
+            f"{current_directory}/imgs/drone.png"
+        )
+        self.person_img = self.load_and_scale_image(
+            f"{current_directory}/imgs/person-swimming.png"
+        )
 
         self.clock = pygame.time.Clock()
         self.render_on = True
@@ -60,17 +66,21 @@ class PygameInterface:
         )
         return scaled_img
 
-    def render_drones(self, drone_positions) -> None:
-        for position in drone_positions:
-            rectangle = self.get_position_rectangle(position)
-            self.screen.blit(self.drone_img, rectangle)
+    def render_entities(self, entities) -> None:
+        for entity in entities:
+            # Checks if the entity is a tuple (assuming that drones are represented as tuples).
+            if isinstance(entity, tuple):
+                rectangle = self.get_position_rectangle(entity)
+                image = self.drone_img
+            # Otherwise, assumes it is an object with 'x' and 'y' attributes (such as a person).
+            else:
+                rectangle = self.get_position_rectangle((entity.x, entity.y))
+                image = self.person_img
 
-    def render_person(self, person_x: int, person_y: int) -> None:
-        self.screen.blit(
-            self.person_img, self.get_position_rectangle((person_x, person_y))
-        )
+            # Renders the entity.
+            self.screen.blit(image, rectangle)
 
-    def get_position_rectangle(self, position: tuple[int]) -> pygame.Rect:
+    def get_position_rectangle(self, position: tuple[int, int]) -> pygame.Rect:
         x = 10 + self.block_size * position[0]
         y = 10 + self.block_size * position[1]
         return pygame.Rect(x, y, self.block_size, self.block_size)
@@ -132,4 +142,3 @@ class PygameInterface:
             pygame.event.pump()
             pygame.display.quit()
             self.render_on = False
-    
