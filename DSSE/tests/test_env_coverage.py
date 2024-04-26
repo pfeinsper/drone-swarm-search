@@ -98,7 +98,7 @@ def test_leave_grid_get_negative_reward(grid_size):
 
     done = False
     reward_sum = 0
-    while not done and reward_sum >= -9_000:
+    while not done and reward_sum >=  (env.reward_scheme.leave_grid * (env.timestep_limit-1)) +1:
         actions = {"drone0": Actions.UP.value}
         _, reward, terminations, done, _ = env.step(actions)
         done = any(done.values())
