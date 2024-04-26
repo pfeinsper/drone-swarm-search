@@ -119,11 +119,16 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             if drone_action not in self.action_space(agent):
                 raise ValueError("Invalid action for " + agent)
 
+
             if self.timestep >= self.timestep_limit:
                 rewards[agent] = self.reward_scheme.exceed_timestep
                 truncations[agent] = True
                 continue
 
+            # Action 8 is to stay in the same position, default reward.
+            if drone_action == 8:
+                continue
+        
             drone_x, drone_y = self.agents_positions[idx]
             new_position = self.move_drone((drone_x, drone_y), drone_action)
             if not self.is_valid_position(new_position):
@@ -139,6 +144,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
                 self.not_seen_states.remove(new_position)
                 # Probability of sucess (POS) = POC * POD
                 self.cumm_pos += prob_matrix[new_y, new_x] * self.drone.pod
+                # Remove the probability of the visited cell.
+                prob_matrix[new_y, new_x] = 0.0
             else:
                 self.repeated_coverage += 1
 
@@ -177,4 +184,4 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return Discrete(8)
+        return Discrete(9)

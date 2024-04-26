@@ -55,7 +55,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
             self.possible_agents.append(agent_name)
 
         self.render_mode = render_mode
-        self.probability_matrix = None
 
         # Initializing render
         self.pygame_renderer = PygameInterface(

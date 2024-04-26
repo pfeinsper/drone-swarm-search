@@ -67,6 +67,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         print(f"Pre render steps: {self.pre_render_steps}")
 
         # Prob matrix
+        self.probability_matrix = None
         self.dispersion_inc = dispersion_inc
         self.dispersion_start = dispersion_start
         self.vector = vector
@@ -147,7 +148,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     ):
         vector = options.get("vector") if options else None
         self.vector = vector if vector else self.vector
-        
+
         self.persons_set = self.create_persons_set()
         for person in self.persons_set:
             person.reset_position()
