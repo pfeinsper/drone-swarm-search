@@ -5,6 +5,11 @@
 [![PettingZoo version dependency](https://img.shields.io/badge/PettingZoo-v1.22.3-blue)]()
 ![GitHub stars](https://img.shields.io/github/stars/pfeinsper/drone-swarm-search)
 
+# <img src="https://github.com/pfeinsper/drone-swarm-search/blob/main/docs/public/pics/drone.svg" alt="DSSE Icon" width="45" height="25"> Drone Swarm Search Environment (DSSE)
+
+Welcome to the official GitHub repository for the Drone Swarm Search Environment (DSSE). This project is dedicated to providing a comprehensive simulation environment designed to develop, test, and refine drone swarm search strategies. Here, researchers and developers can access a versatile platform that supports a wide range of drone swarm simulations, enabling the exploration of complex behaviors and interactions within dynamic, real-world scenarios.
+
+
 ## 📚 Documentation Links
 
 - **[Documentation Site](https://pfeinsper.github.io/drone-swarm-search/)**: Access comprehensive documentation including tutorials, and usage examples for the Drone Swarm Search Environment (DSSE). Ideal for users seeking detailed information about the project's capabilities and how to integrate them into their own applications.
@@ -77,7 +82,7 @@ while not done:
     done = any(terminations.values()) or any(truncations.values())
 ```
 
-## 🛠️ Basic Covarage Usage
+## 🛠️ Basic Coverage Usage
 ```python
 from DSSE import CoverageDroneSwarmSearch
 
