@@ -111,7 +111,7 @@ pip install -r requirements.txt
 | `person_initial_position` | `[int(x), int(y)]`    | `[0, 0]`                  |
 | `drone_amount`            | `int`                 | `1`                       |
 | `drone_speed`             | `int`                 | `10`                      |
-| `probability_of_detection`| `int`                 | `1`                       |
+| `probability_of_detection`| `float`               | `1`                       |
 | `pre_render_time`         | `int`                 | `0`                       |
 
 - `grid_size`: The `grid_size` defines the area in which the search will happen. It should always be an integer greater than one.
@@ -149,13 +149,23 @@ pip install -r requirements.txt
 
 ### `env.reset`:
 
-`env.reset()` will reset the environment to the initial position. If you wish to choose the initial positions of the drones an argument can be sent to the method. To do so, the following syntax should be considered. `env.reset(drones_positions=[[5, 5], [25, 5], [45, 5], [5, 15], [25, 15], [45, 15], [10, 35], [30, 35], [45, 25], [33, 45]])`
+`env.reset()` will reset the environment to the initial position. If you wish to choose the initial positions of the drones, alter the POD of each PIW or alter the movement vector, an argument can be sent to the method. To do so, the following syntax should be considered: create a opt dictionary, then pass it to the reset() method. 
 
-Each value of the list represents the `[x, y]` initial position of each drone. Make sure that the list has the same number of positions as the number of drones defined in the environment. 
+```python
+opt = {
+    "drones_positions": [(10, 5), (10, 10)],
+    "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
+}
+observations, info = env.reset(options=opt)
+```
 
-Additionally, to change the vector, a tuple (representing the vector) can be sent as an argument. This can be done using the following syntax: `env.reset(vector=(0.3, 0.3))`. This way, the person's movement will change according to the new vector. 
+Each value of the  `drones_positions` list represents the `[x, y]` initial position of each drone. Make sure that the list has the same number of positions as the number of drones defined in the environment.
 
-In the case of no argument `env.reset()` will simply allocate the drones from left to right each in the next adjacent cell. Once there are no more available cells in the row it will go to the next row and do the same from left to right. The vector will also remain the same as before, when there is no argument in the reset function.
+Each value of the  `person_pod_multipliers` list represents the probability of detectio for each person, in order. Make sure that the list has the same number of positions as the number of PIW's defined in the environment.
+
+Additionally, to change the vector, a tuple (representing the vector) can be set as an key pair in the dict. This can be done using the following syntax: `vector=(0.3, 0.3))`. This way, the person's movement will change according to the new vector. 
+
+In the case of no argument `env.reset()` will simply allocate the drones from left to right each in the next adjacent cell. Once there are no more available cells in the row it will go to the next row and do the same from left to right. The vector and POD will also remain the same as before, when there is no argument in the reset function.
 
 The method will also return a observation dictionary with the observations of all drones. 
 
@@ -171,49 +181,52 @@ The person's movement is done using the probability matrix and the vector. The v
 
 #### Observation:
 
-The observation is a dictionary with all the drones as keys. Each drone has a value of another dictionary with “observation” as key and a tuple as its value. The tuple follows the following pattern, `((x_position, y_position), probability_matrix)`. An output example can be seen below.
+The observation is a dictionary with all the drones as keys. Each drone has a tuple as its value. The tuple follows the following pattern, `((x_position, y_position), probability_matrix)`. An output example can be seen below.
 
-```bash
+```python
 {
     'drone0': 
-        {'observation': ((5, 5), array([[0., 0., 0., ..., 0., 0., 0.],
+        ((5, 5), array([[0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         ...,
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
-                                        [0., 0., 0., ..., 0., 0., 0.]]))
-        }, 
+                                        [0., 0., 0., ..., 0., 0., 0.]])
+        ),
+
     'drone1': 
-        {'observation': ((25, 5), array([[0., 0., 0., ..., 0., 0., 0.],
+        ((25, 5), array([[0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         ...,
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
-                                        [0., 0., 0., ..., 0., 0., 0.]]))
-        }, 
+                                        [0., 0., 0., ..., 0., 0., 0.]])
+        ),
     'drone2': 
-        {'observation': ((45, 5), array([[0., 0., 0., ..., 0., 0., 0.],
+        ((45, 5), array([[0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         ...,
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
-                                        [0., 0., 0., ..., 0., 0., 0.]]))
-       }, 
+                                        [0., 0., 0., ..., 0., 0., 0.]])
+        ),
+
        
        .................................
        
-    'drone9': 
-        {'observation': ((33, 45), array([[0., 0., 0., ..., 0., 0., 0.],
+    'droneN': 
+        ((33, 45), array([[0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         ...,
                                         [0., 0., 0., ..., 0., 0., 0.],
                                         [0., 0., 0., ..., 0., 0., 0.],
-                                        [0., 0., 0., ..., 0., 0., 0.]]))
-        }
+                                        [0., 0., 0., ..., 0., 0., 0.]])
+        ),
+        
 }
 ```
 
@@ -240,7 +253,7 @@ The termination and truncation variables return a dictionary with all drones as 
 
 #### Info:
 
-Info is a dictionary that contains a key called "Found" that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The info section is to be used as an indicator to see if the person was found. For example, before finding the shipwrecked person, the dictionary will be `{"Found": False}`. Once the person is found, the dictionary will be `{"Found": True}`.
+Info is a dictionary of dictionaries, with each drone being a key, with its value being another dictionary that contains a key called "Found" that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The info section is to be used as an indicator to see if the person was found. For example, before finding the shipwrecked person, the dictionary will be `{'drone0': {'Found': False}, 'drone1': {'Found': False}}`. Once the person is found, the dictionary will be `{'drone0': {'Found': True}, 'drone1': {'Found': True}}`.
 
 ### `env.get_agents`:
 
