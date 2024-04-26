@@ -35,7 +35,7 @@ pip install DSSE
 
 ## 🎯 Outcome
 
-| If drone is found            | If drone is not found  |
+| If drone is target            | If drone is not target  |
 :-------------------------:|:-------------------------:
 | ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/fail_render.png) |
 
@@ -119,7 +119,7 @@ If you use this package, please consider citing it with this piece of BibTeX:
 ```
 @misc{castanares2023dsse,
       title={DSSE: a drone swarm search environment}, 
-      author={Jorás Oliveira, Pedro Andrade, Ricardo Rodrigues, Renato Laffranchi,Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
+      author={Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
       year={2024},
       eprint={2307.06240},
       archivePrefix={arXiv},
