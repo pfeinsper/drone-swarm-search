@@ -54,7 +54,23 @@ Maritime navigation plays a crucial role across various domains, including leisu
 
 To achieve this objective, traditional SAR operations used path planning algorithms such as parallel sweep, expanding square, and sector searches [@iamsar]. But recent researches propose a different approach to this problem using reinforcement learning techniques over pre-determined search patterns [@AI2021110098; @WU2024116403].
 
-In order to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning, the `DSSE`, distributed as a Python package, was designed to provide a training environment using the PettingZoo interface with the purpose of training and evaluating single or multi-agent reinforcement learning algorithms.
+In order to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning, the `DSSE`, distributed as a Python package, was designed to provide a training environment using the PettingZoo [@terry2021pettingzoo] interface with the purpose of training and evaluating single or multi-agent reinforcement learning algorithms.
+
+Using this environment, any researcher or practitioner can write code and execute an agent's training, such as the source code presented below.
+
+```python
+from DSSE import DroneSwarmSearch
+
+env = DroneSwarmSearch()
+
+observations, info = env.reset()
+rewards = 0
+done = False
+while not done:
+      actions = policy(observations, env.get_agents())
+      observations, rewards, terminations, truncations, infos = env.step(actions) 
+      done = any(terminations.values()) or any(truncations.values())
+```
 
 ![Simulation environment showcasing the algorithm's execution.\label{fig:example}](docs/pics/dsse-example.png){ width=50% }
 
@@ -64,12 +80,8 @@ The package also includes a second environment option. Similar to the first, thi
 
 The grid is divided into square cells, each representing a quadrant with sides measuring 130 meters in the real world. This correlation with real-world dimensions is crucial for developing agents capable of learning from realistic motion patterns. The drones, which are controlled by reinforcement learning algorithms, serve as these agents. During the environment's instantiation, users define the drones' nominal speeds. These drones can move both orthogonally and diagonally across the grid, and they are equipped to search each cell for the presence of the PIW.
 
-`DSSE` was originally proposed as part of a Capstone project at Insper in a partnership with Embraer, in order to research the viabillity of exploring and rescuing shipwrecked people with reinforcement learning-empowered drone swarms [@dsse2023]. Since there is no available environment for such purpose and considering that the multi-agent reinforcement learning field of study is recent, it was decided to continue with the development of the project, aiming to enhance even further the realism of the environment and to promote the research.
+Several works have been developed over the past few years to define better algorithms for the search and rescue of shipwrecks [@AI2021110098; @WU2024116403]. However, no environment for agent training is made available publicly. For this reason, we believe that the development and provision of this environment as a Python library and open-source project will be relevant to the machine learning community and ocean safety.
 
-Currently, the `DSSE` is being enhanced and used by students as part of a Capstone project at Insper in a partnership with Embraer to implement and evaluate new reinforcement learning algorithms such as Deep Q-Networks (DQN) [@dqn2015] and Proximal Policy Optimization (PPO) [@ppo2017]. Also, it is receiving further study on how to establish information exchanging mechanisms to increase the collaboration between the agents.
-
-# Acknowledgements
-
-We acknowledge intellectual contributions and mentoring from Prof. Dr. Fabrício J. Barth and from Dr. José Fernando B. Brancalion, who have been extremely enthusiastic and engaged with the advance of the project.
+This new library makes it possible to implement and evaluate new reinforcement learning algorithms, such as Deep Q-Networks (DQN) [@dqn2015] and Proximal Policy Optimization (PPO) [@ppo2017], with little effort. An earlier iteration of this software was utilized in research that compared the Reinforce algorithm with the parallel sweep path planning algorithm [@dsse2023].
 
 # References
