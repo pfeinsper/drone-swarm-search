@@ -54,7 +54,7 @@ Maritime navigation plays a crucial role across various domains, including leisu
 
 To achieve this objective, traditional SAR operations used path planning algorithms such as parallel sweep, expanding square, and sector searches [@iamsar]. But recent researches propose a different approach to this problem using reinforcement learning techniques over pre-determined search patterns [@AI2021110098; @WU2024116403].
 
-In order to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning, the Drone Swarm Search Environment (`DSSE`), distributed as a Python package, was designed to provide a training environment using the PettingZoo [@terry2021pettingzoo] interface with the purpose of training and evaluating single or multi-agent reinforcement learning algorithms, being listed as a third-party environment on PettingZoo's official documentation [@Terry_PettingZoo_Gym_for].
+In order to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning, the Drone Swarm Search Environment (`DSSE`), distributed as a Python package, was designed to provide a training environment using the PettingZoo [@terry2021pettingzoo] interface. Its purpose is to facilitate the training and evaluation of single or multi-agent reinforcement learning algorithms. Additionally, it has been included as a third-party environment in the official PettingZoo documentation [@Terry_PettingZoo_Gym_for].
 
 Using this environment, any researcher or practitioner can write code and execute an agent's training, such as the source code presented below.
 
