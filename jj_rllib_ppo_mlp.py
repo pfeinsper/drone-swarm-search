@@ -11,6 +11,19 @@ from ray.rllib.models.torch.torch_modelv2 import TorchModelV2
 from ray.tune.registry import register_env
 import torch
 from torch import nn
+'''
+    - No drone colisions
+
+    reward_scheme = Reward(
+        default=0,
+        leave_grid=0,
+        exceed_timestep=0,
+        drones_collision=0,
+        search_cell=0,
+        search_and_find=1,
+    )
+'''
+    
 
 
 class MLPModel(TorchModelV2, nn.Module):
@@ -51,12 +64,13 @@ class MLPModel(TorchModelV2, nn.Module):
 
 def env_creator(args):
     env = DroneSwarmSearch(
-        drone_amount=16,
+        drone_amount=4,
         grid_size=40,
-        dispersion_inc=0.05,
-        person_initial_position=(10, 10),
+        dispersion_inc=0.08,
+        person_initial_position=(20, 20),
     )
     env = TopNProbsWrapper(env, 10)
+    # env = RetainDronePosWrapper(env, [(10, 0), (0, 10), (10, 19), (19, 10)])
     return env
 
 
@@ -71,19 +85,19 @@ if __name__ == "__main__":
     config = (
         PPOConfig()
         .environment(env=env_name)
-        .rollouts(num_rollout_workers=6, rollout_fragment_length="auto")
+        .rollouts(num_rollout_workers=14, rollout_fragment_length="auto")
         .training(
             train_batch_size=8192,
             lr=1e-5,
-            gamma=0.99999,
+            gamma=0.9999999,
             lambda_=0.9,
             use_gae=True,
-            clip_param=0.4,
-            grad_clip=None,
-            entropy_coeff=0.1,
-            vf_loss_coeff=0.25,
-            vf_clip_param=4200,
-            sgd_minibatch_size=1024,
+            # clip_param=0.4,
+            # grad_clip=None,
+            # entropy_coeff=0.1,
+            # vf_loss_coeff=0.25,
+            # vf_clip_param=4200,
+            sgd_minibatch_size=300,
             num_sgd_iter=10,
             model={
                 "custom_model": "MLPModel",
@@ -100,7 +114,7 @@ if __name__ == "__main__":
     tune.run(
         "PPO",
         name="PPO",
-        stop={"timesteps_total": 10_000_000 if not os.environ.get("CI") else 50000},
+        stop={"timesteps_total": 5_000_000 if not os.environ.get("CI") else 50000},
         checkpoint_freq=10,
         storage_path=f"{curr_path}/ray_res/" + env_name,
         config=config.to_dict(),

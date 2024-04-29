@@ -17,7 +17,7 @@ class RetainDronePosWrapper(BaseParallelWrapper):
         options = {
             "drone_positions": self.drone_positions
         }
-        obs, infos = self.env.reset(options=options, **kwargs)
+        obs, infos = self.env.reset(options=options)
         return obs, infos
     
 
