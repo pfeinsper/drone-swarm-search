@@ -187,6 +187,9 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             "acumulated_pos": self.cumm_pos,
         }
         return {drone: infos for drone in self.agents}
+    
+    def save_matrix(self, path: str):
+        self.probability_matrix.save_state(path)
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
