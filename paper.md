@@ -72,9 +72,9 @@ while not done:
       done = any(terminations.values()) or any(truncations.values())
 ```
 
-![Simulation environment showcasing the algorithm's execution.\label{fig:example}](docs/pics/dsse-example.png){ width=50% }
-
 The environment depicted in \autoref{fig:example} comprises a grid, a probability matrix, drones, and an arbitrary number of persons-in-water (PIW). The movement of the PIW is influenced by, but not identical to, the dynamics of the probability matrix, which models the drift of sea currents impacting the PIW [@WU2023113444]. The probability matrix itself is defined using a two-dimensional Gaussian distribution, which expands over time, thus broadening the potential search area. This expansion simulates the diffusion of the PIW, approximating the zone where drones are most likely to detect them. Moreover, the environment employs a reward function that incentivizes the speed of the search, rewarding the agents for shorter successful search durations.
+
+![Simulation environment showcasing the algorithm's execution.\label{fig:example}](docs/pics/dsse-example.png){ width=50% }
 
 The package also includes a second environment option. Similar to the first, this alternative setup is designed for training agents, but with key differences in its objectives and mechanics. Unlike the first environment, which rewards agents for speed in their searches, this second option rewards agents that cover the largest area without repetition. It incorporates a trade-off by using a stationary probability matrix, but enhances the simulation with a more advanced Lagrangian particle model [@gmd-11-1405-2018] for pinpointing the PIW's position. Moreover, this environment omits the inclusion of shipwrecked individuals, focusing instead on promoting research into how agents can learn to efficiently expand their search coverage over broader areas.
 
