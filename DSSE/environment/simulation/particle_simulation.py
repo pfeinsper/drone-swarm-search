@@ -2,7 +2,6 @@ import math
 import numpy as np
 from datetime import datetime, timedelta
 from typing import List, Tuple
-from opendrift.models.oceandrift import OceanDrift
 
 
 EARTH_MEAN_RADIUS = 6373.0
@@ -18,6 +17,12 @@ class ParticleSimulation:
         animate: bool = False,
         cell_size: int = 130,
     ) -> None:
+        try:
+            from opendrift.models.oceandrift import OceanDrift
+            self.ocean_drift = OceanDrift
+        except ImportError:
+            raise ImportError("OpenDrift not installed. Install the environment with the 'coverage' extra: pip install DSSE[coverage]")
+        
         self.disaster_lat = disaster_lat
         self.disaster_long = disaster_long
         self.loglevel = loglevel
@@ -55,7 +60,7 @@ class ParticleSimulation:
         radius: int,
         duration: timedelta,
     ) -> List[Tuple[float, float]]:
-        o = OceanDrift(loglevel=self.loglevel)
+        o = self.ocean_drift(loglevel=self.loglevel)
         o.add_readers_from_list(
             ["https://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0/uv3z"]
         )
