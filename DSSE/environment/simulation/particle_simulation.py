@@ -16,12 +16,14 @@ class ParticleSimulation:
         duration_hours: int = 10,
         loglevel: int = 20,
         animate: bool = False,
+        cell_size: int = 130,
     ) -> None:
         self.disaster_lat = disaster_lat
         self.disaster_long = disaster_long
         self.loglevel = loglevel
         self.animate = animate
         self.duration_hours = duration_hours
+        self.cell_size = cell_size
 
         # Internal variables
         self.map_size = 0
@@ -39,7 +41,7 @@ class ParticleSimulation:
         number = 50_000
         radius = 1000
 
-        coordinates = self.simulate(start_time, number, radius, duration, "test.nc")
+        coordinates = self.simulate(start_time, number, radius, duration)
         self.map_size = self.calculate_map_size(coordinates)
         cartesian = self.convert_lat_lon_to_xy(coordinates)
         self.probability_map = self.create_probability_map(cartesian)
@@ -52,7 +54,6 @@ class ParticleSimulation:
         number: int,
         radius: int,
         duration: timedelta,
-        outfile: str,
     ) -> List[Tuple[float, float]]:
         o = OceanDrift(loglevel=self.loglevel)
         o.add_readers_from_list(
@@ -66,7 +67,7 @@ class ParticleSimulation:
             radius=radius,
         )
 
-        o.run(duration=duration, outfile=outfile, time_step=1800)
+        o.run(duration=duration, time_step=1800)
         if self.animate:
             o.animation(filename="animation.mp4")
 
@@ -110,7 +111,6 @@ class ParticleSimulation:
         return cartesian_coordinates
 
     def calculate_map_size(self, coordinates) -> int:
-        cell_size = 130
 
         min_lat, max_lat, min_lon, max_lon = self.calculate_bounding_rectangle(
             coordinates
@@ -119,8 +119,8 @@ class ParticleSimulation:
         width = self.distance_in_meters(min_lat, min_lon, min_lat, max_lon)
         height = self.distance_in_meters(min_lat, min_lon, max_lat, min_lon)
 
-        map_width = round(width / cell_size)
-        map_height = round(height / cell_size)
+        map_width = round(width / self.cell_size)
+        map_height = round(height / self.cell_size)
 
         return max(map_width, map_height)
 
@@ -178,3 +178,14 @@ class ParticleSimulation:
 
     def get_map_size(self):
         return self.map_size
+    
+    def save_state(self, output_path: str):
+        with open(output_path, "wb") as f:
+            np.save(f, self.original_map)
+        
+    
+    def load_state(self, input_path: str):
+        with open(input_path, "rb") as f:
+            self.probability_map = np.load(f)
+            self.original_map = self.probability_map.copy()
+            self.map_size = len(self.probability_map)

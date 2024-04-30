@@ -240,7 +240,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep >= self.timestep_limit:
-                # TODO: Check if is really necessary to add rewards_sum into this reward
                 rewards[agent] = self.reward_scheme.exceed_timestep
                 if self.rewards_sum[agent] > 0:
                     rewards[agent] += self.rewards_sum[agent] // 2
@@ -303,9 +302,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
         # CHECK COLISION - Drone
         self.compute_drone_collision(terminations, rewards)
-        # TODO: Check real usage of this, gives error when using w/ RL libs
-        # rewards["total_reward"] = sum(rewards.values())
-        # self.rewards_sum["total"] += rewards["total_reward"]
 
         self.render_step(any(terminations.values()), person_found)
 

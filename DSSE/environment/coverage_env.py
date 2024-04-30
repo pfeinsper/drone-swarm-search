@@ -6,7 +6,6 @@ import numpy as np
 import functools
 
 
-# TODO: Match env_base to conv_env -> If using particle sim, redo __init__ and reset.
 class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
     metadata = {
         "name": "DroneSwarmSearchCPP",
@@ -31,14 +30,21 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         drone_speed=10,
         drone_probability_of_detection=0.9,
         pre_render_time=10,
+        prob_matrix_path=None,
     ) -> None:
+
         # Prob matrix
         self.probability_matrix = ParticleSimulation(
             disaster_lat=disaster_position[0],
             disaster_long=disaster_position[1],
             duration_hours=pre_render_time,
         )
-        self.probability_matrix.run_or_get_simulation()
+        if prob_matrix_path is not None:
+            if not isinstance(prob_matrix_path, str):
+                raise ValueError("prob_matrix_path must be a string")
+            self.probability_matrix.load_state(prob_matrix_path)
+        else: 
+            self.probability_matrix.run_or_get_simulation()
         grid_size = self.probability_matrix.get_map_size()
 
         super().__init__(
