@@ -3,10 +3,10 @@ requires = ["setuptools >= 61.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
+version = "1.0.3"
 name = "DSSE"
 description = "The Drone Swarm Search project provides an environment for SAR missions built on PettingZoo, where agents, represented by drones, are tasked with locating targets identified as shipwrecked individuals."
 readme = "README.md"
-dynamic = ["version"]
 requires-python = ">= 3.10.5"
 authors = [
     { name="Ricardo Ribeiro Rodrigues", email="ricardorr7@al.insper.edu.br" },
