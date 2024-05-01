@@ -25,7 +25,9 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         self.cell_size = 130  # in meters
         self.grid_size = grid_size
         self._was_reset = False
-
+        if not isinstance(drone_amount, int):
+            raise ValueError("Drone amount must be an integer")
+    
         self.drone = DroneData(
             amount=drone_amount,
             speed=drone_speed,
