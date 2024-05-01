@@ -19,24 +19,24 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.x  # Escolha a versão desejada do Python
+          python-version: 3.x  # Choose the desired Python version
       
       - name: Cache Python Dependencies
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-pip-          
 
-      - name: Install dependencies using pip
+      - name: Install Dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install build
-          python3 -m pip install .  # Instala o projeto atual e suas dependências
-      
+          python -m pip install --upgrade pip
+          python -m pip install .
+
       - name: Run Pytest
         run: |
+          cd ${{ github.workspace }}
           python -m pytest --junitxml=pytest_report.xml  # Gera um arquivo de relatório em formato XML
       
       - name: Add XSLT Style to XML Report
