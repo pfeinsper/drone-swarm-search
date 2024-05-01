@@ -31,7 +31,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          sudo apt update
+          sudo apt upgrade
           python -m pip install --upgrade pip
+          pip install wheel
           pip install GDAL==3.4.1
           pip install DSSE
           pip install -r requirements.txt
