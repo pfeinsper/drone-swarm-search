@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.x  # Choose the desired Python version
+          python-version: 3.x  # Escolha a versão desejada do Python
       
       - name: Cache Python Dependencies
         uses: actions/cache@v4
@@ -29,25 +29,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-          
 
-      - name: Install dependencies
-        run:  >-
-          python3 -m
-          pip install
-          build
-          --user
-
-      - name: Build a binary wheel and a source tarball
-        run: python3 -m build
-
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@v3
-        with:
-          name: python-package-distributions
-          path: dist/
-
+      - name: Install build and toml libraries
+        run: >
+          python3 -m pip install build toml --user
+          
       - name: Run Pytest
         run: |
-          cd ${{ github.workspace }}
           python -m pytest --junitxml=pytest_report.xml  # Gera um arquivo de relatório em formato XML
       
       - name: Add XSLT Style to XML Report
