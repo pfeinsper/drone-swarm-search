@@ -32,7 +32,9 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .
+          pip install GDAL==3.4.1
+          pip install DSSE
+          pip install -r requirements.txt
 
       - name: Run Pytest
         run: |
