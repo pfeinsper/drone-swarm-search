@@ -18,10 +18,21 @@ jobs:
           python-version: '3.*'  # This will use the latest Python 3.x version available
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install wheel setuptools twine
+        run:  >-
+          python3 -m
+          pip install
+          build
+          --user
 
+      - name: Build a binary wheel and a source tarball
+        run: python3 -m build
+
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+          
       - name: Update version in setup.py
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
