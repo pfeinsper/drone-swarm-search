@@ -27,12 +27,7 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-          
-
-      - name: Check gdal-config path
-        run: |
-          which gdal-config
-          gdal-config --version
+            ${{ runner.os }}-pip-
 
       - name: Install Dependencies
         run: |
