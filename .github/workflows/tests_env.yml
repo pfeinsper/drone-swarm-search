@@ -31,6 +31,15 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          wget https://github.com/OSGeo/gdal/releases/download/v3.8.5/gdal-3.8.5.tar.gz
+          tar -zxvf gdal-3.8.5.tar.gz
+          cd gdal-3.8.5
+          mkdir build
+          cd build/
+          cmake .. -DGDAL_ENABLE_PYTHON=YES
+          make -j$(nproc)
+          sudo make install
+          cd ../..
           python -m pip install --upgrade pip
           pip install DSSE
           pip install -r requirements.txt
