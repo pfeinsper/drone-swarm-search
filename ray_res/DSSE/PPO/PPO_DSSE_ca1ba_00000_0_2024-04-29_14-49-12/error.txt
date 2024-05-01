@@ -1,0 +1,52 @@
+Failure # 1 (occurred at 2024-04-29_14-51-25)
+[36mray::PPO.train()[39m (pid=40437, ip=10.102.13.220, actor_id=cc151c4b797956a91596c83401000000, repr=PPO)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/tune/trainable/trainable.py", line 334, in train
+    raise skipped from exception_cause(skipped)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/tune/trainable/trainable.py", line 331, in train
+    result = self.step()
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/algorithm.py", line 831, in step
+    train_results, train_iter_ctx = self._run_one_training_iteration()
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/algorithm.py", line 3028, in _run_one_training_iteration
+    results = self.training_step()
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/ppo/ppo.py", line 410, in training_step
+    return self._training_step_old_and_hybrid_api_stacks()
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/ppo/ppo.py", line 508, in _training_step_old_and_hybrid_api_stacks
+    train_batch = synchronous_parallel_sample(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/execution/rollout_ops.py", line 92, in synchronous_parallel_sample
+    sampled_data = worker_set.foreach_worker(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/worker_set.py", line 788, in foreach_worker
+    handle_remote_call_result_errors(remote_results, self._ignore_worker_failures)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/worker_set.py", line 79, in handle_remote_call_result_errors
+    raise r.get()
+ray.exceptions.RayTaskError(ValueError): [36mray::RolloutWorker.apply()[39m (pid=41744, ip=10.102.13.220, actor_id=7245dbc4fb8d0eaea714a3b901000000, repr=<ray.rllib.evaluation.rollout_worker.RolloutWorker object at 0x7d9ce1255d80>)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/actor_manager.py", line 189, in apply
+    raise e
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/actor_manager.py", line 178, in apply
+    return func(self, *args, **kwargs)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/execution/rollout_ops.py", line 93, in <lambda>
+    lambda w: w.sample(),
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/rollout_worker.py", line 694, in sample
+    batches = [self.input_reader.next()]
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/sampler.py", line 91, in next
+    batches = [self.get_data()]
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/sampler.py", line 273, in get_data
+    item = next(self._env_runner)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/env_runner_v2.py", line 348, in run
+    outputs = self.step()
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/env_runner_v2.py", line 374, in step
+    active_envs, to_eval, outputs = self._process_observations(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/env_runner_v2.py", line 692, in _process_observations
+    self._handle_done_episode(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/env_runner_v2.py", line 842, in _handle_done_episode
+    self._build_done_episode(env_id, is_done, outputs)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/env_runner_v2.py", line 731, in _build_done_episode
+    episode.postprocess_episode(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/episode_v2.py", line 320, in postprocess_episode
+    post_batch = policy.postprocess_trajectory(post_batch, other_batches, self)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/ppo/ppo_torch_policy.py", line 215, in postprocess_trajectory
+    return compute_gae_for_sample_batch(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/postprocessing.py", line 204, in compute_gae_for_sample_batch
+    batch = compute_advantages(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/postprocessing.py", line 128, in compute_advantages
+    delta_t = rewards + gamma * vpred_t[1:] - vpred_t[:-1]
+ValueError: operands could not be broadcast together with shapes (21,) (20,)

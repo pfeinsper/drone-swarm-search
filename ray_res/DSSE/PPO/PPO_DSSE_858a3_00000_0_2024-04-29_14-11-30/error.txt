@@ -1,0 +1,210 @@
+Failure # 1 (occurred at 2024-04-29_14-11-40)
+The actor died because of an error raised in its creation task, [36mray::PPO.__init__()[39m (pid=18956, ip=10.102.13.220, actor_id=afc06958879224767996922901000000, repr=PPO)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/worker_set.py", line 230, in _setup
+    self.add_workers(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/worker_set.py", line 699, in add_workers
+    raise result.get()
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/actor_manager.py", line 497, in _fetch_result
+    result = ray.get(r)
+ray.exceptions.ActorDiedError: The actor died because of an error raised in its creation task, [36mray::RolloutWorker.__init__()[39m (pid=19071, ip=10.102.13.220, actor_id=310893bc5bba04c30955c42201000000, repr=<ray.rllib.evaluation.rollout_worker.RolloutWorker object at 0x77f767dc1db0>)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/env/wrappers/pettingzoo_env.py", line 214, in reset
+    obs, info = self.par_env.reset(seed=seed, options=options)
+  File "/home/jj/insper/8semestre/PFE/drone-swarm-search/DSSE/environment/wrappers/retain_drone_pos_wrapper.py", line 20, in reset
+    obs, infos = self.env.reset(options=options, **kwargs)
+TypeError: DSSE.environment.wrappers.top_n_cells_wrapper.TopNProbsWrapper.reset() got multiple values for keyword argument 'options'
+
+The above exception was the direct cause of the following exception:
+
+[36mray::RolloutWorker.__init__()[39m (pid=19071, ip=10.102.13.220, actor_id=310893bc5bba04c30955c42201000000, repr=<ray.rllib.evaluation.rollout_worker.RolloutWorker object at 0x77f767dc1db0>)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 81, in check_env
+    check_multiagent_environments(env)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 312, in check_multiagent_environments
+    raise ValueError(
+ValueError: Your environment (<ParallelPettingZooEnv instance>) does not abide to the new gymnasium-style API!
+From Ray 2.3 on, RLlib only supports the new (gym>=0.26 or gymnasium) Env APIs.
+In particular, the `reset()` method seems to be faulty.
+Learn more about the most important changes here:
+https://github.com/openai/gym and here: https://github.com/Farama-Foundation/Gymnasium
+
+In order to fix this problem, do the following:
+
+1) Run `pip install gymnasium` on your command line.
+2) Change all your import statements in your code from
+   `import gym` -> `import gymnasium as gym` OR
+   `from gym.space import Discrete` -> `from gymnasium.spaces import Discrete`
+
+For your custom (single agent) gym.Env classes:
+3.1) Either wrap your old Env class via the provided `from gymnasium.wrappers import
+     EnvCompatibility` wrapper class.
+3.2) Alternatively to 3.1:
+ - Change your `reset()` method to have the call signature 'def reset(self, *,
+   seed=None, options=None)'
+ - Return an additional info dict (empty dict should be fine) from your `reset()`
+   method.
+ - Return an additional `truncated` flag from your `step()` method (between `done` and
+   `info`). This flag should indicate, whether the episode was terminated prematurely
+   due to some time constraint or other kind of horizon setting.
+
+For your custom RLlib `MultiAgentEnv` classes:
+4.1) Either wrap your old MultiAgentEnv via the provided
+     `from ray.rllib.env.wrappers.multi_agent_env_compatibility import
+     MultiAgentEnvCompatibility` wrapper class.
+4.2) Alternatively to 4.1:
+ - Change your `reset()` method to have the call signature
+   'def reset(self, *, seed=None, options=None)'
+ - Return an additional per-agent info dict (empty dict should be fine) from your
+   `reset()` method.
+ - Rename `dones` into `terminateds` and only set this to True, if the episode is really
+   done (as opposed to has been terminated prematurely due to some horizon/time-limit
+   setting).
+ - Return an additional `truncateds` per-agent dictionary flag from your `step()`
+   method, including the `__all__` key (100% analogous to your `dones/terminateds`
+   per-agent dict).
+   Return this new `truncateds` dict between `dones/terminateds` and `infos`. This
+   flag should indicate, whether the episode (for some agent or all agents) was
+   terminated prematurely due to some time constraint or other kind of horizon setting.
+
+
+During handling of the above exception, another exception occurred:
+
+[36mray::RolloutWorker.__init__()[39m (pid=19071, ip=10.102.13.220, actor_id=310893bc5bba04c30955c42201000000, repr=<ray.rllib.evaluation.rollout_worker.RolloutWorker object at 0x77f767dc1db0>)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/rollout_worker.py", line 414, in __init__
+    check_env(self.env, self.config)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 96, in check_env
+    raise ValueError(
+ValueError: Traceback (most recent call last):
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 307, in check_multiagent_environments
+    obs_and_infos = env.reset(seed=42, options={})
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/env/wrappers/pettingzoo_env.py", line 214, in reset
+    obs, info = self.par_env.reset(seed=seed, options=options)
+  File "/home/jj/insper/8semestre/PFE/drone-swarm-search/DSSE/environment/wrappers/retain_drone_pos_wrapper.py", line 20, in reset
+    obs, infos = self.env.reset(options=options, **kwargs)
+TypeError: DSSE.environment.wrappers.top_n_cells_wrapper.TopNProbsWrapper.reset() got multiple values for keyword argument 'options'
+
+The above exception was the direct cause of the following exception:
+
+[36mray::RolloutWorker.__init__()[39m (pid=19071, ip=10.102.13.220, actor_id=310893bc5bba04c30955c42201000000, repr=<ray.rllib.evaluation.rollout_worker.RolloutWorker object at 0x77f767dc1db0>)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 81, in check_env
+    check_multiagent_environments(env)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 312, in check_multiagent_environments
+    raise ValueError(
+ValueError: Your environment (<ParallelPettingZooEnv instance>) does not abide to the new gymnasium-style API!
+From Ray 2.3 on, RLlib only supports the new (gym>=0.26 or gymnasium) Env APIs.
+In particular, the `reset()` method seems to be faulty.
+Learn more about the most important changes here:
+https://github.com/openai/gym and here: https://github.com/Farama-Foundation/Gymnasium
+
+In order to fix this problem, do the following:
+
+1) Run `pip install gymnasium` on your command line.
+2) Change all your import statements in your code from
+   `import gym` -> `import gymnasium as gym` OR
+   `from gym.space import Discrete` -> `from gymnasium.spaces import Discrete`
+
+For your custom (single agent) gym.Env classes:
+3.1) Either wrap your old Env class via the provided `from gymnasium.wrappers import
+     EnvCompatibility` wrapper class.
+3.2) Alternatively to 3.1:
+ - Change your `reset()` method to have the call signature 'def reset(self, *,
+   seed=None, options=None)'
+ - Return an additional info dict (empty dict should be fine) from your `reset()`
+   method.
+ - Return an additional `truncated` flag from your `step()` method (between `done` and
+   `info`). This flag should indicate, whether the episode was terminated prematurely
+   due to some time constraint or other kind of horizon setting.
+
+For your custom RLlib `MultiAgentEnv` classes:
+4.1) Either wrap your old MultiAgentEnv via the provided
+     `from ray.rllib.env.wrappers.multi_agent_env_compatibility import
+     MultiAgentEnvCompatibility` wrapper class.
+4.2) Alternatively to 4.1:
+ - Change your `reset()` method to have the call signature
+   'def reset(self, *, seed=None, options=None)'
+ - Return an additional per-agent info dict (empty dict should be fine) from your
+   `reset()` method.
+ - Rename `dones` into `terminateds` and only set this to True, if the episode is really
+   done (as opposed to has been terminated prematurely due to some horizon/time-limit
+   setting).
+ - Return an additional `truncateds` per-agent dictionary flag from your `step()`
+   method, including the `__all__` key (100% analogous to your `dones/terminateds`
+   per-agent dict).
+   Return this new `truncateds` dict between `dones/terminateds` and `infos`. This
+   flag should indicate, whether the episode (for some agent or all agents) was
+   terminated prematurely due to some time constraint or other kind of horizon setting.
+
+
+The above error has been found in your environment! We've added a module for checking your custom environments. It may cause your experiment to fail if your environment is not set up correctly. You can disable this behavior via calling `config.environment(disable_env_checking=True)`. You can run the environment checking module standalone by calling ray.rllib.utils.check_env([your env]).
+
+During handling of the above exception, another exception occurred:
+
+[36mray::PPO.__init__()[39m (pid=18956, ip=10.102.13.220, actor_id=afc06958879224767996922901000000, repr=PPO)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/algorithm.py", line 526, in __init__
+    super().__init__(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/tune/trainable/trainable.py", line 161, in __init__
+    self.setup(copy.deepcopy(self.config))
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/algorithm.py", line 612, in setup
+    self.workers = WorkerSet(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/worker_set.py", line 182, in __init__
+    raise e.args[0].args[2]
+ValueError: Traceback (most recent call last):
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 307, in check_multiagent_environments
+    obs_and_infos = env.reset(seed=42, options={})
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/env/wrappers/pettingzoo_env.py", line 214, in reset
+    obs, info = self.par_env.reset(seed=seed, options=options)
+  File "/home/jj/insper/8semestre/PFE/drone-swarm-search/DSSE/environment/wrappers/retain_drone_pos_wrapper.py", line 20, in reset
+    obs, infos = self.env.reset(options=options, **kwargs)
+TypeError: DSSE.environment.wrappers.top_n_cells_wrapper.TopNProbsWrapper.reset() got multiple values for keyword argument 'options'
+
+The above exception was the direct cause of the following exception:
+
+[36mray::PPO.__init__()[39m (pid=18956, ip=10.102.13.220, actor_id=afc06958879224767996922901000000, repr=PPO)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 81, in check_env
+    check_multiagent_environments(env)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/pre_checks/env.py", line 312, in check_multiagent_environments
+    raise ValueError(
+ValueError: Your environment (<ParallelPettingZooEnv instance>) does not abide to the new gymnasium-style API!
+From Ray 2.3 on, RLlib only supports the new (gym>=0.26 or gymnasium) Env APIs.
+In particular, the `reset()` method seems to be faulty.
+Learn more about the most important changes here:
+https://github.com/openai/gym and here: https://github.com/Farama-Foundation/Gymnasium
+
+In order to fix this problem, do the following:
+
+1) Run `pip install gymnasium` on your command line.
+2) Change all your import statements in your code from
+   `import gym` -> `import gymnasium as gym` OR
+   `from gym.space import Discrete` -> `from gymnasium.spaces import Discrete`
+
+For your custom (single agent) gym.Env classes:
+3.1) Either wrap your old Env class via the provided `from gymnasium.wrappers import
+     EnvCompatibility` wrapper class.
+3.2) Alternatively to 3.1:
+ - Change your `reset()` method to have the call signature 'def reset(self, *,
+   seed=None, options=None)'
+ - Return an additional info dict (empty dict should be fine) from your `reset()`
+   method.
+ - Return an additional `truncated` flag from your `step()` method (between `done` and
+   `info`). This flag should indicate, whether the episode was terminated prematurely
+   due to some time constraint or other kind of horizon setting.
+
+For your custom RLlib `MultiAgentEnv` classes:
+4.1) Either wrap your old MultiAgentEnv via the provided
+     `from ray.rllib.env.wrappers.multi_agent_env_compatibility import
+     MultiAgentEnvCompatibility` wrapper class.
+4.2) Alternatively to 4.1:
+ - Change your `reset()` method to have the call signature
+   'def reset(self, *, seed=None, options=None)'
+ - Return an additional per-agent info dict (empty dict should be fine) from your
+   `reset()` method.
+ - Rename `dones` into `terminateds` and only set this to True, if the episode is really
+   done (as opposed to has been terminated prematurely due to some horizon/time-limit
+   setting).
+ - Return an additional `truncateds` per-agent dictionary flag from your `step()`
+   method, including the `__all__` key (100% analogous to your `dones/terminateds`
+   per-agent dict).
+   Return this new `truncateds` dict between `dones/terminateds` and `infos`. This
+   flag should indicate, whether the episode (for some agent or all agents) was
+   terminated prematurely due to some time constraint or other kind of horizon setting.
+
+
+The above error has been found in your environment! We've added a module for checking your custom environments. It may cause your experiment to fail if your environment is not set up correctly. You can disable this behavior via calling `config.environment(disable_env_checking=True)`. You can run the environment checking module standalone by calling ray.rllib.utils.check_env([your env]).

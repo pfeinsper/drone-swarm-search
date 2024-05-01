@@ -1,0 +1,39 @@
+Failure # 1 (occurred at 2024-04-29_14-31-27)
+The actor died because of an error raised in its creation task, [36mray::APPO.__init__()[39m (pid=31948, ip=10.102.13.220, actor_id=8c0d101fa5336952cd5d61cc01000000, repr=APPO)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/worker_set.py", line 230, in _setup
+    self.add_workers(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/worker_set.py", line 699, in add_workers
+    raise result.get()
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/actor_manager.py", line 497, in _fetch_result
+    result = ray.get(r)
+ray.exceptions.ActorDiedError: The actor died because of an error raised in its creation task, [36mray::RolloutWorker.__init__()[39m (pid=32075, ip=10.102.13.220, actor_id=87efb272e5a14634aee814fb01000000, repr=<ray.rllib.evaluation.rollout_worker.RolloutWorker object at 0x7598dd461d20>)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/rollout_worker.py", line 535, in __init__
+    self._update_policy_map(policy_dict=self.policy_dict)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/rollout_worker.py", line 1743, in _update_policy_map
+    self._build_policy_map(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/rollout_worker.py", line 1854, in _build_policy_map
+    new_policy = create_policy_for_framework(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/utils/policy.py", line 141, in create_policy_for_framework
+    return policy_class(observation_space, action_space, merged_config)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/appo/appo_torch_policy.py", line 107, in __init__
+    self._initialize_loss_from_dummy_batch()
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/policy/policy.py", line 1385, in _initialize_loss_from_dummy_batch
+    max(self.batch_divisibility_req * 4, 32),
+TypeError: '>' not supported between instances of 'int' and 'str'
+
+During handling of the above exception, another exception occurred:
+
+[36mray::APPO.__init__()[39m (pid=31948, ip=10.102.13.220, actor_id=8c0d101fa5336952cd5d61cc01000000, repr=APPO)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/appo/appo.py", line 263, in __init__
+    super().__init__(config, *args, **kwargs)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/algorithm.py", line 526, in __init__
+    super().__init__(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/tune/trainable/trainable.py", line 161, in __init__
+    self.setup(copy.deepcopy(self.config))
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/impala/impala.py", line 598, in setup
+    super().setup(config)
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/algorithms/algorithm.py", line 612, in setup
+    self.workers = WorkerSet(
+  File "/home/jj/.local/lib/python3.10/site-packages/ray/rllib/evaluation/worker_set.py", line 182, in __init__
+    raise e.args[0].args[2]
+TypeError: '>' not supported between instances of 'int' and 'str'
