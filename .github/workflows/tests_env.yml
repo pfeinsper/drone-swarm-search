@@ -31,9 +31,6 @@ jobs:
           sudo apt upgrade
           sudo apt-get install -y libgdal-dev gdal-bin
           python -m pip install --upgrade pip
-          pip install wheel
-          pip install GDAL==3.4.1
-          pip install DSSE
           pip install -r requirements.txt
       - name: Run Pytest
         run: |
