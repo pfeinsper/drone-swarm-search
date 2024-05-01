@@ -44,7 +44,7 @@ export default defineConfig({
               items: [
                 {
                     collapsed: true,
-                    text: 'Training Environment',
+                    text: 'Search Environment',
                     items: [
                       { text: 'About', link: '/docs#about' },
                       { text: 'Quick Start', link: '/docs#quick-start' },
@@ -55,22 +55,30 @@ export default defineConfig({
                     ]
                 },
     
-              //   {
-              //     collapsed: true,
-              //     text: 'Coverage Environment',
-              //     items: [
-              //           { text: 'Item A da Seção A', link: '...' },
-              //           { text: 'Item B da Seção B', link: '...' },
-              //     ]
-              //   }
-              //   {
-              //     collapsed: true,
-              //     text: 'Algorithms',
-              //     items: [
-              //           { text: 'Item A da Seção A', link: '...' },
-              //           { text: 'Item B da Seção B', link: '...' },
-              //     ]
-              //   }
+                {
+                  collapsed: true,
+                  text: 'Coverage Environment',
+                  items: [
+                    { text: 'About', link: '/docsCoverage#about' },
+                    { text: 'Quick Start', link: '/docsCoverage#quick-start' },
+                    { text: 'General Info', link: '/docsCoverage#general-info' },
+                    { text: 'Built in Functions', link: '/docsCoverage#built-in-functions' },
+                    { text: 'Person Movement', link: '/docsCoverage#person-movement' },
+                    { text: 'License', link: '/docsCoverage#license' },
+                  ]
+                },
+                {
+                  collapsed: true,
+                  text: 'Algorithms',
+                  items: [
+                    { text: 'About', link: '/docsAlgorithms#about' },
+                    { text: 'Quick Start', link: '/docsAlgorithms#quick-start' },
+                    { text: 'General Info', link: '/docsAlgorithms#general-info' },
+                    { text: 'Built in Functions', link: '/docsAlgorithms#built-in-functions' },
+                    { text: 'Person Movement', link: '/docsAlgorithms#person-movement' },
+                    { text: 'License', link: '/docsAlgorithms#license' },
+                  ]
+                }
               ]
             }
           ],

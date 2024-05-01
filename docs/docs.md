@@ -13,7 +13,7 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
 
 | If target is found       | If target is not found   |
 :-------------------------:|:-------------------------:
-| ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/pics/fail_render.png) |
+| ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/fail_render.png) |
 
 
 ## Quick Start
