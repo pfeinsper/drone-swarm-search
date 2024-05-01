@@ -17,39 +17,25 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v2
         with:
           python-version: 3.x  # Choose the desired Python version
-      
-      - name: Cache Python Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-          
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          source $HOME/.poetry/env
 
       - name: Install Dependencies
         run: |
-          sudo apt install libcrypto++-dev libproj-dev
-          wget https://github.com/OSGeo/gdal/releases/download/v3.8.5/gdal-3.8.5.tar.gz
-          tar -zxvf gdal-3.8.5.tar.gz
-          cd gdal-3.8.5
-          mkdir build
-          cd build/
-          cmake .. -DGDAL_ENABLE_PYTHON=YES
-          make -j$(nproc)
-          sudo make install
-          cd ../..
           python -m pip install --upgrade pip
-          pip install DSSE
-          pip install -r requirements.txt
+          poetry install
 
       - name: Run Pytest
         run: |
           cd ${{ github.workspace }}
-          python -m pytest --junitxml=pytest_report.xml  # Gera um arquivo de relatório em formato XML
-      
+          poetry run pytest --junitxml=pytest_report.xml  # Executa pytest usando poetry
+
       - name: Add XSLT Style to XML Report
         run: |
           echo '<?xml-stylesheet type="text/xsl" href="transformacao.xsl"?>' | cat - pytest_report.xml > temp && mv temp pytest_report.xml    
