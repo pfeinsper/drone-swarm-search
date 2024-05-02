@@ -1,12 +1,19 @@
-## Quick Start
+# Quick Start Guide
+Welcome to the Quick Start guide for the DSSE (Drone Swarm Search Environment). This guide provides step-by-step instructions on how to install and use DSSE for both the Search and Coverage environments.
 
-#### Install
-DSSE can be installed from pip with the following command:
+## Search Environment
+
+### Installation
+Install DSSE for the search environment using pip:
+
 ```bash
 pip install DSSE
 ```
 
-## Basic Usage
+### Basic Usage
+The following code snippet demonstrates how to set up and run the `DroneSwarmSearch` environment. Expand the details to view the code.
+
+::: details Click me to view the code
 ```python
 from DSSE import DroneSwarmSearch
 
@@ -47,7 +54,42 @@ while not done:
     observations, rewards, terminations, truncations, infos = env.step(actions)
     done = any(terminations.values()) or any(truncations.values())
 ```
+:::
 
-#### PyPi Package Page
+## Coverage Environment
 
-https://pypi.org/project/DSSE/
+### Install
+Install DSSE with coverage environment support using pip:
+
+```bash
+pip install DSSE[coverage]
+```
+
+### Basic Usage
+The following example shows how to initiate and interact with the `CoverageDroneSwarmSearch` environment. Expand the details to see the code.
+
+::: details Click me to view the code
+```python
+from DSSE import CoverageDroneSwarmSearch
+
+env = CoverageDroneSwarmSearch(
+    drone_amount=3,
+    render_mode="human",
+    disaster_position=(-24.04, -46.17),  # (lat, long)
+    pre_render_time=10, # hours to simulate
+)
+
+opt = {
+    "drones_positions": [(0, 10), (10, 10), (20, 10)],
+}
+obs, info = env.reset(options=opt)
+
+step = 0
+while env.agents:
+    step += 1
+    actions = {agent: env.action_space(agent).sample() for agent in env.agents}
+    observations, rewards, terminations, truncations, infos = env.step(actions)
+
+print(infos["drone0"])
+```
+:::

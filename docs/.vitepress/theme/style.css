@@ -137,3 +137,17 @@
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
 
+.aside-curtain {
+  display: none;
+}
+
+.vp-doc table {
+  min-width: 100%;
+  display: table;
+}
+
+.vp-doc > div > p:before {
+  content: '';
+  margin-left: 1.25rem;    
+}
+
