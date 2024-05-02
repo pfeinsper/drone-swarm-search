@@ -57,6 +57,7 @@ def random_policy(obs, agents):
 opt = {
     "drones_positions": [(10, 5), (10, 10)],
     "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
+    "vector": (0.3, 0.3),
 }
 observations, info = env.reset(options=opt)
 
@@ -70,7 +71,7 @@ while not done:
 :::
 
 
-### General Info
+## General Info
 
 | Import             | `from DSSE import DroneSwarmSearch` |
 | ------------------ | -------------------------------------------------- |
@@ -105,80 +106,122 @@ while not done:
 | `dispersion_start`        | `float`               | `0.5`                     |
 | `timestep_limit`          | `int`                 | `100`                     |
 | `person_amount`           | `int`                 | `1`                       |
-| `person_initial_position` | `[int(x), int(y)]`    | `[0, 0]`                  |
+| `person_initial_position` | `(int(x), int(y))`    | `(0, 0)`                  |
 | `drone_amount`            | `int`                 | `1`                       |
 | `drone_speed`             | `int`                 | `10`                      |
 | `probability_of_detection`| `float`               | `1.0`                     |
 | `pre_render_time`         | `int`                 | `0`                       |
 
-- `grid_size`: The `grid_size` defines the area in which the search will happen. It should always be an integer greater than one.
+- **`grid_size`**: Defines the area in which the search will happen. It should always be an integer greater than one.
 
-- `render_mode`: There are two available render modes: *ansi* and *human*.
+- **`render_mode`**:
 
-    - **Ansi**: This mode presents no visualization and is intended to train the reinforcement learning algorithm.
-    - **Human**: This mode presents a visualization of the drones actively searching the target, as well as the visualization of the person moving according to the input vector. 
+    - **`ansi`**: This mode presents no visualization and is intended to train the reinforcement learning algorithm.
+    - **`human`**: This mode presents a visualization of the drones actively searching the target, as well as the visualization of the person moving according to the input vector. 
 
-- `render_grid`: The `render_grid` variable is a boolean. If set to **True** along with `render_mode = "human"`, the visualization will be rendered with a grid. If set to **False**, there will be no grid when rendering.   
+- **`render_grid`**: If set to **True** along with `render_mode = "human"`, the visualization will be rendered with a grid. If set to **False**, there will be no grid when rendering.
 
-- `render_gradient`: The `render_gradient` variable is a boolean. If set to **True** along with `render_mode = "human"`, the colors in the visualization will be interpolated according to the probability of the cell. Otherwise, the color of the cell will be solid according to the following values, considering the values of the matrix are normalized between 0 and 1: `1 > value >= 0.75` the cell will be *green* |` 0.75 > value >= 0.25` the cell will be *yellow* | `0.25 > value` the cell will be *red*.
+- **`render_gradient`**: If set to **True** along with `render_mode = "human"`, the colors in the visualization will be interpolated according to the probability of the cell. Otherwise, the color of the cell will be solid according to the following values, considering the values of the matrix are normalized between 0 and 1: `1 > value >= 0.75` the cell will be <span style="color:lightgreen; text-shadow: -0.8px 0 black, 0 0.8px black, 0.8px 0 black, 0 -0.8px black;">green</span> | `0.75 > value >= 0.25` the cell will be <span style="color:#FFD700; text-shadow: -0.8px 0 black, 0 0.8px black, 0.8px 0 black, 0 -0.8px black;">yellow</span> | `0.25 > value` the cell will be <span style="color:red; text-shadow: -0.8px 0 black, 0 0.8px black, 0.8px 0 black, 0 -0.8px black;">red</span>.
 
-- `vector`: The `vector` is a list with two values that defines the direction in which the person will drift over time. It is a list with two components where the first value of the list is the displacement in the `x axis` and the second value is the displacement in the `y axis`. A positive x value will result in a displacement to the right and vice versa, and a positive y value will result in a displacement downward. A value equal to 1 will result in a displacement of 1 cell per timestamp, a value of 0.5 will result in a displacement of 1 cell every 2 timesteps, and so on. 
 
-- `dispersion_inc`: The `dispersion_inc` is a float that defines the dispersion of the probability matrix. It must be a float greater or equal to zero. The greater the number, the quicker the probability matrix will disperse.
+- **`vector`**: This parameter is a two-element list that specifies the direction and rate of drift over time for a person within the environment. Each element in the list corresponds to displacement along the `x-axis` and `y-axis` respectively:
+  - **X-axis Displacement**: A positive value causes a rightward drift, while a negative value results in a leftward drift.
+  - **Y-axis Displacement**: A positive value causes a downward drift, while a negative value results in an upward drift.
 
-- `dispersion_start`: The `dispersion_start` defines the starting value for the dispersion matrix size. It must be a float greater or equal to zero. By default, it is 0.5.
+::: tip Tip
+For more realistic movement speeds in `vector`, we recommend varying the values of `x` and `y` between `-1 and 1`.
+:::
 
-- `timestep_limit`: The `timestep_limit` is an integer that defines the length of an episode. This means that the `timestep_limit` is essentially the number of steps that can be done without resetting or ending the environment.
+- **`dispersion_inc`**: It's a float that defines the dispersion of the probability matrix. It must be a float `greater` or `equal` to zero. The greater the number, the quicker the probability matrix will disperse.
 
-- `person_amount`: The `person_amount` defines the number of persons in water. It must be an integer greater or equal to 1. By default, it is 1.
+- **`dispersion_start`**: Defines the starting value for the dispersion matrix size. It must be a float `greater` or `equal` to zero.
 
-- `person_initial_position`: The `person_initial_position` defines the starting point of the target. It should be a list with two values where the first component is the `x axis` and the second component is the `y axis`. The `y axis` is directed downward. The values have to be integers.
+- **`timestep_limit`**: It's an integer that defines the length of an episode. This means that the `timestep_limit` is essentially the number of steps that can be done without resetting or ending the environment.
 
-- `drone_amount`: This parameter of type `int` defaults to `1`. It represents the number of drones to be used in the simulation. Adjusting this value allows the user to simulate scenarios with varying numbers of drones.
+- **`person_amount`**: Defines the number of `persons` in water. It must be an **integer** `greater` or `equal` to 1.
 
-- `drone_speed`: This `int` parameter defaults to `10`. It denotes the speed of the drones in the simulation, measured in units of meters per second (m/s). By modifying this value, users can simulate drones with different speeds.
+- **`person_initial_position`**: Specifies the initial coordinates of the target in the form of a tuple `(x, y)`. The `x` value represents the horizontal position, while the `y` value, which increases downward, represents the vertical position. Both coordinates must be **integers**.
 
-- `probability_of_detection`: This `float` parameter defaults to `1.0`. It signifies the probability of a drone detecting an object of interest. Changing this value allows the user to simulate different detection probabilities.
+- **`drone_amount`**: Specifies the number of drones to be used in the simulation. This **integer** parameter can be adjusted to simulate scenarios with different drone counts.
 
-- `pre_render_time`: This `int` parameter defaults to `0`. It specifies the amount of time (minutes) to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
-## Built in Functions:
+- **`drone_speed`**: An **integer** parameter that sets the drones' speed in the simulation, measured in meters per second `(m/s)`. Adjust this value to simulate drones operating at various speeds.
+
+- `probability_of_detection`: This **float** parameter. It signifies the probability of a drone detecting an object of interest. Changing this value allows the user to simulate different detection probabilities.
+
+- `pre_render_time`: This **int** parameter. It specifies the amount of time `(minutes)` to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
+
+## Built in Functions
 
 ### `env.reset`:
 
-`env.reset()` will reset the environment to the initial position. If you wish to choose the initial positions of the drones, alter the POD of each PIW or alter the movement vector, an argument can be sent to the method. To do so, the following syntax should be considered: create a opt dictionary, then pass it to the reset() method. 
+`env.reset()` reinitializes the environment to its initial state. To customize the starting conditions, such as drone positions, the probability of detection for each person (PIW), or the movement vector, you can pass an `options` dictionary to the method. Here’s how to structure this dictionary and use the `reset()` method:
 
 ```python
 opt = {
     "drones_positions": [(10, 5), (10, 10)],
     "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
+    "vector": (0.3, 0.3)
 }
-observations, info = env.reset(options=opt)
+observations, info = env.reset(options=opt, vector)
 ```
+#### Parameters in the options Dictionary:
 
-Each value of the  `drones_positions` list represents the `[x, y]` initial position of each drone. Make sure that the list has the same number of positions as the number of drones defined in the environment.
+- **`drones_positions`**: Specifies the initial `[(x, y), (x, y), ...]` coordinates for each drone. Ensure this list **contains** an entry for each drone in the environment.
 
-Each value of the  `person_pod_multipliers` list represents the probability of detectio for each person, in order. Make sure that the list has the same number of positions as the number of PIW's defined in the environment.
+- **`person_pod_multipliers`**: Specifies the detection probability for each person in the environment. The list length **must** match the number of PIWs (Persons in Water) and each value **must be positive**.
 
-Additionally, to change the vector, a tuple (representing the vector) can be set as an key pair in the dict. This can be done using the following syntax: `vector=(0.3, 0.3))`. This way, the person's movement will change according to the new vector. 
+- **`vector`**: Sets a **tuple** representing the movement direction and rate for the person within the environment. This parameter alters how the person moves according to the specified vector.
 
-In the case of no argument `env.reset()` will simply allocate the drones from left to right each in the next adjacent cell. Once there are no more available cells in the row it will go to the next row and do the same from left to right. The vector and POD will also remain the same as before, when there is no argument in the reset function.
+#### Default Behavior:
 
-The method will also return a observation dictionary with the observations of all drones. 
+Without any arguments, `env.reset()` will place drones sequentially from left to right in adjacent cells. When there are no more available cells in a row, it moves to the next row and continues from left to right. If no vector or POD values are specified, they will remain unchanged from their previous states.
+
+#### Return Values:
+
+The method returns an `observations` dictionary containing observations for all drones, which provides insights into the environment's state immediately after the reset.
 
 ### `env.step`:
 
-The `env.step()` method defines the drone's next movement. When called upon, the method receives  a dictionary with all the drones names as keys and the action as values. For example, in an environment initialized with 10 drones: `env.step({'drone0': 2, 'drone1': 3, 'drone2': 2, 'drone3': 5:, 'drone4’: 1, 'drone5': 0, 'drone6': 2, 'drone7': 5, 'drone8': 0, 'drone9': 1})`. All drones must be in the dictionary and have an action value associated with it, every drone receives an action in every step, otherwise an error will be raised.
+The `env.step()` method defines the drone's next movement. It requires a dictionary input where each key is a drone's name and its corresponding value is the action to be taken. For instance, in an environment initialized with 10 drones, the method call would look like this:
 
-The method returns the **observation**, the **reward**, the **termination** state, the **truncation** state and **info**, in the respectful order.
+```python
+env.step({
+    'drone0': 2, 'drone1': 3, 'drone2': 2, 'drone3': 5, 'drone4': 1,
+    'drone5': 0, 'drone6': 2, 'drone7': 5, 'drone8': 0, 'drone9': 1
+})
+```
 
-### Person movement:
+::: warning Warning
+Every drone listed in the dictionary `must` have an associated action. If any drone is omitted or if an action is not specified for a drone, the method will raise an **error**.
+:::
 
-The person's movement is done using the probability matrix and the vector. The vector essentially dislocates the probabilities, which in turn defines the position of the person. The chances of a person being in a cell is determined by the probability of each cell. Moreover, the person can only move one cell at a time. This means that in every step, the person can only move to one of the cells adjacent to the one he is currently at. This was done in order to create a more realistic movement for the shipwrecked person.
+#### The method returns a tuple containing the following elements in order:
 
-#### Observation:
+- **`Observation`**: The new state of the environment after the step.
+- **`Reward`**: The immediate reward obtained after the action.
+- **`Termination`**: Indicates whether the episode has ended (e.g., find all castway, limit exceeded).
+- **`Truncation`**: Indicates whether the episode was truncated (e.g., through a timeout).
+- **`Info`**: A dictionary containing auxiliary diagnostic information.
 
-The observation is a dictionary with all the drones as keys. Each drone has a tuple as its value. The tuple follows the following pattern, `((x_position, y_position), probability_matrix)`. An output example can be seen below.
+### Person Movement:
+
+The movement of the person in the environment is governed by both the probability matrix and the vector. The vector specifically shifts the probabilities, which then determines the potential positions of the person. Here's how it works:
+
+- **`Probability Matrix`**: Each cell's probability indicates the probabilities of the person being present there.
+- **`Vector Movement`**: The vector applies a displacement to these probabilities, effectively moving the person's likely position within the grid.
+
+Moreover, the person is restricted to moving only one cell per timestep. This means they can move to any adjacent cell-up, down, left, or right-but no further, in a single step. This constraint is designed to simulate more realistic movement patterns for a shipwrecked individual.
+
+### Observation:
+
+The observation is a dictionary with all the drones as keys, identified by names such as `drone0`, `drone1`, etc. Each key is associated with a tuple that contains the drone's current position and its perception of the environment, represented as a probability matrix.
+
+- **Tuple Structure**: `((x_position, y_position), probability_matrix)`
+  - **`x_position`**, **`y_position`**: The current coordinates of the drone on the grid.
+  - **`probability_matrix`**: A matrix representing the drone's view of the probability distribution of the target's location across the grid. 
+
+An output example can be seen below.
 
 ```python
 {
@@ -227,52 +270,76 @@ The observation is a dictionary with all the drones as keys. Each drone has a tu
 }
 ```
 
-#### Reward:
+### Reward:
 
 The reward returns a dictionary with the drones names as keys and their respectful rewards as values. For example `{'drone0': 1, 'drone1': 89.0, 'drone2': 1}`
 
 The rewards values goes as follows:
 
-- **0.1** for every action by default
-- **-200** if the drone leaves the grid 
-- **-200** if the drone does not find the person after timestep exceeds timestep_limit
-- **-200** if the drones collide 
-- ***[0:p] where p is the probability of the searched cell*** for searching a cell
-- ***200 + 200 * ( (1 - timestep) /timestep_limit)*** if the drone searches the cell in which the person is located
+- **`Default Action`**: Every action receives a baseline reward of `0.1`.
+- **`Leaving the Grid`**: A penalty of `-200` is applied if a drone leaves the grid boundaries.
+- **`Exceeding Time Limit`**: A penalty of `-200` is imposed if the drone does not locate the person before the timestep_limit is exceeded.
+- **`Collision`**: If drones collide, each involved drone receives a penalty of `-200`.
+- **`Searching a Cell`**: The reward for searching a cell is proportional to the probability p of the cell being searched, denoted as `[0:p]`.
+- **`Finding the Person`**: If a drone successfully locates the person within a cell, the reward is `200 + 200 * ((1 - timestep) / timestep_limit)`, encouraging faster discovery.
 
-#### Termination & Truncation:
+### Termination & Truncation
 
-The termination and truncation variables return a dictionary with all drones as keys and boolean as values. For example `{'drone0': False, 'drone1': False, 'drone2': False}`. The booleans will be False by default and will turn True in the event of the conditions below:
+The termination and truncation variables return a dictionary with all drones as keys and boolean as values. By default, these values are set to `False` and will switch to `True` under any of the following conditions:
 
-- If two or more drones collide
-- If timestep exceeds timestep_limit
-- If all PIW have been found
+- **`Collision`**: If two or more drones collide.
+- **`Time Limit Exceeded`**: If the simulation's timestep exceeds the `timestep_limit`.
+- **`All PIWs Found`**: If all Persons in Water (PIWs) have been successfully located.
 
-#### Info:
+#### For example, the dictionary might look like this:
 
-Info is a dictionary of dictionaries, with each drone being a key, with its value being another dictionary that contains a key called "Found" that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The info section is to be used as an indicator to see if the person was found. For example, before finding the shipwrecked person, the dictionary will be `{'drone0': {'Found': False}, 'drone1': {'Found': False}}`. Once the person is found, the dictionary will be `{'drone0': {'Found': True}, 'drone1': {'Found': True}}`.
+```python
+{'drone0': False, 'drone1': False, 'drone2': False}
+```
+
+### Info:
+
+the `Info` is a dictionary of dictionaries, with each drone serves as a key, with its value being another dictionary that contains a key called ***`Found`*** that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The `info` section is to be used as an indicator to see if the person was found.
+
+For example, the dictionary will appear as follows before any drone has found the shipwrecked person:
+
+```python
+{'drone0': {'Found': False}, 'drone1': {'Found': False}}
+```
+
+After a drone successfully locates the person, the dictionary updates to reflect this:
+
+```python
+{'drone0': {'Found': True}, 'drone1': {'Found': True}}
+```
+
+This mechanism ensures that users can easily monitor and verify the success of the search operation at any point during the simulation.
 
 ### `env.get_agents`:
 
-`env.get_agents()` will return a list of all the possible agents initialized in the scene, you can use it to confirm that all the drones exist in the environment. For example `['drone0', 'drone1', 'drone2', 'drone3', 'drone4', 'drone5', 'drone6', 'drone7', 'drone8', 'drone9']` in an environment with 10 drones.  
+The `env.get_agents()` method will return a list of all the possible agents (drones) currently initialized in the simulation, you can use it to confirm that all the drones exist in the environment. For example, in an environment configured with 10 drones, the method would return:
+
+```python
+['drone0', 'drone1', 'drone2', 'drone3', 'drone4', 'drone5', 'drone6', 'drone7', 'drone8', 'drone9']
+```
 
 ### `env.close`:
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
 
-## How to cite this work
+## How to Cite This Work
 
 If you use this package, please consider citing it with this piece of BibTeX:
 
-```
+```bibtex
 @misc{castanares2023dsse,
-      title={DSSE: a drone swarm search environment}, 
-      author={Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
+      title={DSSE: A Drone Swarm Search Environment}, 
+      author={Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion, and Fabrício J. Barth},
       year={2024},
       eprint={2307.06240},
       archivePrefix={arXiv},
       primaryClass={cs.LG},
-      doi={https://doi.org/10.48550/arXiv.2307.06240}
+      doi={10.48550/arXiv.2307.06240}
 }
 ```
 

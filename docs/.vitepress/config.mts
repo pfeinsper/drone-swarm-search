@@ -69,17 +69,17 @@ export default defineConfig({
                   collapsed: false,
                   text: 'Quick Start',
                   items: [
-                    { text: 'Quick Start Guide', link: '/QuickStart/index#quick-start-guide' },
-                    { text: 'Search Environment', link: '/QuickStart/index#search-environment' },
-                    { text: 'Coverage Environment', link: '/QuickStart/index#coverage-environment' },
+                    { text: 'Quick Start Guide', link: '/QuickStart/quickStart#quick-start-guide' },
+                    { text: 'Search Environment', link: '/QuickStart/quickStart#search-environment' },
+                    { text: 'Coverage Environment', link: '/QuickStart/quickStart#coverage-environment' },
                   ]
               },],
               "/OurStory/": [{
                     collapsed: false,
                     text: 'Our Story',
                     items: [
-                      { text: 'Our Story Coming Soon!', link: '/OurStory/index#our-story-coming-soon!' },
-                      { text: 'Stay Updated', link: '/OurStory/index#stay-updated' },
+                      { text: 'Our Story Coming Soon!', link: '/OurStory/ourStory#our-story-coming-soon!' },
+                      { text: 'Stay Updated', link: '/OurStory/ourStory#stay-updated' },
                     ]
                 },],
           },

@@ -48,6 +48,9 @@ def random_policy(obs, agents):
 opt = {
     "drones_positions": [(10, 5), (10, 10)],
     "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
+    "vector": (0.3, 0.3),
+
+
 }
 observations, info = env.reset(options=opt)
 

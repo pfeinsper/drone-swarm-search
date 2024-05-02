@@ -13,10 +13,10 @@ hero:
       link: /Documentation/docsSearch#about
     - theme: alt
       text: QuickStart
-      link: /QuickStart/index#quick-start-guide
+      link: /QuickStart/quickStart#quick-start-guide
     - theme: alt
       text: Our Story
-      link: /OurStory/index#our-story-coming-soon!
+      link: /OurStory/ourStory#our-story-coming-soon!
 
 
 features:
