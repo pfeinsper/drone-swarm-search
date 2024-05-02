@@ -15,8 +15,9 @@ hero:
       text: QuickStart
       link: /quickStart
     - theme: alt
-      text: pypi
-      link: https://pypi.org/project/DSSE/
+      text: Our Story
+      link: /OurStory/index
+
 
 features:
   - title: Based on PettingZoo's interface

@@ -22,6 +22,7 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
 `pip install DSSE`
 
 #### Use
+::: details Click me to view the code
 ```python
 from DSSE import DroneSwarmSearch
 
@@ -62,6 +63,8 @@ while not done:
     observations, rewards, terminations, truncations, infos = env.step(actions)
     done = any(terminations.values()) or any(truncations.values())
 ```
+:::
+
 
 ### Installing Dependencies
 Python version above or equal to 3.10.5.
