@@ -59,24 +59,14 @@ export default defineConfig({
                   collapsed: true,
                   text: 'Coverage Environment',
                   items: [
-                    { text: 'About', link: '/docsCoverage#about' },
-                    { text: 'Quick Start', link: '/docsCoverage#quick-start' },
-                    { text: 'General Info', link: '/docsCoverage#general-info' },
-                    { text: 'Built in Functions', link: '/docsCoverage#built-in-functions' },
-                    { text: 'Person Movement', link: '/docsCoverage#person-movement' },
-                    { text: 'License', link: '/docsCoverage#license' },
+                    { text: 'Documentation Under Construction', link: '/docsCoverage#build' },
                   ]
                 },
                 {
                   collapsed: true,
                   text: 'Algorithms',
                   items: [
-                    { text: 'About', link: '/docsAlgorithms#about' },
-                    { text: 'Quick Start', link: '/docsAlgorithms#quick-start' },
-                    { text: 'General Info', link: '/docsAlgorithms#general-info' },
-                    { text: 'Built in Functions', link: '/docsAlgorithms#built-in-functions' },
-                    { text: 'Person Movement', link: '/docsAlgorithms#person-movement' },
-                    { text: 'License', link: '/docsAlgorithms#license' },
+                    { text: 'Documentation Under Construction', link: '/docsAlgorithms#build' },
                   ]
                 }
               ]
