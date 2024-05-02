@@ -38,8 +38,6 @@ export default defineConfig({
         description: "Drone Swarm Search Training Environment",
         themeConfig: {
           sidebar: [
-            {
-              items: [
                 {
                     collapsed: false,
                     text: 'Search Environment',
@@ -52,7 +50,7 @@ export default defineConfig({
                       { text: 'License', link: '/docs#license' },
                     ]
                 },
-    
+                
                 {
                   collapsed: false,
                   text: 'Coverage Environment',
@@ -67,8 +65,6 @@ export default defineConfig({
                     { text: 'Documentation Under Construction', link: '/docsAlgorithms#build' },
                   ]
                 }
-              ]
-            }
           ],
           
           footer: {
