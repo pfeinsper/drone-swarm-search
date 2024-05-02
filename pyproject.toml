@@ -62,5 +62,8 @@ Documentation = "https://pfeinsper.github.io/drone-swarm-search/"
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.package-data]
+DSSE = ["*.png"]
+
 [tool.setuptools.packages.find]
 include = ["DSSE", "DSSE.*"]
