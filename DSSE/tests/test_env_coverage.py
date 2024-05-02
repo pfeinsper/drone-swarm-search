@@ -2,60 +2,48 @@ import pytest
 from DSSE import CoverageDroneSwarmSearch
 from DSSE.environment.constants import Actions
 from pettingzoo.test import parallel_api_test
+import numpy as np
 
 
-def init_drone_swarm_search(
-    grid_size=20,
-    drone_amount=1,
-    dispersion_inc=0.1,
-    vector=(1, 1),
+def init_Coverage_drone_swarm_search(
     render_mode="ansi",
+    render_grid=True,
+    render_gradient=True,
+    timestep_limit=100,
+    drone_amount=1,
+    pre_render_time=10,
+    prob_matrix_path="DSSE/tests/matrix.npy",
+    disaster_position=(-24.04, -46.17),
+    drone_speed=10,
+    drone_probability_of_detection=1,
 ):
     
     return CoverageDroneSwarmSearch(
-        grid_size=grid_size,
-        drone_amount=drone_amount,
-        dispersion_inc=dispersion_inc,
-        vector=vector,
         render_mode=render_mode,
+        render_grid=render_grid,
+        render_gradient=render_gradient,
+        timestep_limit=timestep_limit,
+        drone_amount=drone_amount,
+        pre_render_time=pre_render_time,
+        prob_matrix_path=prob_matrix_path,
+        disaster_position=disaster_position,
+        drone_speed=drone_speed,
+        drone_probability_of_detection=drone_probability_of_detection,
     )
 
 
-
 @pytest.mark.parametrize(
-    "grid_size, drone_amount",
+    "drone_amount",
     [
-        (5, 26),
-        (10, 101),
-        (20, 401),
-        (50, 2501),
+        -26,
+        101.2,
+        "401",
+        4901,
     ],
 )
-def test_wrong_drone_number(grid_size, drone_amount):
+def test_wrong_drone_number(drone_amount):
     with pytest.raises(ValueError):
-        init_drone_swarm_search(grid_size=grid_size, drone_amount=drone_amount)
-
-
-@pytest.mark.parametrize(
-    "grid_size, drone_amount",
-    [
-        (5, 25),
-        (10, 100),
-        (20, 400),
-    ],
-)
-def test_maximum_drones_allowed(grid_size, drone_amount):
-    try:
-        env = init_drone_swarm_search(grid_size=grid_size, drone_amount=drone_amount)
-        _ = env.reset()
-    except ValueError as e:
-        pytest.fail(
-            f"The system should not fail with the maximum allowed number of drones. Error: {str(e)}"
-        )
-
-    assert (
-        len(env.get_agents()) == drone_amount
-    ), f"There should be {drone_amount} drones, but found {len(env.get_agents())}."
+        init_Coverage_drone_swarm_search(drone_amount=drone_amount)
 
 
 @pytest.mark.parametrize(
@@ -66,7 +54,7 @@ def test_maximum_drones_allowed(grid_size, drone_amount):
 )
 def test_drone_collision_termination(drone_amount, drones_positions):
 
-    env = init_drone_swarm_search(drone_amount=drone_amount)
+    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
     opt = {
     "drones_positions": drones_positions,
     }
@@ -87,19 +75,14 @@ def test_drone_collision_termination(drone_amount, drones_positions):
         ), "The total reward should be negative after a collision."
 
 @pytest.mark.parametrize(
-    "grid_size",
+    "drone_amount, drones_positions",
     [
-        15,
-        20,
-        25,
-        30,
+        (1, [(0, 0)]),
     ],
 )
-def test_leave_grid_get_negative_reward(grid_size):
-    env = init_drone_swarm_search(
-        grid_size=grid_size
-    )
-    opt = {"drones_positions": [(0, 0)]}
+def test_leave_grid_get_negative_reward(drone_amount, drones_positions):
+    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
+    opt = {"drones_positions": drones_positions}
     _ = env.reset(options=opt)
 
     done = False
@@ -130,7 +113,7 @@ def test_leave_grid_get_negative_reward(grid_size):
     ],
 )
 def test_if_all_drones_are_created(drone_amount):
-    env = init_drone_swarm_search(drone_amount=drone_amount)
+    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
     _ = env.reset()
 
     assert (
@@ -148,7 +131,7 @@ def test_if_all_drones_are_created(drone_amount):
     ],
 )
 def test_position_drone_is_correct_after_reset(drone_amount, drones_positions):
-    env = init_drone_swarm_search(drone_amount=drone_amount)
+    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
 
     opt = {"drones_positions": drones_positions}
     observations, _ = env.reset(options=opt)
@@ -166,14 +149,14 @@ def test_position_drone_is_correct_after_reset(drone_amount, drones_positions):
     "drone_amount, drones_positions",
     [
         (1, [(-1, 3)]),
-        (2, [(12, 0), (25, 13)]),
+        (2, [(1200, 0), (25, 13)]),
         (3, [(0, 0), (19, 19), (25, -10)]),
         (4, [(5, 0), (0, 0), (10, 10), (10, 10)]),
     ],
 )
 def test_invalid_drone_position_raises_error(drone_amount, drones_positions):
     with pytest.raises(ValueError):
-        env = init_drone_swarm_search(drone_amount=drone_amount)
+        env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
         opt = {"drones_positions": drones_positions}
         _ = env.reset(options=opt)
 
@@ -188,7 +171,7 @@ def test_invalid_drone_position_raises_error(drone_amount, drones_positions):
     ],
 )
 def test_if_all_drones_are_created_with_default_positions(drone_amount):
-    env = init_drone_swarm_search(drone_amount=drone_amount)
+    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
 
     _ = env.reset()
 
@@ -198,30 +181,54 @@ def test_if_all_drones_are_created_with_default_positions(drone_amount):
 
 
 @pytest.mark.parametrize(
-    "drone_amount, grid_size",
+    "drone_amount",
     [
-        (1, 10),
-        (2, 15),
-        (5, 20),
-        (15, 25),
+        2,
+        5,
+        15,
     ],
 )
-def test_with_the_observation_size_is_correct_for_all_drones(drone_amount, grid_size):
-    env = init_drone_swarm_search(grid_size=grid_size, drone_amount=drone_amount)
+def test_with_the_observation_size_is_correct_for_all_drones(drone_amount):
+    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
 
     observations, _ = env.reset()
 
-    for drone in range(drone_amount):
+    # Obtém o tamanho da primeira observação
+    first_observation_shape = observations[f"drone0"][1].shape
+
+    for drone in range(1, drone_amount):
         drone_id = f"drone{drone}"
         observation_matriz = observations[drone_id][1]
+        
+        # Verifica se o tamanho da observação é igual ao da primeira observação
+        assert np.array_equal(observation_matriz.shape, first_observation_shape), f"Observation size mismatch for drone {drone_id}. Expected size: {first_observation_shape}, actual size: {observation_matriz.shape}"
 
-        assert observation_matriz.shape == (
-            grid_size,
-            grid_size,
-        ), f"The observation matrix for {drone_id} should have a shape of ({grid_size}, {grid_size}), but was {observation_matriz.shape}."
+@pytest.mark.parametrize(
+    "timestep_limit",
+    [
+        100,
+        550,
+        150,
+    ],
+)
+def test_if_the_timestep_limit_is_correct(timestep_limit):
+    # Cria o ambiente com o limite de passos de tempo especificado
+    env = init_Coverage_drone_swarm_search(timestep_limit=timestep_limit)
+    _, _ = env.reset()
 
+    # Contador de passos de tempo
+    steps = 0
+
+    # Loop até o ambiente atingir o limite de passos de tempo
+    while env.agents:
+        steps += 1
+        actions = {agent: env.action_space(agent).sample() for agent in env.agents}
+        _, _, _, _, _ = env.step(actions)
+    
+    assert steps == timestep_limit, f"Number of steps does not match timestep limit. Expected: {timestep_limit}, Actual: {steps}"
+    
 
 def test_petting_zoo_interface_works():
-    env = init_drone_swarm_search()
+    env = init_Coverage_drone_swarm_search()
     parallel_api_test(env)
     env.close()
