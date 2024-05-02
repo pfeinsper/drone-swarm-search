@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools >= 61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "DSSE"
+description = "The Drone Swarm Search project provides an environment for SAR missions built on PettingZoo, where agents, represented by drones, are tasked with locating targets identified as shipwrecked individuals."
+readme = "README.md"
+dynamic = ["version"]
+requires-python = ">= 3.10.5"
+authors = [
+    { name="Ricardo Ribeiro Rodrigues", email="ricardorr7@al.insper.edu.br" },
+    { name="Renato Laffranchi Falcão", email="renatolf1@al.insper.edu.br" },
+    { name="Pedro Henrique Britto Aragão Andrade", email="pedroa3@al.insper.edu.br" },
+    { name="Jorás Oliveira", email="jorascco@al.insper.edu.br" },
+    { name="Fabricio Barth", email="fabriciojb@insper.edu.br" },
+    { name="Luis Filipe Carrete" },
+    { name="Manuel Castanares" },
+    { name="Enrico Damiani" },
+    { name="Leonardo Malta" },
+]
+license = { text = "MIT License" }
+keywords = ["Reinforcement Learning", "AI", "SAR", "Multi Agent Reinforcement Learning"]
+classifiers = [
+    "Development Status :: 4 - Beta",  # change to `5 - Production/Stable` when ready
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+]
+dependencies = [
+    "numpy>=1.23.1",
+    "gymnasium>=0.27.1",
+    "pygame>=2.3.0",
+    "pettingzoo>=1.22.3",
+    "matplotlib>=3.7.0",
+    "numba>=0.59.0",
+]
+
+[project.optional-dependencies]
+all = [
+    "numpy>=1.23.1",
+    "gymnasium>=0.27.1",
+    "pygame>=2.3.0",
+    "pettingzoo>=1.22.3",
+    "matplotlib>=3.7.0",
+    "numba>=0.59.0",
+    "GDAL==3.4.1",
+    "opendrift",
+]
+coverage = [
+    "GDAL==3.4.1",
+    "opendrift",
+]
+
+[project.urls]
+Homepage = "https://pfeinsper.github.io/drone-swarm-search/"
+Repository = "https://github.com/pfeinsper/drone-swarm-search/"
+Documentation = "https://pfeinsper.github.io/drone-swarm-search/"
+"Bug Report" = "https://github.com/pfeinsper/drone-swarm-search/issues/"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+DSSE = ["*.png"]
+
+[tool.setuptools.packages.find]
+include = ["DSSE", "DSSE.*"]
