@@ -5,18 +5,18 @@ layout: home
 hero:
   name: "Drone Swarm Search Environment"
   # text: "A environment to train reinforcement learning agents"
-  tagline: A environment to train reinforcement learning agents for search and rescue operations in maritime scenarios.
+  tagline: An environment to train reinforcement learning agents for search and rescue operations in maritime scenarios.
   image: /pics/drone.png
   actions:
     - theme: brand
       text: Documentation
       link: /docs
     - theme: alt
-      text: QuickStart
-      link: /quickStart
-    - theme: alt
       text: Our Story
       link: /OurStory/index
+    - theme: alt
+      text: QuickStart
+      link: /quickStart
 
 
 features:
