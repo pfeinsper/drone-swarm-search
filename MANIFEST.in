@@ -1,1 +1,1 @@
-include *.png
+include DSSE/environments/imgs/*
