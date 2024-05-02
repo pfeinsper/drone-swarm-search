@@ -204,8 +204,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                 drone_1_name = self.agents[drone_1_id]
                 drone_2_name = self.agents[drone_2_id]
                 if self.agents_positions[drone_1_id] == self.agents_positions[drone_2_id]:
-                    terminations[drone_1_name] = True
-                    terminations[drone_2_name] = True
                     rewards[drone_1_name] = self.reward_scheme.drones_collision
                     rewards[drone_2_name] = self.reward_scheme.drones_collision
 

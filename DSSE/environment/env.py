@@ -18,12 +18,12 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     }
 
     reward_scheme = Reward(
-        default=1,
-        leave_grid=-100_000,
-        exceed_timestep=-100_000,
-        drones_collision=-100_000,
-        search_cell=1,
-        search_and_find=100_000,
+        default=0.0,
+        leave_grid=0,
+        exceed_timestep=0,
+        drones_collision=0,
+        search_cell=0,
+        search_and_find=1,
     )
 
     def __init__(
@@ -40,7 +40,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         person_initial_position=(0, 0),
         drone_amount=1,
         drone_speed=10,
-        probability_of_detection=1,
+        probability_of_detection=1.0,
         pre_render_time=0,
     ):
         if person_amount <= 0:
@@ -259,13 +259,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                     for agent in self.agents:
                         terminations[agent] = True
                         truncations[agent] = True
-            elif is_searching:
-                prob_matrix = self.probability_matrix.get_matrix()
-                rewards[agent] = (
-                    prob_matrix[drone_y][drone_x] * 10000
-                    if prob_matrix[drone_y][drone_x] * 100 > 1
-                    else -100
-                )
 
             self.rewards_sum[agent] += rewards[agent]
 
@@ -274,10 +267,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         infos = {drone: {"Found": person_found} for drone in self.agents}
 
         # CHECK COLISION - Drone
-        self.compute_drone_collision(terminations, rewards)
-        # TODO: Check real usage of this, gives error when using w/ RL libs
-        # rewards["total_reward"] = sum(rewards.values())
-        # self.rewards_sum["total"] += rewards["total_reward"]
+        # self.compute_drone_collision(terminations, rewards)
 
         self.render_step(any(terminations.values()), person_found)
 
