@@ -5,6 +5,7 @@ from gymnasium.spaces import MultiDiscrete, Discrete, Box, Tuple
 from .constants import RED, GREEN, Actions, Reward
 from .entities.person import Person
 from .env_base import DroneSwarmSearchBase
+from .simulation.dynamic_probability import ProbabilityMatrix
 
 
 class DroneSwarmSearch(DroneSwarmSearchBase):
@@ -18,12 +19,12 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     }
 
     reward_scheme = Reward(
-        default=1,
-        leave_grid=-100_000,
-        exceed_timestep=-100_000,
-        drones_collision=-100_000,
+        default=0.1,
+        leave_grid=-200,
+        exceed_timestep=-200,
+        drones_collision=-200,
         search_cell=1,
-        search_and_find=100_000,
+        search_and_find=200,
     )
 
     def __init__(
@@ -52,16 +53,25 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             render_mode=render_mode,
             render_grid=render_grid,
             render_gradient=render_gradient,
-            vector=vector,
-            dispersion_inc=dispersion_inc,
-            dispersion_start=dispersion_start,
             timestep_limit=timestep_limit,
-            disaster_position=person_initial_position,
             drone_amount=drone_amount,
             drone_speed=drone_speed,
             probability_of_detection=probability_of_detection,
-            pre_render_time=pre_render_time,
         )
+
+        self.pre_render_steps = round(
+            (pre_render_time * 60)
+            / (self.calculate_simulation_time_step(drone_speed, self.cell_size))
+        )
+        print(f"Pre render time: {pre_render_time} minutes")
+        print(f"Pre render steps: {self.pre_render_steps}")
+
+        # Prob matrix
+        self.probability_matrix = None
+        self.dispersion_inc = dispersion_inc
+        self.dispersion_start = dispersion_start
+        self.vector = vector
+        self.disaster_position = person_initial_position
 
         # Person initialization
         self.person_initial_position = person_initial_position
@@ -136,6 +146,9 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         seed=None,
         options=None,
     ):
+        vector = options.get("vector") if options else None
+        self.vector = vector if vector else self.vector
+
         self.persons_set = self.create_persons_set()
         for person in self.persons_set:
             person.reset_position()
@@ -147,6 +160,23 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             self.raise_if_unvalid_mult(pod_multiplier)
             for person, mult in zip(self.persons_set, pod_multiplier):
                 person.set_mult(mult)
+            
+
+        self.probability_matrix = ProbabilityMatrix(
+            40,
+            self.dispersion_start,
+            self.dispersion_inc,
+            self.vector,
+            [
+                self.disaster_position[1],
+                self.disaster_position[0],
+            ],
+            self.grid_size,
+        )
+
+        self.probability_matrix.update_time_step_relation(
+            self.time_step_relation, self.cell_size
+        )
 
         observations, infos = super().reset(seed=seed, options=options)
         self.rewards_sum = {a: 0 for a in self.agents}
@@ -210,7 +240,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep >= self.timestep_limit:
-                # TODO: Check if is really necessary to add rewards_sum into this reward
                 rewards[agent] = self.reward_scheme.exceed_timestep
                 if self.rewards_sum[agent] > 0:
                     rewards[agent] += self.rewards_sum[agent] // 2
@@ -262,9 +291,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             elif is_searching:
                 prob_matrix = self.probability_matrix.get_matrix()
                 rewards[agent] = (
-                    prob_matrix[drone_y][drone_x] * 10000
-                    if prob_matrix[drone_y][drone_x] * 100 > 1
-                    else -100
+                    prob_matrix[drone_y][drone_x]
                 )
 
             self.rewards_sum[agent] += rewards[agent]
@@ -275,9 +302,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
         # CHECK COLISION - Drone
         self.compute_drone_collision(terminations, rewards)
-        # TODO: Check real usage of this, gives error when using w/ RL libs
-        # rewards["total_reward"] = sum(rewards.values())
-        # self.rewards_sum["total"] += rewards["total_reward"]
 
         self.render_step(any(terminations.values()), person_found)
 
