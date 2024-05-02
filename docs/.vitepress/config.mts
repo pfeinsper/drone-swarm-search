@@ -91,7 +91,7 @@ export default defineConfig({
         },
       },
     pt: {
-        label: 'Português (Embreve)',
+        label: 'Português (Em breve)',
         lang: 'pt-br',
         link: '/pt/',
       },
