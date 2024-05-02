@@ -19,7 +19,7 @@ hero:
       link: https://pypi.org/project/DSSE/
 
 features:
-  - title: Based on Farama.org and Petting Zoo
+  - title: Based on PettingZoo's interface
     icon: 🦁
     details: Compatible with leading reinforcement learning libraries
     link: https://pettingzoo.farama.org/

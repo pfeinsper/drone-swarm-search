@@ -75,12 +75,12 @@ pip install -r requirements.txt
 
 ### General Info
 
-| Import             | `from core.environment.env import DroneSwarmSearch` |
+| Import             | `from DSSE import DroneSwarmSearch` |
 | ------------------ | -------------------------------------------------- |
 | Action Space       | Discrete (9)                                      |
 | Action Values      | [0, 1, 2, 3, 4, 5, 6, 7, 8]                       |  
 | Agents             | N                                                |
-| Observation Space  | `{droneN: {observation: ((x, y), probability_matrix)}}` |
+| Observation Space  | `{droneN: ((x, y), probability_matrix)}` |
 
 ### Action Space
 
@@ -111,7 +111,7 @@ pip install -r requirements.txt
 | `person_initial_position` | `[int(x), int(y)]`    | `[0, 0]`                  |
 | `drone_amount`            | `int`                 | `1`                       |
 | `drone_speed`             | `int`                 | `10`                      |
-| `probability_of_detection`| `float`               | `1`                       |
+| `probability_of_detection`| `float`               | `1.0`                     |
 | `pre_render_time`         | `int`                 | `0`                       |
 
 - `grid_size`: The `grid_size` defines the area in which the search will happen. It should always be an integer greater than one.
@@ -141,9 +141,9 @@ pip install -r requirements.txt
 
 - `drone_speed`: This `int` parameter defaults to `10`. It denotes the speed of the drones in the simulation, measured in units of meters per second (m/s). By modifying this value, users can simulate drones with different speeds.
 
-- `probability_of_detection`: This `int` parameter defaults to `1`. It signifies the probability of a drone detecting an object of interest. Changing this value allows the user to simulate different detection probabilities.
+- `probability_of_detection`: This `float` parameter defaults to `1.0`. It signifies the probability of a drone detecting an object of interest. Changing this value allows the user to simulate different detection probabilities.
 
-- `pre_render_time`: This `int` parameter defaults to `0`. It specifies the amount of time to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
+- `pre_render_time`: This `int` parameter defaults to `0`. It specifies the amount of time (minutes) to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
 ## Built in Functions:
 
@@ -232,7 +232,7 @@ The observation is a dictionary with all the drones as keys. Each drone has a tu
 
 #### Reward:
 
-The reward returns a dictionary with the drones names as keys and their respectful rewards as values, as well as a total reward which is the sum of all agents rewards. For example `{'drone0': 1, 'drone1': 89.0, 'drone2': 1, 'total_reward': 91.0}`
+The reward returns a dictionary with the drones names as keys and their respectful rewards as values. For example `{'drone0': 1, 'drone1': 89.0, 'drone2': 1}`
 
 The rewards values goes as follows:
 
@@ -241,7 +241,7 @@ The rewards values goes as follows:
 - **-200** if the drone does not find the person after timestep exceeds timestep_limit
 - **-200** if the drones collide 
 - ***[0:p] where p is the probability of the searched cell*** for searching a cell
-- ***200 * ( (1 - timestep) /timestep_limit)*** if the drone searches the cell in which the person is located
+- ***200 + 200 * ( (1 - timestep) /timestep_limit)*** if the drone searches the cell in which the person is located
 
 #### Termination & Truncation:
 
@@ -279,7 +279,7 @@ If you use this package, please consider citing it with this piece of BibTeX:
 ```
 @misc{castanares2023dsse,
       title={DSSE: a drone swarm search environment}, 
-      author={Jorás Oliveira, Pedro Andrade, Ricardo Rodrigues, Renato Laffranchi,Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
+      author={Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
       year={2024},
       eprint={2307.06240},
       archivePrefix={arXiv},
