@@ -17,27 +17,17 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         render_mode="ansi",
         render_grid=False,
         render_gradient=True,
-        vector=(1, -0.5),
-        dispersion_inc=0.1,
-        dispersion_start=0.5,
         timestep_limit=100,
-        disaster_position=(0, 0),
         drone_amount=1,
         drone_speed=10,
         probability_of_detection=1,
-        pre_render_time=0,
     ) -> None:
         self.cell_size = 130  # in meters
         self.grid_size = grid_size
         self._was_reset = False
-        self.pre_render_steps = round(
-            (pre_render_time * 60)
-            / (self.calculate_simulation_time_step(drone_speed, self.cell_size))
-        )
-
-        print(f"Pre render time: {pre_render_time} minutes")
-        print(f"Pre render steps: {self.pre_render_steps}")
-
+        if not isinstance(drone_amount, int):
+            raise ValueError("Drone amount must be an integer")
+    
         self.drone = DroneData(
             amount=drone_amount,
             speed=drone_speed,
@@ -59,10 +49,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         self.time_step_relation = self.calculate_simulation_time_step(
             self.drone.speed, self.cell_size
         )
-        self.dispersion_inc = dispersion_inc
-        self.dispersion_start = dispersion_start
-        self.vector = vector
-        self.disaster_position = disaster_position
 
         self.possible_agents = []
         self.agents_positions = [(None, None)] * self.drone.amount
@@ -71,7 +57,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
             self.possible_agents.append(agent_name)
 
         self.render_mode = render_mode
-        self.probability_matrix = None
 
         # Initializing render
         self.pygame_renderer = PygameInterface(
@@ -106,7 +91,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         options=None,
     ):
         self._was_reset = True
-        vector = options.get("vector") if options else None
         drones_positions = options.get("drones_positions") if options else None
 
         if drones_positions is not None:
@@ -117,22 +101,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
 
         self.agents = copy(self.possible_agents)
         self.timestep = 0
-        self.vector = vector if vector else self.vector
-        self.probability_matrix = ProbabilityMatrix(
-            40,
-            self.dispersion_start,
-            self.dispersion_inc,
-            self.vector,
-            [
-                self.disaster_position[1],
-                self.disaster_position[0],
-            ],
-            self.grid_size,
-        )
-
-        self.probability_matrix.update_time_step_relation(
-            self.time_step_relation, self.cell_size
-        )
 
         if drones_positions is None:
             self.default_drones_positions()
