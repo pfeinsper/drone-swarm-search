@@ -25,25 +25,25 @@
 
 ## Melhorando nossas chances (não obrigatório)
 
-- [ ] Ser modular
-- [ ] Bons testes
-- [ ] Boa documentação
-- [ ] Boa *maintainability*
-- [ ] Enviar uma contribuição que descreva a aplicação científica do projeto. (Mais detalhes [aqui](https://joss.readthedocs.io/en/latest/submitting.html#co-publication-of-science-methods-and-software)).
+- [x] Ser modular
+- [x] Bons testes
+- [x] Boa documentação
+- [x] Boa *maintainability*
+- [x] Enviar uma contribuição que descreva a aplicação científica do projeto. (Mais detalhes [aqui](https://joss.readthedocs.io/en/latest/submitting.html#co-publication-of-science-methods-and-software)).
 
 ## Escrita do paper
 
 - [x] Seguir o [template](https://joss.readthedocs.io/en/latest/submitting.html#example-paper-and-bibliography).
-- [ ] Deve ser escrito em MarkDown e compilado com Pandoc (criar uma [GitHub Action](https://joss.readthedocs.io/en/latest/submitting.html#github-action)).
-- [ ] (Opcional) Criar um arquivo de metadados utilizando o [script](https://gist.github.com/arfon/478b2ed49e11f984d6fb).
+- [x] Deve ser escrito em MarkDown e compilado com Pandoc (criar uma [GitHub Action](https://joss.readthedocs.io/en/latest/submitting.html#github-action)).
+- [x] (Opcional) Criar um arquivo de metadados utilizando o [script](https://gist.github.com/arfon/478b2ed49e11f984d6fb).
 - [x] O paper não deve focar nos resultados obtidos com o software.
 - [x] Explicar as funcionalidades e domínio de aplicação para um leitor não-especialista.
 - [x] Explicar as aplicações do software.
 - [x] Paper de 250 a 1000 palavres
 - [x] Lista de autores e suas afiliações.
-- [ ] Um sumário em alto-nivel das funcionalidades do software para um leitor não-especialista (introdução).
+- [x] Um sumário em alto-nivel das funcionalidades do software para um leitor não-especialista (introdução).
 - [x] "Statement of need": seção para ilustrar claramente o propósito do software e contextualiza o trabalho relacionado.
-- [ ] Lista de referências chave, incluindo a outros softwares endereçando necessidades relacionadas.
+- [x] Lista de referências chave, incluindo a outros softwares endereçando necessidades relacionadas.
 - [x] Menção de projetos que utilizam o software, de forma a demonstrar como este software oportunizou a realização destes projetos.
 - [x] Reconhecimento de suporte financeiro (não aplicável a nós)
 
