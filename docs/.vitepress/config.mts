@@ -37,13 +37,11 @@ export default defineConfig({
         title: "DSSE",
         description: "Drone Swarm Search Training Environment",
         themeConfig: {
-          // https://vitepress.dev/reference/default-theme-config    
           sidebar: [
             {
-              text: 'Documentation',
               items: [
                 {
-                    collapsed: true,
+                    collapsed: false,
                     text: 'Search Environment',
                     items: [
                       { text: 'About', link: '/docs#about' },
@@ -56,14 +54,14 @@ export default defineConfig({
                 },
     
                 {
-                  collapsed: true,
+                  collapsed: false,
                   text: 'Coverage Environment',
                   items: [
                     { text: 'Documentation Under Construction', link: '/docsCoverage#build' },
                   ]
                 },
                 {
-                  collapsed: true,
+                  collapsed: false,
                   text: 'Algorithms',
                   items: [
                     { text: 'Documentation Under Construction', link: '/docsAlgorithms#build' },
@@ -80,7 +78,7 @@ export default defineConfig({
         },
       },
     pt: {
-        label: 'Português',
+        label: 'Português (Embreve)',
         lang: 'pt-br',
         link: '/pt/',
       },
