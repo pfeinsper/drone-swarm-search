@@ -14,4 +14,4 @@ We are currently working hard on developing comprehensive documentation for the 
 
 ### Stay Updated
 
-We appreciate your patience and interest in our work. If you have any questions or need immediate assistance regarding the Coverage Environment, please do not hesitate to contact us via our [GitHub Issues page](https://github.com/pfeinsper/drone-swarm-search-algorithms/issues).
+We appreciate your patience and interest in our work. If you have any questions or need immediate assistance regarding the Coverage Environment, please do not hesitate to contact us via our [GitHub Issues page](https://github.com/pfeinsper/drone-swarm-search/issues).
