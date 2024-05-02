@@ -10,13 +10,13 @@ hero:
   actions:
     - theme: brand
       text: Documentation
-      link: /docs
-    - theme: alt
-      text: Our Story
-      link: /OurStory/index
+      link: /Documentation/docsSearch#about
     - theme: alt
       text: QuickStart
-      link: /quickStart
+      link: /QuickStart/index#quick-start-guide
+    - theme: alt
+      text: Our Story
+      link: /OurStory/index#our-story-coming-soon!
 
 
 features:

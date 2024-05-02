@@ -18,6 +18,10 @@ The Drone Swarm Search project is an environment, based on PettingZoo, that is t
 
 ## Quick Start
 
+::: warning Warning
+The DSSE project requires Python version 3.10.5 or higher.
+:::
+
 #### Install
 `pip install DSSE`
 
@@ -64,16 +68,6 @@ while not done:
     done = any(terminations.values()) or any(truncations.values())
 ```
 :::
-
-
-### Installing Dependencies
-Python version above or equal to 3.10.5.
-
-By default all dependencies should install with the pypi installation, in case something fails,  download the dependencies using the following command:
-
-```bash
-pip install -r requirements.txt
-```
 
 
 ### General Info
@@ -265,15 +259,6 @@ Info is a dictionary of dictionaries, with each drone being a key, with its valu
 ### `env.close`:
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
-
-## PyPi Package 
-
-https://pypi.org/project/DSSE/
-
-## Workflow Status: Automated Testing with Pytest
-
-[![Run Pytest](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml/badge.svg)](https://github.com/pfeinsper/drone-swarm-search/actions/workflows/env.yml)
-
 
 ## How to cite this work
 

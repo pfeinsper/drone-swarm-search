@@ -14,7 +14,7 @@ export default defineConfig({
 
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Documentation', link: '/docs' },
+      { text: 'Documentation', link: '/Documentation/docsSearch' },
     ],
 
     socialLinks: [
@@ -37,17 +37,17 @@ export default defineConfig({
         title: "DSSE",
         description: "Drone Swarm Search Training Environment",
         themeConfig: {
-          sidebar: [
-                {
+          sidebar: {
+                "/Documentation/": [{
                     collapsed: false,
                     text: 'Search Environment',
                     items: [
-                      { text: 'About', link: '/docs#about' },
-                      { text: 'Quick Start', link: '/docs#quick-start' },
-                      { text: 'General Info', link: '/docs#general-info' },
-                      { text: 'Built in Functions', link: '/docs#built-in-functions' },
-                      { text: 'Person Movement', link: '/docs#person-movement' },
-                      { text: 'License', link: '/docs#license' },
+                      { text: 'About', link: '/Documentation/docsSearch#about' },
+                      { text: 'Quick Start', link: '/Documentation/docsSearch#quick-start' },
+                      { text: 'General Info', link: '/Documentation/docsSearch#general-info' },
+                      { text: 'Built in Functions', link: '/Documentation/docsSearch#built-in-functions' },
+                      { text: 'Person Movement', link: '/Documentation/docsSearch#person-movement' },
+                      { text: 'License', link: '/Documentation/docsSearch#license' },
                     ]
                 },
                 
@@ -55,17 +55,34 @@ export default defineConfig({
                   collapsed: false,
                   text: 'Coverage Environment',
                   items: [
-                    { text: 'Documentation Under Construction', link: '/docsCoverage#build' },
+                    { text: 'Documentation Under Construction', link: '/Documentation/docsCoverage#build' },
                   ]
                 },
                 {
                   collapsed: false,
                   text: 'Algorithms',
                   items: [
-                    { text: 'Documentation Under Construction', link: '/docsAlgorithms#build' },
+                    { text: 'Documentation Under Construction', link: '/Documentation/docsAlgorithms#build' },
                   ]
-                }
-          ],
+                }],
+              "/QuickStart/": [{
+                  collapsed: false,
+                  text: 'Quick Start',
+                  items: [
+                    { text: 'Quick Start Guide', link: '/QuickStart/index#quick-start-guide' },
+                    { text: 'Search Environment', link: '/QuickStart/index#search-environment' },
+                    { text: 'Coverage Environment', link: '/QuickStart/index#coverage-environment' },
+                  ]
+              },],
+              "/OurStory/": [{
+                    collapsed: false,
+                    text: 'Our Story',
+                    items: [
+                      { text: 'Our Story Coming Soon!', link: '/OurStory/index#our-story-coming-soon!' },
+                      { text: 'Stay Updated', link: '/OurStory/index#stay-updated' },
+                    ]
+                },],
+          },
           
           footer: {
             message: 'Published under the MIT License.',
