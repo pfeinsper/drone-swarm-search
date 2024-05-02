@@ -1,0 +1,86 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "http://orcid.org/0009-0000-0056-4322",
+      "@type": "Person",
+      "email": "pedroa3@al.insper.edu.br",
+      "name": "Pedro2712",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "Luis Filipe Carrete",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "https://orcid.org/0009-0008-1237-3353",
+      "@type": "Person",
+      "email": "ricardorr7@al.insper.edu.br",
+      "name": "RicardoRibeiroRodrigues",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "leonardo.malta",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "Manuel Castanares",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "https://orcid.org/0009-0001-5943-0481",
+      "@type": "Person",
+      "email": "renatolf1@al.insper.edu.br",
+      "name": "renatex333",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "Enrico",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "leonardodma",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-6263-121X",
+      "@type": "Person",
+      "email": "fabriciojb@insper.edu.br",
+      "name": "Fabricio J Barth",
+      "affiliation": "INSPER"
+    },
+    {
+      "@id": "https://orcid.org/0009-0005-1883-8703",
+      "@type": "Person",
+      "email": "jorascco@al.insper.edu.br",
+      "name": "Jorás Oliveira",
+      "affiliation": "INSPER"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/pfeinsper/drone-swarm-search",
+  "datePublished": "2024-04-25",
+  "dateModified": "2024-04-25",
+  "dateCreated": "2024-04-25",
+  "description": "The Drone Swarm Search project provides an environment for SAR missions built on PettingZoo, where agents, represented by drones, are tasked with locating targets identified as shipwrecked individuals.",
+  "keywords": "reinforcement learning, AI, multi-agent, marl, pettingzoo",
+  "license": "MIT",
+  "title": "DSSE",
+  "version": "v1.0.3"
+}
