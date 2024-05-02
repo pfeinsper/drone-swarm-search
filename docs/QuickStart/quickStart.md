@@ -17,7 +17,7 @@ pip install DSSE
 ### Basic Usage
 The following code snippet demonstrates how to set up and run the `DroneSwarmSearch` environment. Expand the details to view the code.
 
-::: details Click me to view the code
+::: details Click me to view the code <a href="https://github.com/pfeinsper/drone-swarm-search/blob/main/basic_env.py" target="blank" style="float:right"><Badge type="tip" text="basic_env.py &boxbox;" /></a>
 ```python
 from DSSE import DroneSwarmSearch
 
@@ -75,7 +75,7 @@ pip install DSSE[coverage]
 ### Basic Usage
 The following example shows how to initiate and interact with the `CoverageDroneSwarmSearch` environment. Expand the details to see the code.
 
-::: details Click me to view the code
+::: details Click me to view the code <a href="https://github.com/pfeinsper/drone-swarm-search/blob/main/basic_coverage.py" target="blank" style="float:right"><Badge type="tip" text="basic_coverage.py &boxbox;" /></a>
 ```python
 from DSSE import CoverageDroneSwarmSearch
 

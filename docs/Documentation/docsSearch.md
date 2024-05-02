@@ -26,7 +26,7 @@ The DSSE project requires Python version 3.10.5 or higher.
 `pip install DSSE`
 
 #### Use
-::: details Click me to view the code
+::: details Click me to view the code <a href="https://github.com/pfeinsper/drone-swarm-search/blob/main/basic_env.py" target="blank" style="float:right"><Badge type="tip" text="basic_env.py &boxbox;" /></a>
 ```python
 from DSSE import DroneSwarmSearch
 
