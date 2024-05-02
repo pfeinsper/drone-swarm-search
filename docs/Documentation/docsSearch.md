@@ -1,4 +1,4 @@
-# Drone Swarm Search
+# Drone Swarm Search: The Search Environment
 
 ## About
 
