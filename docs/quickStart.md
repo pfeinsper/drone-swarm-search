@@ -1,6 +1,10 @@
 # Quick Start Guide
 Welcome to the Quick Start guide for the DSSE (Drone Swarm Search Environment). This guide provides step-by-step instructions on how to install and use DSSE for both the Search and Coverage environments.
 
+::: warning Warning
+The DSSE project requires Python version 3.10.5 or higher.
+:::
+
 ## Search Environment
 
 ### Installation
