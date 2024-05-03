@@ -215,7 +215,7 @@ The movement of the person in the environment is governed by both the probabilit
 
 Moreover, the person is restricted to moving only one cell per timestep. This means they can move to any adjacent cell-up, down, left, or right-but no further, in a single step. This constraint is designed to simulate more realistic movement patterns for a shipwrecked individual.
 
-### Observation:
+### Observation
 
 The observation is a dictionary with all the drones as keys, identified by names such as `drone0`, `drone1`, etc. Each key is associated with a tuple that contains the drone's current position and its perception of the environment, represented as a probability matrix.
 
@@ -272,7 +272,7 @@ An output example can be seen below.
 }
 ```
 
-### Reward:
+### Reward
 
 The reward returns a dictionary with the drones names as keys and their respectful rewards as values. For example `{'drone0': 1, 'drone1': 89.0, 'drone2': 1}`
 
@@ -299,7 +299,7 @@ The termination and truncation variables return a dictionary with all drones as 
 {'drone0': False, 'drone1': False, 'drone2': False}
 ```
 
-### Info:
+### Info
 
 the `Info` is a dictionary of dictionaries, with each drone serves as a key, with its value being another dictionary that contains a key called ***`Found`*** that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The `info` section is to be used as an indicator to see if the person was found.
 

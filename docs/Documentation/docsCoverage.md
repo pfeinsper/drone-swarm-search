@@ -169,13 +169,13 @@ Every drone listed in the dictionary `must` have an associated action. If any dr
 - **`Truncation`**: Indicates whether the episode was truncated (e.g., through a timeout).
 - **`Info`**: A dictionary containing auxiliary diagnostic information.
 
-### Probability Matrix:
+### Probability Matrix
 
 The probability matrix is generated through a particle simulation conducted by the [Opendrift library](https://github.com/OpenDrift/opendrift). Particles are released at the site of a disaster and then transported by water currents. Those that reach the coast are removed from the simulation. The matrix itself is formed based on the number of particles that arrive at each grid cell, representing the accumulated data from the simulation. The final positions of the particles are captured and used to create the matrix.
 
 - **`Probability Matrix`**: The probability indicated in each cell reflects the likelihood of finding a person in that specific location.
 
-### Observation:
+### Observation
 
 The observation is a dictionary with all the drones as keys, identified by names such as `drone0`, `drone1`, etc. Each key is associated with a tuple that contains the drone's current position and its perception of the environment, represented as a probability matrix.
 
@@ -232,7 +232,7 @@ An output example can be seen below.
 }
 ```
 
-### Reward:
+### Reward
 
 The reward returns a dictionary with the drones names as keys and their respectful rewards as values. For example `{'drone0': 1, 'drone1': 89.0, 'drone2': 1}`
 
@@ -258,7 +258,7 @@ The termination and truncation variables return a dictionary with all drones as 
 {'drone0': False, 'drone1': False, 'drone2': False}
 ```
 
-### Info:
+### Info
 
 The `Info` is structured as a dictionary of dictionaries, where each drone, such as `drone0`, serves as a key. The associated value is another dictionary containing several key metrics:
 
