@@ -120,7 +120,7 @@ We incorporated 8 actions in this environment to enable the use of agents traine
 
 - **`pre_render_time`**: This **int** parameter specifies the amount of time `(hours)` to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
-- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to a file containing a pre-simulated probability matrix. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
+- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to file of a already simulated probability matrix. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
 
 ## Built in Functions
 
@@ -171,7 +171,7 @@ Every drone listed in the dictionary `must` have an associated action. If any dr
 
 ### Probability Matrix
 
-The probability matrix is created using a particle simulation facilitated by the [Opendrift library](https://github.com/OpenDrift/opendrift). In this process, particles are released at a disaster site and drift with water currents. Those reaching the coast are removed from the simulation. The matrix is constructed by recording the number of particles that reach each grid cell, thus encapsulating the data accumulated throughout the simulation. The final locations of these particles are documented to form the matrix.
+The probability matrix is created using a Lagrangian particle simulation facilitated by the [Opendrift library](https://github.com/OpenDrift/opendrift). In this process, particles are released at a disaster site and drift with water currents. Those reaching the coast are removed from the simulation. The matrix is constructed by recording the number of particles that reach each grid cell, thus encapsulating the data accumulated throughout the simulation. The final locations of these particles are documented to form the matrix.
 
 <p align="center">
     <img src="/gifs/OpendriftSimulation.gif" width="600" height="600" align="center">
