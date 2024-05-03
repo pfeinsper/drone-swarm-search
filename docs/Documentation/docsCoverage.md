@@ -25,14 +25,14 @@ The DSSE project requires Python version 3.10.5 or higher.
 :::
 
 ::: tip Tip
-After running the training file, the begining of training might take a while dependengin of your internet conection.
+After instancing the environment class, the beginning of simulation might take a while depending of your internet conection.
 :::
 
 #### Install
 `pip install DSSE[coverage]`
 
 #### Use
-::: details Click me to view the code <a href="https://github.com/pfeinsper/drone-swarm-search/blob/main/basic_env.py" target="blank" style="float:right"><Badge type="tip" text="basic_env.py &boxbox;" /></a>
+::: details Click me to view the code <a href="https://github.com/pfeinsper/drone-swarm-search/blob/main/basic_coverage.py" target="blank" style="float:right"><Badge type="tip" text="basic_coverage.py &boxbox;" /></a>
 ```python
 from DSSE import CoverageDroneSwarmSearch
 
@@ -61,7 +61,7 @@ print(infos["drone0"])
 
 ## General Info
 
-| Import             | `from DSSE import DroneSwarmSearch` |
+| Import             | `from DSSE import CoverageDroneSwarmSearch` |
 | ------------------ | --------------------------------------------------|
 | Action Space       | Discrete (9)                                      |
 | Action Values      | [0, 1, 2, 3, 4, 5, 6, 7, 8]                       |  
@@ -120,7 +120,7 @@ We incorporated 8 actions in this environment to enable the use of agents traine
 
 - **`pre_render_time`**: This **int** parameter specifies the amount of time `(hours)` to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
-- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to a probability matrix file. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
+- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to a file containing a pre-simulated probability matrix. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
 
 ## Built in Functions
 
@@ -287,7 +287,7 @@ The `Info` is structured as a dictionary of dictionaries, where each drone, such
 - **`is_completed`**: a boolean indicating whether the drone has searched all grid cells. It starts as False and changes to True once the drone has completed its search.
 - **`coverage_rate`**: the percentage of the grid that has been covered by the drone.
 - **`repeated_coverage`**: the percentage of the grid that has been covered more than once, indicating overlap in search areas.
-- **`acumulated_pos`**: the total number of cells that have been searched by the drone.
+- **`accumulated_pos`**: The accumulated Probability of Sucess (POS) of the SAR mission, this serves as a way to quantify the chance of finding all SAR targets within a mission.
 
 The `info` section serves as an indicator of the progress of the search operation.
 
@@ -300,7 +300,7 @@ For example, here is how the dictionary appears before any drone has completed i
 After a drone successfully locates the person, the dictionary updates to reflect this:
 
 ```python
-{'drone0': {'is_completed': True, 'coverage_rate': 100, 'repeated_coverage': 2.912397984939490308, 'acumulated_pos': 132}}
+{'drone0': {'is_completed': True, 'coverage_rate': 100, 'repeated_coverage': 2.912397984939490308, 'acumulated_pos': 1.0}}
 ```
 
 This setup allows users to continuously monitor and assess the effectiveness of the search operation during the simulation.
