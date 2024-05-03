@@ -120,7 +120,7 @@ We incorporated 8 actions in this environment to enable the use of agents traine
 
 - **`pre_render_time`**: This **int** parameter specifies the amount of time `(hours)` to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
-- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to file of a already simulated probability matrix. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
+- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to a file containing a pre-simulated probability matrix. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
 
 ## Built in Functions
 
