@@ -66,7 +66,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         print(f"Pre render time: {pre_render_time} minutes")
         print(f"Pre render steps: {self.pre_render_steps}")
 
-        # Prob matrix
+        # Prob m"DSSE/tests/matrix.npy"atrix
         self.probability_matrix = None
         self.dispersion_inc = dispersion_inc
         self.dispersion_start = dispersion_start

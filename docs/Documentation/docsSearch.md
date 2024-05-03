@@ -5,7 +5,9 @@
 The Drone Swarm Search project is an environment, based on PettingZoo, that is to be used in conjunction with multi-agent (or single-agent) reinforcement learning algorithms. It is an environment in which the agents (drones), have to find the targets (shipwrecked people). The agents do not know the position of the target, and do not receive rewards related to their own distance to the target(s). However, the agents receive the probabilities of the target(s) being in a certain cell of the map. The aim of this project is to aid in the study of reinforcement learning algorithms that require dynamic probabilities as inputs. A visual representation of the environment is displayed below. To test the environment (without an algorithm), run `basic_env.py`.
 
 <p align="center">
-    <img src="https://raw.github.com/PFE-Embraer/drone-swarm-search/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
+    <img src="/gifs/render_with_grid_gradient.gif" width="600" height="600" align="center">
+    <br>
+    <em>Fig 1: Representation of the environment in the Search Environment.</em>
 </p>
 
 
@@ -155,7 +157,7 @@ For more realistic movement speeds in `vector`, we recommend varying the values 
 
 ### `env.reset`:
 
-`env.reset()` reinitializes the environment to its initial state. To customize the starting conditions, such as drone positions, the probability of detection for each person (PIW), or the movement vector, you can pass an `options` dictionary to the method. Here’s how to structure this dictionary and use the `reset()` method:
+The `env.reset()` reinitializes the environment to its initial state. To customize the starting conditions, such as drone positions, the probability of detection for each person (PIW), or the movement vector, you can pass an `options` dictionary to the method. Here’s how to structure this dictionary and use the `reset()` method:
 
 ```python
 opt = {
@@ -163,7 +165,7 @@ opt = {
     "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
     "vector": (0.3, 0.3)
 }
-observations, info = env.reset(options=opt, vector)
+observations, info = env.reset(options=opt)
 ```
 #### Parameters in the options Dictionary:
 
@@ -179,7 +181,7 @@ Without any arguments, `env.reset()` will place drones sequentially from left to
 
 #### Return Values:
 
-The method returns an `observations` dictionary containing observations for all drones, which provides insights into the environment's state immediately after the reset.
+The method returns an `observations` dictionary containing observations for all drones, which provides insights into the environment's state immediately after the reset. The `info` dictionary contains additional information about the environment.
 
 ### `env.step`:
 

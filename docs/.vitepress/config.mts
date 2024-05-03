@@ -55,7 +55,12 @@ export default defineConfig({
                   collapsed: false,
                   text: 'Coverage Environment',
                   items: [
-                    { text: 'Documentation Under Construction', link: '/Documentation/docsCoverage#build' },
+                    { text: 'About', link: '/Documentation/docsCoverage#about' },
+                    { text: 'Quick Start', link: '/Documentation/docsCoverage#quick-start' },
+                    { text: 'General Info', link: '/Documentation/docsCoverage#general-info' },
+                    { text: 'Built in Functions', link: '/Documentation/docsCoverage#built-in-functions' },
+                    { text: 'Person Movement', link: '/Documentation/docsCoverage#person-movement' },
+                    { text: 'License', link: '/Documentation/docsCoverage#license' },
                   ]
                 },
                 {

@@ -1,15 +1,17 @@
-# Drone Swarm Search: The Search Environment
+# Drone Swarm Search: The Coverage Environment
 
 ## About
 
-The Drone Swarm Search project is an environment, based on PettingZoo, that is to be used in conjunction with multi-agent (or single-agent) reinforcement learning algorithms. It is an environment in which the agents (drones), have to find the targets (shipwrecked people). The agents do not know the position of the target, and do not receive rewards related to their own distance to the target(s). However, the agents receive the probabilities of the target(s) being in a certain cell of the map. The aim of this project is to aid in the study of reinforcement learning algorithms that require dynamic probabilities as inputs. A visual representation of the environment is displayed below. To test the environment (without an algorithm), run `basic_env.py`.
+The **Coverage Environment** is our second training arena, building on the `PettingZoo` framework and accommodating both multi-agent and single-agent setups with reinforcement learning algorithms. In contrast to the Search Environment, which aims to locate survivors, the Coverage Environment focuses on efficiently maximizing the search spread over the most probable area in minimal time. This environment differs from the Search Environment in its static nature; it employs a particle simulation that integrates real tidal data to accurately represent the area of highest probability. This simulation utilizes the open-source library [Opendrift](https://github.com/OpenDrift/opendrift). Below, you can find a visual representation of the environment. To explore the environment without an algorithm, execute the script `basic_coverage.py`.
 
 <p align="center">
-    <img src="https://raw.github.com/PFE-Embraer/drone-swarm-search/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
+    <img src="/gifs/basic_coverage.gif" width="600" height="600" align="center">
+    <br>
+    <em>Fig 1: Representation of the environment in the Coverage Environment.</em>
 </p>
 
 
-### Outcome
+<!-- ### Outcome -->
 
 <!-- | If target is found       | If target is not found   |
 :-------------------------:|:-------------------------:
@@ -79,21 +81,23 @@ print(infos["drone0"])
 | 7     | Diagonal Down Right    |
 | 8     | Do nothing             |
 
-### Inputs
-| Inputs                    | Possible Values       | Default Values            |
-| -------------             | -------------         | -------------             |
-| `grid_size`               | `int(N)`              | `20`                      |
-| `render_mode`             | `"ansi" or "human"`   | `"ansi"`                  |
-| `render_grid`             | `bool`                | `False`                   |
-| `render_gradient`         | `bool`                | `True`                    |
-| `timestep_limit`          | `int`                 | `100`                     |
-| `drone_amount`            | `int`                 | `1`                       |
-| `drone_speed`             | `int`                 | `10`                      |
-| `probability_of_detection`| `float`               | `1.0`                     |
-| `pre_render_time`         | `int`                 | `0`                       |
-| `disaster_position`       | `(float, float)`      | `(-24.04, -46.17)`        |
+::: tip tip
+We incorporated 8 actions in this environment to enable the use of agents trained here in the Search Environment as well.
+:::
 
-- **`grid_size`**: Defines the area in which the search will happen. It should always be an integer greater than one.
+### Inputs
+| Inputs                          | Possible Values       | Default Values            |
+| -------------                   | -------------         | -------------             |
+| `render_mode`                   | `"ansi" or "human"`   | `"ansi"`                  |
+| `render_grid`                   | `bool`                | `True`                    |
+| `render_gradient`               | `bool`                | `True`                    |
+| `timestep_limit`                | `int`                 | `100`                     |
+| `disaster_position`             | `(float, float)`      | `(-24.04, -46.17)`        |
+| `drone_amount`                  | `int`                 | `1`                       |
+| `drone_speed`                   | `int`                 | `10`                      |
+| `drone_probability_of_detection`| `float`               | `1.0`                     |
+| `pre_render_time`               | `int`                 | `10`                      |
+| `prob_matrix_path`              | `string`              | `None`                    |
 
 - **`render_mode`**:
 
@@ -106,27 +110,29 @@ print(infos["drone0"])
 
 - **`timestep_limit`**: It's an integer that defines the length of an episode. This means that the `timestep_limit` is essentially the number of steps that can be done without resetting or ending the environment.
 
+- **`disaster_position`**: **(float, float)** parameter to specify the location of the event that let to PIW (Persons In Water), it receives a `tuple` of floats, representing the **latitue** and **longitute** of said location. default value is (-24.04, -46.17), a point near the coast of Guaruja, Brazil.
+
 - **`drone_amount`**: Specifies the number of drones to be used in the simulation. This **integer** parameter can be adjusted to simulate scenarios with different drone counts.
 
 - **`drone_speed`**: An **integer** parameter that sets the drones' speed in the simulation, measured in meters per second `(m/s)`. Adjust this value to simulate drones operating at various speeds.
 
-- `probability_of_detection`: This **float** parameter signifies the probability of a drone detecting an object of interest. Changing this value allows the user to simulate different detection probabilities.
+- **`drone_probability_of_detection`**: This **float** parameter signifies the probability of a drone detecting an object of interest. Changing this value allows the user to simulate different detection probabilities.
 
-- `pre_render_time`: This **int** parameter specifies the amount of time `(minutes)` to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
+- **`pre_render_time`**: This **int** parameter specifies the amount of time `(hours)` to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
-- `disaster_position`: **(float, float**) parameter to specify the location of the event that let to PIW, it receives a tuple of floats, representing the latitue and longitute of said location. default value is (-24.04, -46.17), a point near the coast of Guaruja, Brazil.
+- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to a probability matrix file. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
 
 ## Built in Functions
 
 ### `env.reset`:
 
-`env.reset()` reinitializes the environment to its initial state. To customize the starting conditions, such as drone positions, you can pass an `options` dictionary to the method. Here’s how to structure this dictionary and use the `reset()` method:
+The `env.reset()` reinitializes the environment to its initial state. To customize the starting conditions, such as drone positions, you can pass an `options` dictionary to the method. Here’s how to structure this dictionary and use the `reset()` method:
 
 ```python
 opt = {
     "drones_positions": [(10, 5), (10, 10)],
 }
-observations, info = env.reset(options=opt, vector)
+observations, info = env.reset(options=opt)
 ```
 #### Parameters in the options Dictionary:
 
@@ -134,11 +140,11 @@ observations, info = env.reset(options=opt, vector)
 
 #### Default Behavior:
 
-Without any arguments, `env.reset()` will place drones sequentially from left to right in adjacent cells. When there are no more available cells in a row, it moves to the next row and continues from left to right. If no vector or POD values are specified, they will remain unchanged from their previous states.
+Without any arguments, `env.reset()` will place drones sequentially from left to right in adjacent cells. When there are no more available cells in a row, it moves to the next row and continues from left to right.
 
 #### Return Values:
 
-The method returns an `observations` dictionary containing observations for all drones, which provides insights into the environment's state immediately after the reset.
+The method returns an `observations` dictionary containing observations for all drones, which provides insights into the environment's state immediately after the reset. The `info` dictionary contains additional information about the environment.
 
 ### `env.step`:
 
@@ -165,11 +171,9 @@ Every drone listed in the dictionary `must` have an associated action. If any dr
 
 ### Probability Matrix:
 
-Lorem Ipsum ... Here's how it works:
+The probability matrix is generated through a particle simulation conducted by the [Opendrift library](https://github.com/OpenDrift/opendrift). Particles are released at the site of a disaster and then transported by water currents. Those that reach the coast are removed from the simulation. The matrix itself is formed based on the number of particles that arrive at each grid cell, representing the accumulated data from the simulation. The final positions of the particles are captured and used to create the matrix.
 
-- **`Probability Matrix`**: Each cell's probability indicates the probabilities of the person being present there.
-
-Moreover, the person is restricted to moving only one cell per timestep. This means the agents can move to any adjacent cell-up, down, left, or right-but no further, in a single step. This constraint is designed to simulate more realistic movement patterns for a shipwrecked individual.
+- **`Probability Matrix`**: The probability indicated in each cell reflects the likelihood of finding a person in that specific location.
 
 ### Observation:
 
@@ -234,12 +238,12 @@ The reward returns a dictionary with the drones names as keys and their respectf
 
 The rewards values goes as follows:
 
-- **`Default Action`**: Every action receives a baseline reward of `0.1`.
-- **`Leaving the Grid`**: A penalty of `-200` is applied if a drone leaves the grid boundaries.
-- **`Exceeding Time Limit`**: A penalty of `-200` is imposed if the drone does not locate the person before the timestep_limit is exceeded.
-- **`Collision`**: If drones collide, each involved drone receives a penalty of `-200`.
-- **`Searching a Cell`**: The reward for searching a cell is proportional to the probability p of the cell being searched, denoted as `[0:p]`.
-- **`Finding the Person`**: If a drone successfully locates the person within a cell, the reward is `200 + 200 * ((1 - timestep) / timestep_limit)`, encouraging faster discovery.
+- **`Default Action`**: Every action receives a baseline reward of `0`.
+- **`Leaving the Grid`**: A penalty of `-10` is applied if a drone leaves the grid boundaries.
+- **`Exceeding Time Limit`**: A penalty of `-100` is imposed if the drone does not locate all the cells before the timestep_limit is exceeded.
+- **`Collision`**: If drones collide, each involved drone receives a penalty of `-10`.
+- **`Searching a Cell`**: The reward for searching a cell is proportional to the probability p of the cell being searched, denoted as `10 + (1 / (timestep)) * prob_matrix * 1_000`.
+- **`complete the serching`**: If all cells are searched, the reward is `100`.
 
 ### Termination & Truncation
 
@@ -247,7 +251,6 @@ The termination and truncation variables return a dictionary with all drones as 
 
 - **`Collision`**: If two or more drones collide.
 - **`Time Limit Exceeded`**: If the simulation's timestep exceeds the `timestep_limit`.
-- **`All PIWs Found`**: If all Persons in Water (PIWs) have been successfully located.
 
 #### For example, the dictionary might look like this:
 
@@ -257,21 +260,28 @@ The termination and truncation variables return a dictionary with all drones as 
 
 ### Info:
 
-the `Info` is a dictionary of dictionaries, with each drone serves as a key, with its value being another dictionary that contains a key called ***`Found`*** that contains a boolean value. The value begins as `False`, and is only changed to `True` once any drone finds the shipwrecked person. The `info` section is to be used as an indicator to see if the person was found.
+The `Info` is structured as a dictionary of dictionaries, where each drone, such as `drone0`, serves as a key. The associated value is another dictionary containing several key metrics:
 
-For example, the dictionary will appear as follows before any drone has found the shipwrecked person:
+- **`is_completed`**: a boolean indicating whether the drone has searched all grid cells. It starts as False and changes to True once the drone has completed its search.
+- **`coverage_rate`**: the percentage of the grid that has been covered by the drone.
+- **`repeated_coverage`**: the percentage of the grid that has been covered more than once, indicating overlap in search areas.
+- **`acumulated_pos`**: the total number of cells that have been searched by the drone.
+
+The `info` section serves as an indicator of the progress of the search operation.
+
+For example, here is how the dictionary appears before any drone has completed its search:
 
 ```python
-{'drone0': {'Found': False}, 'drone1': {'Found': False}}
+{'drone0': {'is_completed': False, 'coverage_rate': 0.5693877551020409, 'repeated_coverage': 0.0010204081632653062, 'acumulated_pos': 0}}
 ```
 
 After a drone successfully locates the person, the dictionary updates to reflect this:
 
 ```python
-{'drone0': {'Found': True}, 'drone1': {'Found': True}}
+{'drone0': {'is_completed': True, 'coverage_rate': 100, 'repeated_coverage': 2.912397984939490308, 'acumulated_pos': 132}}
 ```
 
-This mechanism ensures that users can easily monitor and verify the success of the search operation at any point during the simulation.
+This setup allows users to continuously monitor and assess the effectiveness of the search operation during the simulation.
 
 ### `env.get_agents`:
 
@@ -280,6 +290,34 @@ The `env.get_agents()` method will return a list of all the possible agents (dro
 ```python
 ['drone0', 'drone1', 'drone2', 'drone3', 'drone4', 'drone5', 'drone6', 'drone7', 'drone8', 'drone9']
 ```
+
+### `env.save_matrix`:
+
+The `env.save_matrix()` method enables saving the probability matrix as a `.npy` file. To use this method, you must provide a string parameter that specifies the file path where the matrix should be saved. For example:
+
+```python
+env.save_matrix("path/to/save/matrix.npy")
+```
+
+After saving, you can load this matrix in a newly created environment using the `prob_matrix_path` parameter:
+
+```python
+env = CoverageDroneSwarmSearch(
+    drone_amount=3,
+    render_mode="human",
+    disaster_position=(-24.04, -46.17),  # (lat, long)
+    pre_render_time=10, # hours to simulate
+    prob_matrix_path="path/to/save/matrix.npy"
+)
+```
+
+::: warning Warning
+Ensure that the `disaster_position` and `pre_render_time` parameters are the same as those used to generate the matrix to maintain consistency in the simulation conditions.
+:::
+
+::: tip Tip
+The `env.save_matrix()` method is not only convenient for saving the probability matrix post-simulation but also essential for reusing it in subsequent simulations without needing to regenerate it. It facilitates varying simulation parameters, such as the number of drones, their speed, or timestep, for different experimental setups.
+:::
 
 ### `env.close`:
 
