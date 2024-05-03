@@ -2,7 +2,7 @@
 
 ## About
 
-The **Coverage Environment** is our second training arena, building on the `PettingZoo` framework and accommodating both multi-agent and single-agent setups with reinforcement learning algorithms. In contrast to the Search Environment, which aims to locate survivors, the Coverage Environment focuses on efficiently maximizing the search spread over the most probable area in minimal time. This environment differs from the Search Environment in its static nature; it employs a particle simulation that integrates real tidal data to accurately represent the area of highest probability. This simulation utilizes the open-source library [Opendrift](https://github.com/OpenDrift/opendrift). Below, you can find a visual representation of the environment. To explore the environment without an algorithm, execute the script `basic_coverage.py`.
+The **Coverage Environment** is our second training environment, building on the `PettingZoo` framework and accommodating both multi-agent and single-agent setups with reinforcement learning algorithms. In contrast to the Search Environment, which aims to locate survivors, the Coverage Environment focuses on efficiently maximizing the search spread over the most probable area in minimal time. This environment differs from the Search Environment in its static nature; it employs a Lagrangian particle model that integrates real tidal data to accurately represent the area of highest probability. This simulation utilizes the open-source library [Opendrift](https://github.com/OpenDrift/opendrift). Below, you can find a visual representation of the environment. To explore the environment without an algorithm, execute the script `basic_coverage.py`.
 
 <p align="center">
     <img src="/gifs/basic_coverage.gif" width="600" height="600" align="center">
@@ -25,14 +25,14 @@ The DSSE project requires Python version 3.10.5 or higher.
 :::
 
 ::: tip Tip
-After running the training file, the begining of training might take a while dependengin of your internet conection.
+After instancing the environment class, the beginning of simulation might take a while depending of your internet conection.
 :::
 
 #### Install
 `pip install DSSE[coverage]`
 
 #### Use
-::: details Click me to view the code <a href="https://github.com/pfeinsper/drone-swarm-search/blob/main/basic_env.py" target="blank" style="float:right"><Badge type="tip" text="basic_env.py &boxbox;" /></a>
+::: details Click me to view the code <a href="https://github.com/pfeinsper/drone-swarm-search/blob/main/basic_coverage.py" target="blank" style="float:right"><Badge type="tip" text="basic_coverage.py &boxbox;" /></a>
 ```python
 from DSSE import CoverageDroneSwarmSearch
 
@@ -61,7 +61,7 @@ print(infos["drone0"])
 
 ## General Info
 
-| Import             | `from DSSE import DroneSwarmSearch` |
+| Import             | `from DSSE import CoverageDroneSwarmSearch` |
 | ------------------ | --------------------------------------------------|
 | Action Space       | Discrete (9)                                      |
 | Action Values      | [0, 1, 2, 3, 4, 5, 6, 7, 8]                       |  
@@ -120,7 +120,7 @@ We incorporated 8 actions in this environment to enable the use of agents traine
 
 - **`pre_render_time`**: This **int** parameter specifies the amount of time `(hours)` to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
-- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to a probability matrix file. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
+- **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to file of a already simulated probability matrix. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
 
 ## Built in Functions
 
@@ -171,7 +171,7 @@ Every drone listed in the dictionary `must` have an associated action. If any dr
 
 ### Probability Matrix
 
-The probability matrix is generated through a particle simulation conducted by the [Opendrift library](https://github.com/OpenDrift/opendrift). Particles are released at the site of a disaster and then transported by water currents. Those that reach the coast are removed from the simulation. The matrix itself is formed based on the number of particles that arrive at each grid cell, representing the accumulated data from the simulation. The final positions of the particles are captured and used to create the matrix.
+The probability matrix is generated through a Lagrangian particle simulation conducted by the [Opendrift library](https://github.com/OpenDrift/opendrift). Particles are released at the site of a disaster and then transported by water currents. Those that reach the coast are removed from the simulation. The matrix itself is formed based on the number of particles that arrive at each grid cell, representing the accumulated data from the simulation. The final positions of the particles are captured and used to create the matrix.
 
 - **`Probability Matrix`**: The probability indicated in each cell reflects the likelihood of finding a person in that specific location.
 
@@ -265,7 +265,7 @@ The `Info` is structured as a dictionary of dictionaries, where each drone, such
 - **`is_completed`**: a boolean indicating whether the drone has searched all grid cells. It starts as False and changes to True once the drone has completed its search.
 - **`coverage_rate`**: the percentage of the grid that has been covered by the drone.
 - **`repeated_coverage`**: the percentage of the grid that has been covered more than once, indicating overlap in search areas.
-- **`acumulated_pos`**: the total number of cells that have been searched by the drone.
+- **`accumulated_pos`**: The accumulated Probability of Sucess (POS) of the SAR mission, this serves as a way to quantify the chance of finding all SAR targets within a mission.
 
 The `info` section serves as an indicator of the progress of the search operation.
 
@@ -278,7 +278,7 @@ For example, here is how the dictionary appears before any drone has completed i
 After a drone successfully locates the person, the dictionary updates to reflect this:
 
 ```python
-{'drone0': {'is_completed': True, 'coverage_rate': 100, 'repeated_coverage': 2.912397984939490308, 'acumulated_pos': 132}}
+{'drone0': {'is_completed': True, 'coverage_rate': 100, 'repeated_coverage': 2.912397984939490308, 'acumulated_pos': 1.0}}
 ```
 
 This setup allows users to continuously monitor and assess the effectiveness of the search operation during the simulation.
