@@ -2,7 +2,7 @@
 
 ## About
 
-The **Coverage Environment** is our second training arena, building on the `PettingZoo` framework and accommodating both multi-agent and single-agent setups with reinforcement learning algorithms. In contrast to the Search Environment, which aims to locate survivors, the Coverage Environment focuses on efficiently maximizing the search spread over the most probable area in minimal time. This environment differs from the Search Environment in its static nature; it employs a particle simulation that integrates real tidal data to accurately represent the area of highest probability. This simulation utilizes the open-source library [Opendrift](https://github.com/OpenDrift/opendrift). Below, you can find a visual representation of the environment. To explore the environment without an algorithm, execute the script `basic_coverage.py`.
+The **Coverage Environment** is our second training environment, building on the `PettingZoo` framework and accommodating both multi-agent and single-agent setups with reinforcement learning algorithms. In contrast to the Search Environment, which aims to locate survivors, the Coverage Environment focuses on efficiently maximizing the search spread over the most probable area in minimal time. This environment differs from the Search Environment in its static nature; it employs a Lagrangian particle model that integrates real tidal data to accurately represent the area of highest probability. This simulation utilizes the open-source library [Opendrift](https://github.com/OpenDrift/opendrift). Below, you can find a visual representation of the environment. To explore the environment without an algorithm, execute the script `basic_coverage.py`.
 
 <p align="center">
     <img src="/gifs/basic_coverage.gif" width="600" height="600" align="center">
@@ -171,7 +171,29 @@ Every drone listed in the dictionary `must` have an associated action. If any dr
 
 ### Probability Matrix
 
-The probability matrix is generated through a particle simulation conducted by the [Opendrift library](https://github.com/OpenDrift/opendrift). Particles are released at the site of a disaster and then transported by water currents. Those that reach the coast are removed from the simulation. The matrix itself is formed based on the number of particles that arrive at each grid cell, representing the accumulated data from the simulation. The final positions of the particles are captured and used to create the matrix.
+The probability matrix is created using a particle simulation facilitated by the [Opendrift library](https://github.com/OpenDrift/opendrift). In this process, particles are released at a disaster site and drift with water currents. Those reaching the coast are removed from the simulation. The matrix is constructed by recording the number of particles that reach each grid cell, thus encapsulating the data accumulated throughout the simulation. The final locations of these particles are documented to form the matrix.
+
+<p align="center">
+    <img src="/gifs/OpendriftSimulation.gif" width="600" height="600" align="center">
+    <br>
+    <em>Fig 2: Opendrift simulation over 240 hours, starting at coordinates (-24.04, -46.17).</em>
+</p>
+
+As demonstrated in the above GIF, after conducting the Opendrift simulation, we ascertain the final positions of the particles and proceed to construct the probability matrix. This matrix is visually represented by the blue particles in the image below.
+
+<p align="center">
+    <img src="/pics/OpendriftFinalPosition.jpeg" width="600" height="600" align="center">
+    <br>
+    <em>Fig 3: Final positions of particles from an Opendrift simulation.</em>
+</p>
+
+Following the collection of particle data, we generate the probability matrix. Each cell in this matrix represents the likelihood of discovering a person at that particular location, as depicted in the subsequent image.
+
+<p align="center">
+    <img src="/pics/heatmap_2.png" width="600" height="600" align="center">
+    <br>
+    <em>Fig 4: Final probability matrix.</em>
+</p>
 
 - **`Probability Matrix`**: The probability indicated in each cell reflects the likelihood of finding a person in that specific location.
 
