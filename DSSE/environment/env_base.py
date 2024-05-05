@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from pettingzoo import ParallelEnv
 from .entities.drone import DroneData
 from .pygame_interface import PygameInterface
-from .simulation.dynamic_probability import ProbabilityMatrix
 from .constants import Actions
 from gymnasium.spaces import MultiDiscrete, Discrete, Tuple, Box
 from copy import copy
@@ -197,6 +196,8 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                 new_position = (position[0] - 1, position[1] + 1)
             case Actions.DOWN_RIGHT.value:  # DOWN_RIGHT
                 new_position = (position[0] + 1, position[1] + 1)
+            case _:
+                new_position = position
 
         return new_position
 
@@ -215,7 +216,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                     low=0,
                     high=1,
                     shape=(self.grid_size, self.grid_size),
-                    dtype=np.float32,
+                    dtype=np.float64,
                 ),
             )
         )

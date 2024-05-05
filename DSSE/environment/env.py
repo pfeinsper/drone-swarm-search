@@ -241,8 +241,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             # Check truncation conditions (overwrites termination conditions)
             if self.timestep >= self.timestep_limit:
                 rewards[agent] = self.reward_scheme.exceed_timestep
-                if self.rewards_sum[agent] > 0:
-                    rewards[agent] += self.rewards_sum[agent] // 2
                 truncations[agent] = True
                 terminations[agent] = True
                 continue

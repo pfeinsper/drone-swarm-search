@@ -12,11 +12,11 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
     }
     reward_scheme = Reward(
         default=0,
-        leave_grid=-10,
-        exceed_timestep=-100,
-        drones_collision=-10,
-        search_cell=10,
-        search_and_find=100,
+        leave_grid=0,
+        exceed_timestep=0,
+        drones_collision=0,
+        search_cell=0,
+        search_and_find=5,
     )
 
     def __init__(
@@ -79,7 +79,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
     def reset_search_state(self):
         # This is in (x, y)
-        self.seen_states = {pos for pos in self.agents_positions}
+        self.seen_states = set()
+        self.not_seen_states: set = self.all_states
 
         mat = self.probability_matrix.get_matrix()
         # (row, col)
@@ -87,9 +88,10 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
         # Remove the need to visit cells with POC near to 0
         for y, x in close_to_zero:
-            self.seen_states.add((x, y))
+            point = (x, y)
+            if point in self.not_seen_states:
+                self.not_seen_states.remove((x, y))
 
-        self.not_seen_states = self.all_states - self.seen_states
 
     def create_observations(self):
         observations = {}
@@ -130,10 +132,6 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
                 rewards[agent] = self.reward_scheme.exceed_timestep
                 truncations[agent] = True
                 continue
-
-            # Action 8 is to stay in the same position, default reward.
-            if drone_action == 8:
-                continue
         
             drone_x, drone_y = self.agents_positions[idx]
             new_position = self.move_drone((drone_x, drone_y), drone_action)
@@ -144,7 +142,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             self.agents_positions[idx] = new_position
             new_x, new_y = new_position
             if new_position in self.not_seen_states:
-                reward_poc = (1 / (self.timestep)) * prob_matrix[new_y, new_x] * 1_000
+                time_multiplier = (1 - self.timestep / self.timestep_limit)
+                reward_poc = time_multiplier * prob_matrix[new_y, new_x] * 5
                 rewards[agent] = self.reward_scheme.search_cell + reward_poc
                 self.seen_states.add(new_position)
                 self.not_seen_states.remove(new_position)
@@ -161,14 +160,14 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             self.render()
 
         if is_completed:
-            # TODO: Proper define reward for completing the search (R_done)
+            # (R_done)
             rewards = {
                 drone: self.reward_scheme.search_and_find for drone in self.agents
             }
             terminations = {drone: True for drone in self.agents}
         infos = self.compute_infos(is_completed)
 
-        self.compute_drone_collision(terminations, rewards)
+        # self.compute_drone_collision(terminations, rewards)
         # Get observations
         observations = self.create_observations()
         # If terminted, reset the agents (pettingzoo parallel env requirement)
@@ -177,7 +176,6 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         return observations, rewards, terminations, truncations, infos
 
     def compute_infos(self, is_completed: bool) -> dict[str, dict]:
-        # TODO: Is this the best way to inform the coverage rate, Cum_pos and repetitions?
         total_states = len(self.seen_states) + len(self.not_seen_states)
         coverage_rate = len(self.seen_states) / total_states
         infos = {
