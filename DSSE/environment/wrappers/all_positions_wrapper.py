@@ -44,7 +44,7 @@ class AllPositionsWrapper(BaseParallelWrapper):
                     low=0,
                     high=1,
                     shape=(self.env.grid_size, self.env.grid_size),
-                    dtype=np.float32,
+                    dtype=np.float64,
                 )
             )
         )

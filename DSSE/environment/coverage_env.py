@@ -80,7 +80,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
     def reset_search_state(self):
         # This is in (x, y)
         self.seen_states = set()
-        self.not_seen_states: set = self.all_states
+        self.not_seen_states: set = self.all_states.copy()
 
         mat = self.probability_matrix.get_matrix()
         # (row, col)

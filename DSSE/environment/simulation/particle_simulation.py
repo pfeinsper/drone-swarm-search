@@ -16,6 +16,8 @@ class ParticleSimulation:
         loglevel: int = 20,
         animate: bool = False,
         cell_size: int = 130,
+        particle_amount: int = 50_000,
+        particle_radius: int = 1000,
     ) -> None:
         try:
             from opendrift.models.oceandrift import OceanDrift
@@ -29,6 +31,8 @@ class ParticleSimulation:
         self.animate = animate
         self.duration_hours = duration_hours
         self.cell_size = cell_size
+        self.particle_amount = particle_amount
+        self.particle_radius = particle_radius
 
         # Internal variables
         self.map_size = 0
@@ -43,8 +47,8 @@ class ParticleSimulation:
     def run_simulation(self):
         duration = timedelta(hours=self.duration_hours)
         start_time = datetime.now() - duration
-        number = 50_000
-        radius = 1000
+        number = self.particle_amount
+        radius = self.particle_radius
 
         coordinates = self.simulate(start_time, number, radius, duration)
         self.map_size = self.calculate_map_size(coordinates)
@@ -62,7 +66,14 @@ class ParticleSimulation:
     ) -> List[Tuple[float, float]]:
         o = self.ocean_drift(loglevel=self.loglevel)
         o.add_readers_from_list(
-            ["https://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0/uv3z"]
+            [
+                "https://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0/uv3z"
+            ]
+        )
+        o.add_readers_from_list(
+            [
+                "https://pae-paha.pacioos.hawaii.edu/thredds/dodsC/ncep_global/NCEP_Global_Atmospheric_Model_best.ncd"
+            ]
         )
         o.seed_elements(
             lat=self.disaster_lat,
@@ -168,7 +179,7 @@ class ParticleSimulation:
         """
         Creates a probability map based on the coordinates of the particles.
         """
-        prob_map = np.zeros((self.map_size, self.map_size))
+        prob_map = np.zeros((self.map_size, self.map_size), dtype=np.float64)
 
         for x, y in cartesian_coords:
             prob_map[y][x] += 1
