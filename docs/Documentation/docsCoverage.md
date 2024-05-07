@@ -22,6 +22,11 @@ The **Coverage Environment** is our second training environment, building on the
 
 ::: warning Warning
 The DSSE project requires Python version 3.10.5 or higher.
+
+The installation of GDAL (requirement for using opendrift) may need the installation of the following packages
+```sh
+sudo apt-get install -y libgdal-dev gdal-bin
+```
 :::
 
 ::: tip Tip
