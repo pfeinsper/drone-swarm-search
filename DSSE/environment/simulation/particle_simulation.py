@@ -21,10 +21,13 @@ class ParticleSimulation:
     ) -> None:
         try:
             from opendrift.models.oceandrift import OceanDrift
+
             self.ocean_drift = OceanDrift
         except ImportError:
-            raise ImportError("OpenDrift not installed. Install the environment with the 'coverage' extra: pip install DSSE[coverage]")
-        
+            raise ImportError(
+                "OpenDrift not installed. Install the environment with the 'coverage' extra: pip install DSSE[coverage]"
+            )
+
         self.disaster_lat = disaster_lat
         self.disaster_long = disaster_long
         self.loglevel = loglevel
@@ -47,10 +50,8 @@ class ParticleSimulation:
     def run_simulation(self):
         duration = timedelta(hours=self.duration_hours)
         start_time = datetime.now() - duration
-        number = self.particle_amount
-        radius = self.particle_radius
 
-        coordinates = self.simulate(start_time, number, radius, duration)
+        coordinates = self.simulate(start_time, duration)
         self.map_size = self.calculate_map_size(coordinates)
         cartesian = self.convert_lat_lon_to_xy(coordinates)
         self.probability_map = self.create_probability_map(cartesian)
@@ -60,18 +61,13 @@ class ParticleSimulation:
     def simulate(
         self,
         time: datetime,
-        number: int,
-        radius: int,
         duration: timedelta,
     ) -> List[Tuple[float, float]]:
         o = self.ocean_drift(loglevel=self.loglevel)
+        # Add Wind & Ocean data
         o.add_readers_from_list(
             [
-                "https://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0/uv3z"
-            ]
-        )
-        o.add_readers_from_list(
-            [
+                "https://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0/uv3z",
                 "https://pae-paha.pacioos.hawaii.edu/thredds/dodsC/ncep_global/NCEP_Global_Atmospheric_Model_best.ncd"
             ]
         )
@@ -79,8 +75,8 @@ class ParticleSimulation:
             lat=self.disaster_lat,
             lon=self.disaster_long,
             time=time,
-            number=number,
-            radius=radius,
+            number=self.particle_amount,
+            radius=self.particle_radius,
         )
 
         o.run(duration=duration, time_step=1800)
@@ -184,8 +180,10 @@ class ParticleSimulation:
         for x, y in cartesian_coords:
             prob_map[y][x] += 1
 
-        particle_sum = max(np.sum(prob_map), 1)
+        # TODO: Remove cells with only one particle (or propose a better filter for outliers)
+        prob_map[prob_map <= 2] = 0.0
 
+        particle_sum = max(np.sum(prob_map), 1)
         probability_map = prob_map / particle_sum
         return probability_map
 
@@ -194,12 +192,11 @@ class ParticleSimulation:
 
     def get_map_size(self):
         return self.map_size
-    
+
     def save_state(self, output_path: str):
         with open(output_path, "wb") as f:
             np.save(f, self.original_map)
-        
-    
+
     def load_state(self, input_path: str):
         with open(input_path, "rb") as f:
             self.probability_map = np.load(f)

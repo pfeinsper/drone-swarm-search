@@ -15,7 +15,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         leave_grid=0,
         exceed_timestep=0,
         drones_collision=0,
-        search_cell=0,
+        search_cell=0.012030075187969926,
         search_and_find=5,
     )
 
@@ -31,6 +31,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         drone_probability_of_detection=0.9,
         pre_render_time=10,
         prob_matrix_path=None,
+        particle_amount=50_000,
+        particle_radius=1000,
     ) -> None:
 
         # Prob matrix
@@ -38,6 +40,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             disaster_lat=disaster_position[0],
             disaster_long=disaster_position[1],
             duration_hours=pre_render_time,
+            particle_amount=particle_amount,
+            particle_radius=particle_radius,
         )
         if prob_matrix_path is not None:
             if not isinstance(prob_matrix_path, str):
@@ -72,6 +76,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
         self.reset_search_state()
 
+        # self.reward_scheme.search_cell = 5 / len(self.not_seen_states)
         self.cumm_pos = 0
         self.repeated_coverage = 0
         infos = self.compute_infos(False)
@@ -90,7 +95,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         for y, x in close_to_zero:
             point = (x, y)
             if point in self.not_seen_states:
-                self.not_seen_states.remove((x, y))
+                self.not_seen_states.remove(point)
 
 
     def create_observations(self):
@@ -152,6 +157,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
                 # Remove the probability of the visited cell.
                 prob_matrix[new_y, new_x] = 0.0
             else:
+                # rewards[agent] = -
                 self.repeated_coverage += 1
 
         # Get dummy infos
@@ -182,7 +188,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             "is_completed": is_completed,
             "coverage_rate": coverage_rate,
             "repeated_coverage": self.repeated_coverage / total_states,
-            "acumulated_pos": self.cumm_pos,
+            "accumulated_pos": self.cumm_pos,
         }
         return {drone: infos for drone in self.agents}
     
