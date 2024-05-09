@@ -5,21 +5,22 @@ layout: home
 hero:
   name: "Drone Swarm Search Environment"
   # text: "A environment to train reinforcement learning agents"
-  tagline: A environment to train reinforcement learning agents for search and rescue operations in maritime scenarios.
+  tagline: An environment to train reinforcement learning agents for search and rescue operations in maritime scenarios.
   image: /pics/drone.png
   actions:
     - theme: brand
       text: Documentation
-      link: /docs
+      link: /Documentation/docsSearch#about
     - theme: alt
       text: QuickStart
-      link: /quickStart
+      link: /QuickStart/quickStart#quick-start-guide
     - theme: alt
-      text: pypi
-      link: https://pypi.org/project/DSSE/
+      text: Our Story
+      link: /OurStory/ourStory#our-story-coming-soon!
+
 
 features:
-  - title: Based on Farama.org and Petting Zoo
+  - title: Based on PettingZoo's interface
     icon: 🦁
     details: Compatible with leading reinforcement learning libraries
     link: https://pettingzoo.farama.org/

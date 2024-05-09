@@ -7,7 +7,9 @@
 
 # <img src="https://github.com/pfeinsper/drone-swarm-search/blob/main/docs/public/pics/drone.svg" alt="DSSE Icon" width="45" height="25"> Drone Swarm Search Environment (DSSE)
 
-Welcome to the official GitHub repository for the Drone Swarm Search Environment (DSSE). This project is dedicated to providing a comprehensive simulation environment designed to develop, test, and refine drone swarm search strategies. Here, researchers and developers can access a versatile platform that supports a wide range of drone swarm simulations, enabling the exploration of complex behaviors and interactions within dynamic, real-world scenarios.
+Welcome to the official GitHub repository for the Drone Swarm Search Environment (DSSE). This project offers a comprehensive simulation platform designed for developing, testing, and refining search strategies using drone swarms. Researchers and developers will find a versatile toolset supporting a broad spectrum of simulations, which facilitates the exploration of complex drone behaviors and interactions in dynamic, real-world scenarios.
+
+In this repository, we have implemented two distinct types of environments. The first is a dynamic environment that simulates maritime search and rescue operations for shipwreck survivors. It models the movement of individuals in the sea using a dynamic probability matrix, with the objective for drones being to locate and identify these individuals. The second is a environment utilizing the Lagrangian particle simulation from the open-source [Opendrift library](https://github.com/OpenDrift/opendrift), which incorporates real-world ocean and wind data to create a probability matrix for drone SAR tasks. In this scenario, drones are tasked with covering the full search area within the lowest time possible, while prioritizing higher probability areas.
 
 
 ## 📚 Documentation Links
@@ -18,20 +20,14 @@ Welcome to the official GitHub repository for the Drone Swarm Search Environment
 
 - **[PyPI Repository](https://pypi.org/project/DSSE/)**: Visit the PyPI page for DSSE to download the latest release, view release histories, and read additional installation instructions.
 
+# DSSE - Search Environment
+
 ## 🎥 Visual Demonstrations
 <p align="center">
-    <img src="https://raw.github.com/PFE-Embraer/drone-swarm-search/env-cleanup/docs/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
+    <img src="docs/public/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
     <br>
     <em>Above: A simulation showing how drones adjust their search pattern over a grid.</em>
 </p>
-
-## ⚡Quick Start
-
-### ⚙️ Installation
-Install DSSE quickly with pip:
-```bash
-pip install DSSE
-````
 
 ## 🎯 Outcome
 
@@ -39,8 +35,16 @@ pip install DSSE
 :-------------------------:|:-------------------------:
 | ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/fail_render.png) |
 
+## ⚡ Quick Start
 
-## 🛠️ Basic Env Usage
+### ⚙️ Installation
+Quickly install DSSE using pip:
+```bash
+pip install DSSE
+````
+
+
+## 🛠️ Basic Env Search Usage
 ```python
 from DSSE import DroneSwarmSearch
 
@@ -71,6 +75,7 @@ def random_policy(obs, agents):
 opt = {
     "drones_positions": [(10, 5), (10, 10)],
     "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
+    "vector": (0.3, 0.3),
 }
 observations, info = env.reset(options=opt)
 
@@ -80,18 +85,37 @@ while not done:
     actions = random_policy(observations, env.get_agents())
     observations, rewards, terminations, truncations, infos = env.step(actions)
     done = any(terminations.values()) or any(truncations.values())
+
 ```
+
+
+# DSSE - Coverage Environment
+
+## 🎥 Visual Demonstrations
+<p align="center">
+    <img src="docs/public/gifs/basic_coverage.gif" width="400" height="400" align="center">
+    <br>
+    <em>Above: A simulation showing how drones adjust their search pattern over a grid.</em>
+</p>
+
+## ⚡ Quick Start
+
+### ⚙️ Installation
+Install DSSE with coverage support using pip:
+```bash
+pip install DSSE[coverage]
+````
+
 
 ## 🛠️ Basic Coverage Usage
 ```python
 from DSSE import CoverageDroneSwarmSearch
 
 env = CoverageDroneSwarmSearch(
-    grid_size=40,
     drone_amount=3,
-    dispersion_inc=0.1,
-    vector=(1, 1),
     render_mode="human",
+    disaster_position=(-24.04, -46.17),  # (lat, long)
+    pre_render_time=10, # hours to simulate
 )
 
 opt = {
