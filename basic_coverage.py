@@ -1,11 +1,10 @@
 from DSSE import CoverageDroneSwarmSearch
 
 env = CoverageDroneSwarmSearch(
-    grid_size=40,
     drone_amount=3,
-    dispersion_inc=0.1,
-    vector=(1, 1),
     render_mode="human",
+    disaster_position=(-24.04, -46.17),  # (lat, long)
+    pre_render_time=10, # hours to simulate
 )
 
 opt = {

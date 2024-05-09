@@ -1,5 +1,4 @@
 name: Tests Status 🧪
-
 on:
   push:
     branches:
@@ -7,7 +6,6 @@ on:
   pull_request:
     branches:
       - '*'
-
 jobs:
   test-env:
     runs-on: ubuntu-latest
@@ -15,7 +13,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -28,13 +25,13 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-          
-
       - name: Install Dependencies
         run: |
+          sudo apt update
+          sudo apt upgrade
+          sudo apt-get install -y libgdal-dev gdal-bin
           python -m pip install --upgrade pip
-          pip install DSSE
           pip install -r requirements.txt
-
       - name: Run Pytest
         run: |
           cd ${{ github.workspace }}
