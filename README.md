@@ -9,7 +9,7 @@
 
 Welcome to the official GitHub repository for the Drone Swarm Search Environment (DSSE). This project offers a comprehensive simulation platform designed for developing, testing, and refining search strategies using drone swarms. Researchers and developers will find a versatile toolset supporting a broad spectrum of simulations, which facilitates the exploration of complex drone behaviors and interactions in dynamic, real-world scenarios.
 
-In this repository, we have implemented two distinct types of environments. The first is a dynamic environment that simulates maritime search and rescue operations for shipwreck survivors. It models the movement of individuals in the sea using a dynamic probability matrix, with the objective for drones being to locate and identify these individuals. The second is a static environment utilizing the Lagrangian particle simulation from the open-source [Opendrift library](https://github.com/OpenDrift/opendrift), which incorporates real-world ocean data to create a probability matrix for drone navigation tasks. In this scenario, drones are tasked with efficiently identifying all relevant cells that meet a certain probability threshold.
+In this repository, we have implemented two distinct types of environments. The first is a dynamic environment that simulates maritime search and rescue operations for shipwreck survivors. It models the movement of individuals in the sea using a dynamic probability matrix, with the objective for drones being to locate and identify these individuals. The second is a environment utilizing the Lagrangian particle simulation from the open-source [Opendrift library](https://github.com/OpenDrift/opendrift), which incorporates real-world ocean and wind data to create a probability matrix for drone SAR tasks. In this scenario, drones are tasked with covering the full search area within the lowest time possible, while prioritizing higher probability areas.
 
 
 ## 📚 Documentation Links
@@ -75,6 +75,7 @@ def random_policy(obs, agents):
 opt = {
     "drones_positions": [(10, 5), (10, 10)],
     "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
+    "vector": (0.3, 0.3),
 }
 observations, info = env.reset(options=opt)
 
@@ -84,6 +85,7 @@ while not done:
     actions = random_policy(observations, env.get_agents())
     observations, rewards, terminations, truncations, infos = env.step(actions)
     done = any(terminations.values()) or any(truncations.values())
+
 ```
 
 
@@ -110,11 +112,10 @@ pip install DSSE[coverage]
 from DSSE import CoverageDroneSwarmSearch
 
 env = CoverageDroneSwarmSearch(
-    grid_size=40,
     drone_amount=3,
-    dispersion_inc=0.1,
-    vector=(1, 1),
     render_mode="human",
+    disaster_position=(-24.04, -46.17),  # (lat, long)
+    pre_render_time=10, # hours to simulate
 )
 
 opt = {

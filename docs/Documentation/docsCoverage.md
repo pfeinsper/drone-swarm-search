@@ -350,21 +350,5 @@ The `env.save_matrix()` method is not only convenient for saving the probability
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
 
-## How to Cite This Work
-
-If you use this package, please consider citing it with this piece of BibTeX:
-
-```bibtex
-@misc{castanares2023dsse,
-      title={DSSE: A Drone Swarm Search Environment}, 
-      author={Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion, and Fabrício J. Barth},
-      year={2024},
-      eprint={2307.06240},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      doi={10.48550/arXiv.2307.06240}
-}
-```
-
 ## License
 This documentation is licensed under the terms of the [MIT License](https://opensource.org/licenses/MIT). See the LICENSE file for more details.

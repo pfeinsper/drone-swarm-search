@@ -68,7 +68,6 @@ export default defineConfig({
                     { text: 'Reward', link: '/Documentation/docsCoverage#reward' },
                     { text: 'Termination & Truncation', link: '/Documentation/docsCoverage#termination-truncation' },
                     { text: 'Info', link: '/Documentation/docsCoverage#info' },
-                    { text: 'How to Cite This Work', link: '/Documentation/docsCoverage#how-to-cite-this-work' },
                     { text: 'License', link: '/Documentation/docsCoverage#license' },
                   ]
                 },
