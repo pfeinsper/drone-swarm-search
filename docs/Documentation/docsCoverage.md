@@ -181,13 +181,13 @@ The probability matrix is created using a Lagrangian particle simulation facilit
 <p align="center">
     <img src="/gifs/OpendriftSimulation.gif" width="600" height="600" align="center">
     <br>
-    <em>Fig 2: Opendrift simulation over 240 hours, starting at coordinates (-24.04, -46.17).</em>
+    <em>Fig 2: Opendrift simulation over 40 hours, starting at coordinates (-24.04, -46.17).</em>
 </p>
 
 As demonstrated in the above GIF, after conducting the Opendrift simulation, we ascertain the final positions of the particles and proceed to construct the probability matrix. This matrix is visually represented by the blue particles in the image below.
 
 <p align="center">
-    <img src="/pics/OpendriftFinalPosition.jpeg" width="600" height="600" align="center">
+    <img src="/pics/OpendriftFinalPosition.png" width="600" height="600" align="center">
     <br>
     <em>Fig 3: Final positions of particles from an Opendrift simulation.</em>
 </p>
