@@ -188,6 +188,35 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
         return observations
 
+    def detect_person(self, drone_x, drone_y, rewards, agent):
+        person_found = False
+        for human in self.persons_set.copy():
+            if human.x == drone_x and human.y == drone_y:
+                if random() <= min(human.get_mult() * self.drone.pod, 1):
+                    self.persons_set.remove(human)
+                    time_decay_factor = 1 - (self.timestep / self.timestep_limit)
+                    time_reward_corrected = self.reward_scheme.search_and_find * time_decay_factor
+                    rewards[agent] += self.reward_scheme.search_and_find + time_reward_corrected
+                    person_found = True
+        return person_found
+
+    def check_all_persons_found(self, person_found, terminations, truncations):
+        if not self.persons_set:
+            person_found = True
+            for agent in self.agents:
+                terminations[agent] = True
+                truncations[agent] = True
+        return person_found
+
+    def handle_no_detection(self, person_found, drone_x, drone_y, rewards, agent):
+        if not person_found:
+            prob_matrix = self.probability_matrix.get_matrix()
+            rewards[agent] = (
+                prob_matrix[drone_y][drone_x] * 10000
+                if prob_matrix[drone_y][drone_x] * 100 > 1
+                else -100
+            )
+
     def step(self, actions):
         """
         Returns a tuple with (observations, rewards, terminations, truncations, infos)
@@ -232,35 +261,10 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                 continue
 
             if is_searching:
-                person_found = False
-                for human in self.persons_set.copy():
-                    if human.x == drone_x and human.y == drone_y:
-                        max_detection_probability = min(human.get_mult() * self.drone.pod, 1)
-                        if random() <= max_detection_probability:
-                            self.persons_set.remove(human)
-                            time_decay_factor = 1 - (self.timestep / self.timestep_limit)
-                            time_reward_corrected = (
-                                self.reward_scheme.search_and_find * time_decay_factor
-                            )
-                            if agent in rewards:
-                                rewards[agent] += self.reward_scheme.search_and_find + time_reward_corrected
-                            else:
-                                rewards[agent] = self.reward_scheme.search_and_find + time_reward_corrected
-                            
-                            person_found = True
-
-                if not self.persons_set:
-                    person_found = True
-                    for agent in self.agents:
-                        terminations[agent] = True
-                        truncations[agent] = True
-                elif not person_found:
-                    prob_matrix = self.probability_matrix.get_matrix()
-                    rewards[agent] = (
-                        prob_matrix[drone_y][drone_x] * 10000
-                        if prob_matrix[drone_y][drone_x] * 100 > 1
-                        else -100
-                    )
+                person_found = self.detect_person(drone_x, drone_y, rewards, agent)
+                person_found = self.check_all_persons_found(person_found, terminations, truncations)
+                if not person_found:
+                    self.handle_no_detection(person_found, drone_x, drone_y, rewards, agent)
 
             self.rewards_sum[agent] += rewards[agent]
 
