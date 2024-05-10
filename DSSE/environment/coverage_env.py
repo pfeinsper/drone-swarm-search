@@ -11,12 +11,12 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         "name": "DroneSwarmSearchCPP",
     }
     reward_scheme = Reward(
-        default=0,
+        default=0.0,
         leave_grid=0,
         exceed_timestep=0,
         drones_collision=0,
-        search_cell=0.012030075187969926,
-        search_and_find=5,
+        search_cell=1,
+        search_and_find=120,
     )
 
     def __init__(
@@ -102,10 +102,12 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         observations = {}
 
         probability_matrix = self.probability_matrix.get_matrix()
+        prob_max = probability_matrix.max()
+        norm = probability_matrix / prob_max
         for idx, agent in enumerate(self.agents):
             observation = (
                 self.agents_positions[idx],
-                probability_matrix,
+                norm,
             )
             observations[agent] = observation
 
@@ -141,14 +143,13 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             drone_x, drone_y = self.agents_positions[idx]
             new_position = self.move_drone((drone_x, drone_y), drone_action)
             if not self.is_valid_position(new_position):
-                rewards[agent] = self.reward_scheme.leave_grid
                 continue
 
             self.agents_positions[idx] = new_position
             new_x, new_y = new_position
             if new_position in self.not_seen_states:
                 time_multiplier = (1 - self.timestep / self.timestep_limit)
-                reward_poc = time_multiplier * prob_matrix[new_y, new_x] * 5
+                reward_poc = time_multiplier * prob_matrix[new_y, new_x] * 0.0
                 rewards[agent] = self.reward_scheme.search_cell + reward_poc
                 self.seen_states.add(new_position)
                 self.not_seen_states.remove(new_position)
@@ -167,8 +168,10 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
         if is_completed:
             # (R_done)
+            time_adjusted = (1 - self.timestep / self.timestep_limit) * self.reward_scheme.search_and_find
+            r_done = self.reward_scheme.search_and_find + time_adjusted
             rewards = {
-                drone: self.reward_scheme.search_and_find for drone in self.agents
+                drone: r_done for drone in self.agents
             }
             terminations = {drone: True for drone in self.agents}
         infos = self.compute_infos(is_completed)
