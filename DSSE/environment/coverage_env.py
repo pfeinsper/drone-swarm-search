@@ -10,14 +10,13 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
     metadata = {
         "name": "DroneSwarmSearchCPP",
     }
-    reward_scheme = Reward(
-        default=0.0,
-        leave_grid=0,
-        exceed_timestep=0,
-        drones_collision=0,
-        search_cell=1,
-        search_and_find=120,
-    )
+    reward_scheme = {
+        "default": 0.0,
+        "exceed_timestep": 0.0,
+        "search_cell": 1.0,
+        "done": 60,
+        "reward_poc": 0.0
+    }
 
     def __init__(
         self,
@@ -33,6 +32,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         prob_matrix_path=None,
         particle_amount=50_000,
         particle_radius=1000,
+        num_particle_to_filter_as_noise=0
     ) -> None:
 
         # Prob matrix
@@ -42,6 +42,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             duration_hours=pre_render_time,
             particle_amount=particle_amount,
             particle_radius=particle_radius,
+            num_particle_to_filter_as_noise=num_particle_to_filter_as_noise
         )
         if prob_matrix_path is not None:
             if not isinstance(prob_matrix_path, str):
@@ -76,7 +77,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
         self.reset_search_state()
 
-        # self.reward_scheme.search_cell = 5 / len(self.not_seen_states)
+        self.reward_scheme["done"] = len(self.not_seen_states) / len(self.agents)
         self.cumm_pos = 0
         self.repeated_coverage = 0
         infos = self.compute_infos(False)
@@ -90,7 +91,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         mat = self.probability_matrix.get_matrix()
         # (row, col)
         close_to_zero = np.argwhere(np.abs(mat) < 1e-10)
-
+        
+        x_min, y_min = close_to_zero.max(axis=0)
         # Remove the need to visit cells with POC near to 0
         for y, x in close_to_zero:
             point = (x, y)
@@ -121,7 +123,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             raise ValueError("Please reset the env before interacting with it")
 
         terminations = {a: False for a in self.agents}
-        rewards = {a: self.reward_scheme.default for a in self.agents}
+        rewards = {a: self.reward_scheme["default"] for a in self.agents}
         truncations = {a: False for a in self.agents}
         self.timestep += 1
 
@@ -136,7 +138,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
 
             if self.timestep >= self.timestep_limit:
-                rewards[agent] = self.reward_scheme.exceed_timestep
+                rewards[agent] = self.reward_scheme["exceed_timestep"]
                 truncations[agent] = True
                 continue
         
@@ -149,8 +151,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             new_x, new_y = new_position
             if new_position in self.not_seen_states:
                 time_multiplier = (1 - self.timestep / self.timestep_limit)
-                reward_poc = time_multiplier * prob_matrix[new_y, new_x] * 0.0
-                rewards[agent] = self.reward_scheme.search_cell + reward_poc
+                reward_poc = time_multiplier * prob_matrix[new_y, new_x] * self.reward_scheme["reward_poc"]
+                rewards[agent] = self.reward_scheme["search_cell"] + reward_poc
                 self.seen_states.add(new_position)
                 self.not_seen_states.remove(new_position)
                 # Probability of sucess (POS) = POC * POD
@@ -168,15 +170,14 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
 
         if is_completed:
             # (R_done)
-            time_adjusted = (1 - self.timestep / self.timestep_limit) * self.reward_scheme.search_and_find
-            r_done = self.reward_scheme.search_and_find + time_adjusted
+            time_adjusted = (1 - self.timestep / self.timestep_limit) * self.reward_scheme["done"]
+            r_done = self.reward_scheme["done"] + time_adjusted
             rewards = {
                 drone: r_done for drone in self.agents
             }
             terminations = {drone: True for drone in self.agents}
         infos = self.compute_infos(is_completed)
 
-        # self.compute_drone_collision(terminations, rewards)
         # Get observations
         observations = self.create_observations()
         # If terminted, reset the agents (pettingzoo parallel env requirement)

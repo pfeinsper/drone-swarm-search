@@ -162,19 +162,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
     def step(self, actions):
         raise NotImplementedError("Method not implemented")
 
-    def compute_drone_collision(self, terminations, rewards):
-        """
-        Check for drone collision and compute terminations, rewards and truncations.
-        """
-        for drone_1_id in range(len(self.agents)):
-            for drone_2_id in range(drone_1_id + 1, len(self.agents)):
-                drone_1_name = self.agents[drone_1_id]
-                drone_2_name = self.agents[drone_2_id]
-                if self.agents_positions[drone_1_id] == self.agents_positions[drone_2_id]:
-                    rewards[drone_1_name] = self.reward_scheme.drones_collision
-                    rewards[drone_2_name] = self.reward_scheme.drones_collision
-
-
     def move_drone(self, position, action):
         """
         Returns a tuple with (is_terminal, new_position, reward)

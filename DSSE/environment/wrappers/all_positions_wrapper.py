@@ -24,7 +24,7 @@ class AllPositionsWrapper(BaseParallelWrapper):
     def add_other_positions_obs(self, obs):
         for idx, agent in enumerate(obs.keys()):
             agents_positions = np.array(self.env.agents_positions, dtype=np.int64)
-            agents_positions[[0, idx]] = agents_positions[[idx, 0]]            
+            agents_positions[[0, idx]] = agents_positions[[idx, 0]]         
             obs[agent] = (
                 agents_positions.flatten(),
                 obs[agent][1]

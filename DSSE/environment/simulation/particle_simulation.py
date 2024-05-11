@@ -3,7 +3,6 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import List, Tuple
 
-
 EARTH_MEAN_RADIUS = 6373.0
 
 
@@ -18,6 +17,7 @@ class ParticleSimulation:
         cell_size: int = 130,
         particle_amount: int = 50_000,
         particle_radius: int = 1000,
+        num_particle_to_filter_as_noise: int = 0
     ) -> None:
         try:
             from opendrift.models.oceandrift import OceanDrift
@@ -36,6 +36,7 @@ class ParticleSimulation:
         self.cell_size = cell_size
         self.particle_amount = particle_amount
         self.particle_radius = particle_radius
+        self.particles_as_noise = num_particle_to_filter_as_noise
 
         # Internal variables
         self.map_size = 0
@@ -180,13 +181,36 @@ class ParticleSimulation:
         for x, y in cartesian_coords:
             prob_map[y][x] += 1
 
-        # TODO: Remove cells with only one particle (or propose a better filter for outliers)
-        prob_map[prob_map <= 2] = 0.0
+        prob_map[prob_map <= self.particles_as_noise] = 0.0
+        prob_map = self.trimm_map(prob_map)
+        self.map_size = len(prob_map)
 
         particle_sum = max(np.sum(prob_map), 1)
         probability_map = prob_map / particle_sum
         return probability_map
 
+    def trimm_map(self, prob_map) -> np.ndarray:
+        """
+        Trims map to fit cells with particles.
+        """
+        zero_values = np.argwhere(prob_map > 0)
+        row_min, col_min = zero_values.min(axis=0)
+        row_max, col_max = zero_values.max(axis=0)
+
+        new_width = row_max - row_min
+        new_height = col_max - col_min
+
+        # Pad the map to make it square
+        padding = ((0, 0), (0, 0))
+        if new_width > new_height:
+            padding = ((0, 0), (0, new_width - new_height))
+        elif new_height > new_width:
+            padding = ((0, new_height - new_width), (0, 0))
+
+        # Pads with zeros (there were no particles there anyway)
+        res = np.pad(prob_map[row_min:row_max, col_min:col_max], padding, mode="constant", constant_values=0.0)
+        return res
+        
     def get_matrix(self):
         return self.probability_map
 
