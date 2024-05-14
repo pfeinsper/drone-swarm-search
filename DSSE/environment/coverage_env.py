@@ -11,7 +11,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         "name": "DroneSwarmSearchCPP",
     }
     reward_scheme = {
-        "default": 0.0,
+        "default": -0.1,
         "exceed_timestep": 0.0,
         "search_cell": 1.0,
         "done": 60,
@@ -92,7 +92,6 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         # (row, col)
         close_to_zero = np.argwhere(np.abs(mat) < 1e-10)
         
-        x_min, y_min = close_to_zero.max(axis=0)
         # Remove the need to visit cells with POC near to 0
         for y, x in close_to_zero:
             point = (x, y)
