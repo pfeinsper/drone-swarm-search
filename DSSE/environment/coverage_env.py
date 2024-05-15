@@ -11,11 +11,11 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         "name": "DroneSwarmSearchCPP",
     }
     reward_scheme = {
-        "default": -0.1,
+        "default": -0.2,
         "exceed_timestep": 0.0,
         "search_cell": 1.0,
         "done": 60,
-        "reward_poc": 0.0
+        "reward_poc": 45.0
     }
 
     def __init__(
