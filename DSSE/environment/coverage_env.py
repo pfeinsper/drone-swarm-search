@@ -1,3 +1,4 @@
+import datetime
 from gymnasium.spaces import Discrete
 from .env_base import DroneSwarmSearchBase
 from .simulation.particle_simulation import ParticleSimulation
@@ -31,14 +32,19 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         pre_render_time=10,
         prob_matrix_path=None,
         particle_amount=50_000,
-        particle_radius=1000,
-        num_particle_to_filter_as_noise=0
+        particle_radius=800,
+        num_particle_to_filter_as_noise=1,
+        start_time: datetime = None,
+        grid_cell_size=130,
     ) -> None:
-
-        # Prob matrix
+        
+        if start_time is None:
+            start_time = datetime.datetime.now()
+        
         self.probability_matrix = ParticleSimulation(
             disaster_lat=disaster_position[0],
             disaster_long=disaster_position[1],
+            start_time=start_time,
             duration_hours=pre_render_time,
             particle_amount=particle_amount,
             particle_radius=particle_radius,
@@ -61,6 +67,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             drone_amount=drone_amount,
             drone_speed=drone_speed,
             probability_of_detection=drone_probability_of_detection,
+            grid_cell_size=grid_cell_size,
         )
         self.disaster_position = disaster_position
         # Sets used to keep track of the seen and not seen states for reward calculation
@@ -78,6 +85,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         self.reset_search_state()
 
         self.reward_scheme["done"] = len(self.not_seen_states) / len(self.agents)
+        self.reward_scheme["reward_poc"] = len(self.not_seen_states)
         self.cumm_pos = 0
         self.repeated_coverage = 0
         infos = self.compute_infos(False)

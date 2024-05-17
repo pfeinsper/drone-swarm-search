@@ -11,13 +11,14 @@ class ParticleSimulation:
         self,
         disaster_lat: float,
         disaster_long: float,
+        start_time: datetime,
         duration_hours: int = 10,
         loglevel: int = 20,
         animate: bool = False,
         cell_size: int = 130,
         particle_amount: int = 50_000,
         particle_radius: int = 1000,
-        num_particle_to_filter_as_noise: int = 0
+        num_particle_to_filter_as_noise: int = 0,
     ) -> None:
         try:
             from opendrift.models.oceandrift import OceanDrift
@@ -30,6 +31,7 @@ class ParticleSimulation:
 
         self.disaster_lat = disaster_lat
         self.disaster_long = disaster_long
+        self.start_time = start_time
         self.loglevel = loglevel
         self.animate = animate
         self.duration_hours = duration_hours
@@ -50,32 +52,27 @@ class ParticleSimulation:
 
     def run_simulation(self):
         duration = timedelta(hours=self.duration_hours)
-        start_time = datetime.now() - duration
 
-        coordinates = self.simulate(start_time, duration)
+        coordinates = self.simulate(duration)
         self.map_size = self.calculate_map_size(coordinates)
         cartesian = self.convert_lat_lon_to_xy(coordinates)
         self.probability_map = self.create_probability_map(cartesian)
         # Maintain always a copy of the original map
         self.original_map = self.probability_map.copy()
 
-    def simulate(
-        self,
-        time: datetime,
-        duration: timedelta,
-    ) -> List[Tuple[float, float]]:
+    def simulate(self, duration: timedelta) -> List[Tuple[float, float]]:
         o = self.ocean_drift(loglevel=self.loglevel)
         # Add Wind & Ocean data
         o.add_readers_from_list(
             [
                 "https://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0/uv3z",
-                "https://pae-paha.pacioos.hawaii.edu/thredds/dodsC/ncep_global/NCEP_Global_Atmospheric_Model_best.ncd"
+                "https://pae-paha.pacioos.hawaii.edu/thredds/dodsC/ncep_global/NCEP_Global_Atmospheric_Model_best.ncd",
             ]
         )
         o.seed_elements(
             lat=self.disaster_lat,
             lon=self.disaster_long,
-            time=time,
+            time=self.start_time,
             number=self.particle_amount,
             radius=self.particle_radius,
         )
@@ -208,9 +205,14 @@ class ParticleSimulation:
             padding = ((0, new_height - new_width), (0, 0))
 
         # Pads with zeros (there were no particles there anyway)
-        res = np.pad(prob_map[row_min:row_max, col_min:col_max], padding, mode="constant", constant_values=0.0)
+        res = np.pad(
+            prob_map[row_min:row_max, col_min:col_max],
+            padding,
+            mode="constant",
+            constant_values=0.0,
+        )
         return res
-        
+
     def get_matrix(self):
         return self.probability_map
 
