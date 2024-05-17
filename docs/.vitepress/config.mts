@@ -71,13 +71,14 @@ export default defineConfig({
                     { text: 'License', link: '/Documentation/docsCoverage#license' },
                   ]
                 },
-                {
-                  collapsed: false,
-                  text: 'Algorithms',
-                  items: [
-                    { text: 'Documentation Under Construction', link: '/Documentation/docsAlgorithms#build' },
-                  ]
-                }],
+                // {
+                //   collapsed: false,
+                //   text: 'Algorithms',
+                //   items: [
+                //     { text: 'Documentation Under Construction', link: '/Documentation/docsAlgorithms#build' },
+                //   ]
+                // }
+              ],
               "/QuickStart/": [{
                   collapsed: false,
                   text: 'Quick Start',
