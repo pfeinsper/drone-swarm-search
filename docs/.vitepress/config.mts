@@ -14,7 +14,7 @@ export default defineConfig({
 
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Documentation', link: '/docs' },
+      { text: 'Documentation', link: '/Documentation/docsSearch' },
     ],
 
     socialLinks: [
@@ -37,43 +37,66 @@ export default defineConfig({
         title: "DSSE",
         description: "Drone Swarm Search Training Environment",
         themeConfig: {
-          // https://vitepress.dev/reference/default-theme-config    
-          sidebar: [
-            {
-              text: 'Documentation',
-              items: [
-                {
-                    collapsed: true,
-                    text: 'Training Environment',
+          sidebar: {
+                "/Documentation/": [{
+                    collapsed: false,
+                    text: 'Search Environment',
                     items: [
-                      { text: 'About', link: '/docs#about' },
-                      { text: 'Quick Start', link: '/docs#quick-start' },
-                      { text: 'General Info', link: '/docs#general-info' },
-                      { text: 'Built in Functions', link: '/docs#built-in-functions' },
-                      { text: 'Person Movement', link: '/docs#person-movement' },
-                      { text: 'License', link: '/docs#license' },
+                      { text: 'About', link: '/Documentation/docsSearch#about' },
+                      { text: 'Quick Start', link: '/Documentation/docsSearch#quick-start' },
+                      { text: 'General Info', link: '/Documentation/docsSearch#general-info' },
+                      { text: 'Built in Functions', link: '/Documentation/docsSearch#built-in-functions' },
+                      { text: 'Person Movement', link: '/Documentation/docsSearch#person-movement' },
+                      { text: 'Observation', link: '/Documentation/docsSearch#observation' },
+                      { text: 'Reward', link: '/Documentation/docsSearch#reward' },
+                      { text: 'Termination & Truncation', link: '/Documentation/docsSearch#termination-truncation' },
+                      { text: 'Info', link: '/Documentation/docsSearch#info' },
+                      { text: 'How to Cite This Work', link: '/Documentation/docsSearch#how-to-cite-this-work' },
+                      { text: 'License', link: '/Documentation/docsSearch#license' },
                     ]
                 },
-    
-              //   {
-              //     collapsed: true,
-              //     text: 'Coverage Environment',
-              //     items: [
-              //           { text: 'Item A da Seção A', link: '...' },
-              //           { text: 'Item B da Seção B', link: '...' },
-              //     ]
-              //   }
-              //   {
-              //     collapsed: true,
-              //     text: 'Algorithms',
-              //     items: [
-              //           { text: 'Item A da Seção A', link: '...' },
-              //           { text: 'Item B da Seção B', link: '...' },
-              //     ]
-              //   }
-              ]
-            }
-          ],
+                
+                {
+                  collapsed: false,
+                  text: 'Coverage Environment',
+                  items: [
+                    { text: 'About', link: '/Documentation/docsCoverage#about' },
+                    { text: 'Quick Start', link: '/Documentation/docsCoverage#quick-start' },
+                    { text: 'General Info', link: '/Documentation/docsCoverage#general-info' },
+                    { text: 'Built in Functions', link: '/Documentation/docsCoverage#built-in-functions' },
+                    { text: 'Probability Matrix', link: '/Documentation/docsCoverage#probability-matrix' },
+                    { text: 'Reward', link: '/Documentation/docsCoverage#reward' },
+                    { text: 'Termination & Truncation', link: '/Documentation/docsCoverage#termination-truncation' },
+                    { text: 'Info', link: '/Documentation/docsCoverage#info' },
+                    { text: 'License', link: '/Documentation/docsCoverage#license' },
+                  ]
+                },
+                // {
+                //   collapsed: false,
+                //   text: 'Algorithms',
+                //   items: [
+                //     { text: 'Documentation Under Construction', link: '/Documentation/docsAlgorithms#build' },
+                //   ]
+                // }
+              ],
+              "/QuickStart/": [{
+                  collapsed: false,
+                  text: 'Quick Start',
+                  items: [
+                    { text: 'Quick Start Guide', link: '/QuickStart/quickStart#quick-start-guide' },
+                    { text: 'Search Environment', link: '/QuickStart/quickStart#search-environment' },
+                    { text: 'Coverage Environment', link: '/QuickStart/quickStart#coverage-environment' },
+                  ]
+              },],
+              "/OurStory/": [{
+                    collapsed: false,
+                    text: 'Our Story',
+                    items: [
+                      { text: 'Our Story Coming Soon!', link: '/OurStory/ourStory#our-story-coming-soon!' },
+                      { text: 'Stay Updated', link: '/OurStory/ourStory#stay-updated' },
+                    ]
+                },],
+          },
           
           footer: {
             message: 'Published under the MIT License.',
@@ -82,7 +105,7 @@ export default defineConfig({
         },
       },
     pt: {
-        label: 'Português',
+        label: 'Português (Em breve)',
         lang: 'pt-br',
         link: '/pt/',
       },
