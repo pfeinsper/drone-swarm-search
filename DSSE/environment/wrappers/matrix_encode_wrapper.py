@@ -42,5 +42,5 @@ class MatrixEncodeWrapper(BaseParallelWrapper):
             low=-1,
             high=3,
             shape=(self.env.grid_size, self.env.grid_size),
-            dtype=np.float32,
+            dtype=np.float64,
         )
