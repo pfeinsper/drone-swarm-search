@@ -43,6 +43,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         drone_speed=10,
         probability_of_detection=1.0,
         pre_render_time=0,
+        grid_cell_size=130,
     ):
         if person_amount <= 0:
             raise ValueError("The number of persons must be greater than 0.")
@@ -57,6 +58,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             drone_amount=drone_amount,
             drone_speed=drone_speed,
             probability_of_detection=probability_of_detection,
+            grid_cell_size=grid_cell_size,
         )
 
         self.pre_render_steps = round(
