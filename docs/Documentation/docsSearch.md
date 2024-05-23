@@ -274,22 +274,17 @@ An output example can be seen below.
 
 ### Reward
 
-The reward returns a dictionary with the drones names as keys and their respectful rewards as values. For example `{'drone0': 1, 'drone1': 89.0, 'drone2': 1}`
+The reward returns a dictionary with the drones names as keys and their respectful rewards as values. For example `{'drone0': 1.0, 'drone1': 0.0, 'drone2': 1.0}`
 
 The rewards values goes as follows:
 
-- **`Default Action`**: Every action receives a baseline reward of `0.1`.
-- **`Leaving the Grid`**: A penalty of `-200` is applied if a drone leaves the grid boundaries.
-- **`Exceeding Time Limit`**: A penalty of `-200` is imposed if the drone does not locate the person before the timestep_limit is exceeded.
-- **`Collision`**: If drones collide, each involved drone receives a penalty of `-200`.
-- **`Searching a Cell`**: The reward for searching a cell is proportional to the probability p of the cell being searched, denoted as `[0:p]`.
-- **`Finding the Person`**: If a drone successfully locates the person within a cell, the reward is `200 + 200 * ((1 - timestep) / timestep_limit)`, encouraging faster discovery.
+- **`Default Action`**: Every action receives a baseline reward of `0.0`.
+- **`Finding the Person`**: If a drone successfully locates the person within a cell, the reward is `1 + 1 * ((1 - timestep) / timestep_limit)`, encouraging faster discovery.
 
 ### Termination & Truncation
 
 The termination and truncation variables return a dictionary with all drones as keys and boolean as values. By default, these values are set to `False` and will switch to `True` under any of the following conditions:
 
-- **`Collision`**: If two or more drones collide.
 - **`Time Limit Exceeded`**: If the simulation's timestep exceeds the `timestep_limit`.
 - **`All PIWs Found`**: If all Persons in Water (PIWs) have been successfully located.
 

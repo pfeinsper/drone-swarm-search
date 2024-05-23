@@ -265,19 +265,16 @@ The reward returns a dictionary with the drones names as keys and their respectf
 
 The rewards values goes as follows:
 
-- **`Default Action`**: Every action receives a baseline reward of `0`.
-- **`Leaving the Grid`**: A penalty of `-10` is applied if a drone leaves the grid boundaries.
-- **`Exceeding Time Limit`**: A penalty of `-100` is imposed if the drone does not locate all the cells before the timestep_limit is exceeded.
-- **`Collision`**: If drones collide, each involved drone receives a penalty of `-10`.
-- **`Searching a Cell`**: The reward for searching a cell is proportional to the probability p of the cell being searched, denoted as `10 + (1 / (timestep)) * prob_matrix * 1_000`.
-- **`complete the serching`**: If all cells are searched, the reward is `100`.
+- **`Default Action`**: Every action receives a baseline reward of `-0.2`.
+- **`Searching a Cell`**: The reward for searching a cell is proportional to the probability p of the cell being searched, denoted as `1 + (1 - Ts / Ts_limit) * p * n_cells`.
+- **`Complete the searching`**: If all cells are searched, the reward is `n_cells + n_cells * (1 - Ts / Ts_limit)`.
 
 ### Termination & Truncation
 
 The termination and truncation variables return a dictionary with all drones as keys and boolean as values. By default, these values are set to `False` and will switch to `True` under any of the following conditions:
 
-- **`Collision`**: If two or more drones collide.
 - **`Time Limit Exceeded`**: If the simulation's timestep exceeds the `timestep_limit`.
+- **`Done searching all cells`**: If the drones have searched all cells with probability > 0.
 
 #### For example, the dictionary might look like this:
 
