@@ -45,60 +45,33 @@ def test_wrong_drone_number(drone_amount):
     with pytest.raises(ValueError):
         init_Coverage_drone_swarm_search(drone_amount=drone_amount)
 
-
 @pytest.mark.parametrize(
-    "drone_amount, drones_positions",
+    "drone_amount, drones_positions, timestep_limit",
     [
-        (2, [(0, 0), (2, 0),]),
+        (1, [(0, 0)], 100),
     ],
 )
-def test_drone_collision_termination(drone_amount, drones_positions):
-
-    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
-    opt = {
-    "drones_positions": drones_positions,
-    }
-    _ = env.reset(options=opt)
-
-    done = False
-    while not done:
-        actions = {"drone0": Actions.RIGHT.value, "drone1": Actions.LEFT.value}
-        _, reward, terminations, truncations, _ = env.step(actions)
-        done = any(terminations.values()) or any(truncations.values())
-
-        assert done, "The simulation should terminate upon drone collision."
-        assert any(
-            terminations.values()
-        ), "There should be a termination flag set due to the collision."
-        assert (
-            sum(reward.values()) < 0
-        ), "The total reward should be negative after a collision."
-
-@pytest.mark.parametrize(
-    "drone_amount, drones_positions",
-    [
-        (1, [(0, 0)]),
-    ],
-)
-def test_leave_grid_get_negative_reward(drone_amount, drones_positions):
-    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount)
+def test_leave_grid_get_negative_reward(drone_amount, drones_positions, timestep_limit):
+    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount, timestep_limit=timestep_limit)
     opt = {"drones_positions": drones_positions}
     _ = env.reset(options=opt)
 
     done = False
     reward_sum = 0
-    while not done and reward_sum >=  (env.reward_scheme.leave_grid * (env.timestep_limit-1)) +1:
+    steps = 0
+    while not done and steps < timestep_limit - 1:
         actions = {"drone0": Actions.UP.value}
         _, reward, terminations, done, _ = env.step(actions)
         done = any(done.values())
         reward_sum += sum(reward.values())
+        steps += 1
 
     assert (
         not done
     ), "The simulation should not end, indicating the drone left the grid or another termination condition was met."
     assert (
         sum(reward.values()) < 0
-    ), "The total reward should be negative, indicating a penalty was applied."
+    ), f"The total reward should be negative, indicating a penalty was applied. reward: {reward_sum}"
     assert not any(
         terminations.values()
     ), "There not should be at least one termination condition met."

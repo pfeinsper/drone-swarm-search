@@ -13,7 +13,7 @@ class PygameInterface:
     FPS = 5
 
     def __init__(
-        self, grid_size: int, render_gradient: bool, render_grid: bool
+        self, grid_size: int, render_gradient: bool, render_grid: bool, env_name: str
     ) -> None:
         pygame.init()
         self.grid_size = grid_size
@@ -23,6 +23,7 @@ class PygameInterface:
         self.screen = None
         self.render_on = False
         self.probability_matrix = None
+        self.env_name = env_name
 
         self.block_size = self.window_size / self.grid_size
         self.drone_img = None
@@ -126,7 +127,13 @@ class PygameInterface:
             elif normalized_prob >= 0.25:
                 red = 255
                 green = 255
-        return (red, green, 0)
+        
+        if self.env_name == "DroneSwarmSearchCPP":
+            blue = 255 if normalized_prob > 0 else 0
+        else:
+            blue = 0
+        
+        return (red, green, blue)
 
     def render_episode_end_screen(self, message: str, color: tuple):
         font = pygame.font.SysFont(None, 50)

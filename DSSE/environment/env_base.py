@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from pettingzoo import ParallelEnv
 from .entities.drone import DroneData
 from .pygame_interface import PygameInterface
-from .simulation.dynamic_probability import ProbabilityMatrix
 from .constants import Actions
 from gymnasium.spaces import MultiDiscrete, Discrete, Tuple, Box
 from copy import copy
@@ -21,8 +20,9 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         drone_amount=1,
         drone_speed=10,
         probability_of_detection=1,
+        grid_cell_size=130,
     ) -> None:
-        self.cell_size = 130  # in meters
+        self.cell_size = grid_cell_size  # in meters
         self.grid_size = grid_size
         self._was_reset = False
         if not isinstance(drone_amount, int):
@@ -60,7 +60,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
 
         # Initializing render
         self.pygame_renderer = PygameInterface(
-            self.grid_size, render_gradient, render_grid
+            self.grid_size, render_gradient, render_grid, self.metadata["name"]
         )
 
     def calculate_simulation_time_step(
@@ -163,21 +163,6 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
     def step(self, actions):
         raise NotImplementedError("Method not implemented")
 
-    def compute_drone_collision(self, terminations, rewards):
-        """
-        Check for drone collision and compute terminations, rewards and truncations.
-        """
-        for drone_1_id in range(len(self.agents)):
-            for drone_2_id in range(drone_1_id + 1, len(self.agents)):
-                drone_1_name = self.agents[drone_1_id]
-                drone_2_name = self.agents[drone_2_id]
-                if self.agents_positions[drone_1_id] == self.agents_positions[drone_2_id]:
-                    terminations[drone_1_name] = True
-                    terminations[drone_2_name] = True
-                    rewards[drone_1_name] = self.reward_scheme.drones_collision
-                    rewards[drone_2_name] = self.reward_scheme.drones_collision
-
-
     def move_drone(self, position, action):
         """
         Returns a tuple with (is_terminal, new_position, reward)
@@ -199,6 +184,8 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                 new_position = (position[0] - 1, position[1] + 1)
             case Actions.DOWN_RIGHT.value:  # DOWN_RIGHT
                 new_position = (position[0] + 1, position[1] + 1)
+            case _:
+                new_position = position
 
         return new_position
 
@@ -217,7 +204,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
                     low=0,
                     high=1,
                     shape=(self.grid_size, self.grid_size),
-                    dtype=np.float32,
+                    dtype=np.float64,
                 ),
             )
         )
