@@ -74,7 +74,6 @@ while not done:
 
 
 ## General Info
-
 | Import             | `from DSSE import DroneSwarmSearch` |
 | ------------------ | -------------------------------------------------- |
 | Action Space       | Discrete (9)                                      |
@@ -83,7 +82,6 @@ while not done:
 | Observation Space  | `{droneN: ((x, y), probability_matrix)}` |
 
 ### Action Space
-
 | Value | Meaning                |
 | ----- | ---------------------- |
 | 0     | Move Left              |
@@ -100,6 +98,7 @@ while not done:
 | Inputs                    | Possible Values       | Default Values            |
 | -------------             | -------------         | -------------             |
 | `grid_size`               | `int(N)`              | `20`                      |
+| `cell_size`               | `int(N)`              | `130`                     |
 | `render_mode`             | `"ansi" or "human"`   | `"ansi"`                  |
 | `render_grid`             | `bool`                | `False`                   |
 | `render_gradient`         | `bool`                | `True`                    |
@@ -114,7 +113,9 @@ while not done:
 | `probability_of_detection`| `float`               | `1.0`                     |
 | `pre_render_time`         | `int`                 | `0`                       |
 
-- **`grid_size`**: Defines the area in which the search will happen. It should always be an integer greater than one.
+- **`grid_size`**: Integer value that defines the area in which the search will happen. It should always be an integer greater than one.
+
+- **`cell_size`**: Integer value that defines the size of each cell, in meters..
 
 - **`render_mode`**:
 
@@ -279,7 +280,7 @@ The reward returns a dictionary with the drones names as keys and their respectf
 The rewards values goes as follows:
 
 - **`Default Action`**: Every action receives a baseline reward of `0.0`.
-- **`Finding the Person`**: If a drone successfully locates the person within a cell, the reward is `1 + 1 * ((1 - timestep) / timestep_limit)`, encouraging faster discovery.
+- **`Finding the Person`**: If a drone successfully locates the person within a cell, the reward is `1 + 1 * (1 - timestep / timestep_limit)`, encouraging faster discovery.
 
 ### Termination & Truncation
 
@@ -339,6 +340,10 @@ If you use this package, please consider citing it with this piece of BibTeX:
       doi={10.48550/arXiv.2307.06240}
 }
 ```
+
+## Stay Updated
+
+We appreciate your patience and interest in our work. If you have any questions or need immediate assistance regarding our `Search Environment`, please do not hesitate to contact us via our [GitHub Issues page](https://github.com/pfeinsper/drone-swarm-search/issues).
 
 ## License
 This documentation is licensed under the terms of the [MIT License](https://opensource.org/licenses/MIT). See the LICENSE file for more details.

@@ -91,18 +91,23 @@ We incorporated 8 actions in this environment to enable the use of agents traine
 :::
 
 ### Inputs
-| Inputs                          | Possible Values       | Default Values            |
-| -------------                   | -------------         | -------------             |
-| `render_mode`                   | `"ansi" or "human"`   | `"ansi"`                  |
-| `render_grid`                   | `bool`                | `True`                    |
-| `render_gradient`               | `bool`                | `True`                    |
-| `timestep_limit`                | `int`                 | `100`                     |
-| `disaster_position`             | `(float, float)`      | `(-24.04, -46.17)`        |
-| `drone_amount`                  | `int`                 | `1`                       |
-| `drone_speed`                   | `int`                 | `10`                      |
-| `drone_probability_of_detection`| `float`               | `1.0`                     |
-| `pre_render_time`               | `int`                 | `10`                      |
-| `prob_matrix_path`              | `string`              | `None`                    |
+| Inputs                            | Possible Values       | Default Values            |
+| -------------                     | -------------         | -------------             |
+| `render_mode`                     | `"ansi" or "human"`   | `"ansi"`                  |
+| `render_grid`                     | `bool`                | `True`                    |
+| `render_gradient`                 | `bool`                | `True`                    |
+| `timestep_limit`                  | `int`                 | `100`                     |
+| `disaster_position`               | `(float, float)`      | `(-24.04, -46.17)`        |
+| `drone_amount`                    | `int`                 | `1`                       |
+| `drone_speed`                     | `int`                 | `10`                      |
+| `drone_probability_of_detection`  | `float`               | `1.0`                     |
+| `pre_render_time`                 | `int`                 | `10`                      |
+| `prob_matrix_path`                | `string`              | `None`                    |
+| `particle_amount`                 | `int`                 | `50,000`                  |
+| `particle_radius`                 | `int`                 | `800`                     |
+| `num_particle_to_filter_as_noise` | `int`                 | `1`                       |
+| `start_time`                      | `datetime`            | `None`                    |
+| `grid_cell_size`                  | `int`                 | `130`                     |
 
 - **`render_mode`**:
 
@@ -126,6 +131,16 @@ We incorporated 8 actions in this environment to enable the use of agents traine
 - **`pre_render_time`**: This **int** parameter specifies the amount of time `(hours)` to pre-render the simulation before starting. Adjusting this value lets the user control the pre-rendering time of the simulation.
 
 - **`prob_matrix_path`**: This **string** parameter allows the user to specify the path to file of a already simulated probability matrix. The file should be a `.npy` file containing a probability matrix. If this parameter is not specified, the environment will generate a new probability matrix.
+
+- **`particle_amount`**: This **int** parameter allows the user to customize the number of particles used in the `Lagrangian particle model` used to create the probability matrix.
+
+- **`particle_radius`**: This **int** parameter allows the user to `customize` the radius that the particles are randomly placed at the start of the Lagrangian particle model simulation.
+
+- **`num_particle_to_filter_as_noise`**: This **int** parameter allows the user to modify the number of particles in each cell that are filtered to zero.  (e.g. if the number of value is `1`, cells with only 1 particle in the end of simulation will be filtered to 0).
+
+- **`start_time`**: This **datetime** parameter allows the user to specify the `start time` of the simulation. If not specified, the simulation will start at the current time.
+
+- **`grid_cell_size`**: This **int** parameter allows the user to specify the `size of the grid` cells in meters. The default value is 130 meters.
 
 ## Built in Functions
 
@@ -266,7 +281,7 @@ The reward returns a dictionary with the drones names as keys and their respectf
 The rewards values goes as follows:
 
 - **`Default Action`**: Every action receives a baseline reward of `-0.2`.
-- **`Searching a Cell`**: The reward for searching a cell is proportional to the probability p of the cell being searched, denoted as `1 + (1 - Ts / Ts_limit) * p * n_cells`.
+- **`Searching a Cell`**: The reward for searching a cell is proportional to the probability p of the cell being searched, denoted as `1 + (1 - Ts / Ts_limit) * p * n_cells`, being `n_cells` the number of cells with probability greater than 0, Ts being the terminal timestep and Ts_limit the limit of timesteps.
 - **`Complete the searching`**: If all cells are searched, the reward is `n_cells + n_cells * (1 - Ts / Ts_limit)`.
 
 ### Termination & Truncation
@@ -274,7 +289,7 @@ The rewards values goes as follows:
 The termination and truncation variables return a dictionary with all drones as keys and boolean as values. By default, these values are set to `False` and will switch to `True` under any of the following conditions:
 
 - **`Time Limit Exceeded`**: If the simulation's timestep exceeds the `timestep_limit`.
-- **`Done searching all cells`**: If the drones have searched all cells with probability > 0.
+- **`Done searching all cells`**: If the agents have searched all cells with probability > 0.
 
 #### For example, the dictionary might look like this:
 
@@ -346,6 +361,10 @@ The `env.save_matrix()` method is not only convenient for saving the probability
 ### `env.close`:
 
 `env.close()` will simply close the render window. Not a necessary function but may be used.
+
+## Stay Updated
+
+We appreciate your patience and interest in our work. If you have any questions or need immediate assistance regarding our `Coverage Environment`, please do not hesitate to contact us via our [GitHub Issues page](https://github.com/pfeinsper/drone-swarm-search/issues).
 
 ## License
 This documentation is licensed under the terms of the [MIT License](https://opensource.org/licenses/MIT). See the LICENSE file for more details.
