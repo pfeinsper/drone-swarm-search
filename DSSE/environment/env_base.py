@@ -21,9 +21,8 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         drone_amount=1,
         drone_speed=10,
         probability_of_detection=1,
-        cell_size=130, 
     ) -> None:
-        self.cell_size = cell_size  # in meters
+        self.cell_size = 130  # in meters
         self.grid_size = grid_size
         self._was_reset = False
         if not isinstance(drone_amount, int):
