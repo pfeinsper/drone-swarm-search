@@ -24,7 +24,7 @@ In this repository, we have implemented two distinct types of environments. The 
 
 ## 🎥 Visual Demonstrations
 <p align="center">
-    <img src="docs/public/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
+    <img src="https://raw.githubusercontent.com/pfeinsper/drone-swarm-search/main/docs/public/gifs/render_with_grid_gradient.gif" width="400" height="400" align="center">
     <br>
     <em>Above: A simulation showing how drones adjust their search pattern over a grid.</em>
 </p>
@@ -93,7 +93,7 @@ while not done:
 
 ## 🎥 Visual Demonstrations
 <p align="center">
-    <img src="docs/public/gifs/basic_coverage.gif" width="400" height="400" align="center">
+    <img src="https://raw.githubusercontent.com/pfeinsper/drone-swarm-search/main/docs/public/gifs/basic_coverage.gif" width="400" height="400" align="center">
     <br>
     <em>Above: A simulation showing how drones adjust their search pattern over a grid.</em>
 </p>
