@@ -272,13 +272,13 @@ The following table outlines the hyperparameters used for the Proximal Policy Op
 
 **Table A1: Hyperparameters for PPO**
 
-| Parameter | Value   | Description                           |
-|-----------|---------|---------------------------------------|
-| B         | 8192    | Training batch size                   |
-| Lr        | 10^-5   | Learning rate                         |
-| 𝛾         | 0.9999999 | Discount factor                       |
-| M         | 300     | Stochastic Gradient Descent (SGD) minibatch |
-| K         | 10      | Number of SGD iterations              |
+| Parameter | Value     | Description                                 |
+|-----------|-----------|---------------------------------------------|
+| B         | 8192      | Training batch size                         |
+| Lr        | 10^-5     | Learning rate                               |
+| 𝛾         | 0.9999999 | Discount factor                             |
+| M         | 300       | Stochastic Gradient Descent (SGD) minibatch |
+| K         | 10        | Number of SGD iterations                    |
 
 ### Hyperparameters for DQN
 
@@ -286,15 +286,15 @@ The following table outlines the hyperparameters used for the Deep Q-Network (DQ
 
 **Table A2: Hyperparameters for DQN**
 
-| Parameter | Value    | Description                                   |
-|-----------|----------|-----------------------------------------------|
-| B         | 8192     | Training batch size                           |
-| Lr        | 10^-5    | Learning rate                                 |
-| 𝛾         | 0.9999999 | Discount factor                               |
-| U         | 500      | Update target network every U steps           |
-| 𝜀0        | 1        | Initial epsilon for 𝜀-greedy                  |
-| 𝜀f        | 0.1      | Final epsilon for 𝜀-greedy                    |
-| T         | 400000   | T timesteps for epsilon to decay from 𝜀0 to 𝜀f |
+| Parameter | Value     | Description                                    |
+|-----------|-----------|------------------------------------------------|
+| B         | 8192      | Training batch size                            |
+| Lr        | 10^-5     | Learning rate                                  |
+| 𝛾         | 0.9999999 | Discount factor                                |
+| U         | 500       | Update target network every U steps            |
+| 𝜀0        | 1         | Initial epsilon for 𝜀-greedy                   |
+| 𝜀f        | 0.1       | Final epsilon for 𝜀-greedy                     |
+| T         | 400000    | T timesteps for epsilon to decay from 𝜀0 to 𝜀f |
 
 ### Environment Settings for Search Tests
 
@@ -302,13 +302,13 @@ The following table provides the settings for the search environment used in the
 
 **Table A3: Environment Settings for Search Tests**
 
-| Parameter              | Value          | Description                          |
-|------------------------|----------------|--------------------------------------|
-| Incremento de dispersão | 0.1 (0.05 H1) | Dispersion increment                 |
-| Número de PIW         | 1 (4 H5)       | Number of Persons in Water (PIW)     |
-| Tamanho do grid       | 40x40          | Grid size                            |
-| Número de drones      | 4              | Number of drones                     |
-| Número máximo de timesteps por simulação | 100 | Maximum number of timesteps per simulation |
+| Parameter                                  | Value          |
+|--------------------------------------------|----------------|
+| Dispersion increment                       | 0.1 (0.05 H1)  |
+| Number of Persons in Water (PIW)           | 1 (4 H5)       |
+| Grid size                                  | 40x40          |
+| Number of drones                           | 4              |
+| Maximum number of timesteps per simulation | 100            |
 
 ### Environment Settings for Coverage Tests
 
@@ -316,24 +316,117 @@ The following table provides the settings for the coverage environment used in t
 
 **Table A4: Environment Settings for Coverage Tests**
 
-| Parameter                                | Value                        | Description                                |
-|------------------------------------------|------------------------------|--------------------------------------------|
-| Horas da simulação de partículas         | 2                            | Hours of particle simulation               |
-| Posição naufrágio                        | -24.04 lat, -46.17 long      | Wreck position (near Guarujá, ocean)       |
-| Tamanho do grid                          | 9x9                          | Grid size                                  |
-| Número de drones                         | 4                            | Number of drones                           |
-| Número máximo de timesteps por simulação | 200                          | Maximum number of timesteps per simulation |
+| Parameter                                  | Value                        |
+|--------------------------------------------|------------------------------|
+| Hours of particle simulation               | 2                            |
+| Wreck position (near Guarujá, ocean)       | -24.04 lat, -46.17 long      |
+| Grid size                                  | 9x9                          |
+| Number of drones                           | 4                            |
+| Maximum number of timesteps per simulation | 200                          |
 
-## How to run
+## How to Run
 
-A variety of algorithm implementations are available in the [algorithms directory](https://github.com/pfeinsper/drone-swarm-search-algorithms). To run any script within this directory, use the following command:
+To run the experiments, you will need to navigate to the [algorithms directory](https://github.com/pfeinsper/drone-swarm-search-algorithms) and execute scripts located in the `src/` folder. Below is a brief description of the relevant scripts and the instructions on how to run them for each hypothesis testing.
 
 ```bash
-python SCRIPT.py
+src/
+├── greedy_heuristic.py
+├── min_matrix.npy
+├── recorder.py
+├── test_ppo_cnn.py
+├── test_trained_cnn_lstm.py
+├── test_trained_cov.py
+├── test_trained_cov_mlp.py
+├── test_trained_search.py
+├── train_descentralized_ppo_cnn.py
+├── train_dqn_cnn.py
+├── train_dqn_multi.py
+├── train_ppo_cnn.py
+├── train_ppo_cnn_comm.py
+├── train_ppo_cnn_cov.py
+├── train_ppo_cnn_lstm.py
+├── train_ppo_encoded.py
+├── train_ppo_mlp.py
+├── train_ppo_mlp_cov.py
+└── train_ppo_multi.py
 ```
-exchanging `SCRIPT` with the desired script name.
 
-Please note that configurations and parameters can be adjusted for both the environment and RLlib. Make sure to review and update these settings as needed to suit your specific requirements.
+### Running Experiments for Hypothesis Testing
+
+#### Hypothesis 1: Effectiveness of RL vs. Greedy Algorithms
+
+To run the experiments for Hypothesis 1:
+
+```bash
+# Train PPO with CNN for base scenario
+python train_ppo_cnn.py
+```
+
+Modify `dispersion_inc` parameter to 0.05 in the script and run again.
+
+```bash
+# To test the trained algorithms:
+python test_trained_search.py --checkpoint <path/to/trained_checkpoint>
+```
+
+Optional flag `--see` can be added to visualize the algorithm in action and make a recording of the simulation.
+
+#### Hypothesis 2: Centralized vs. Decentralized PPO
+
+To test the centralized versus decentralized performance:
+
+```bash
+# Train decentralized PPO with CNN
+python train_descentralized_ppo_cnn.py
+```
+
+#### Hypothesis 3: Impact of Communicating Target Trajectory
+
+To evaluate the effect of trajectory communication:
+
+```bash
+# Train PPO with trajectory data
+python train_ppo_cnn_comm.py
+
+# Train PPO with LSTM for sequence handling
+python train_ppo_cnn_lstm.py
+
+# To test the models:
+python test_trained_cnn_lstm.py --checkpoint <path/to/trained_checkpoint>
+python test_trained_search_comm.py --checkpoint <path/to/trained_checkpoint>
+```
+
+#### Hypothesis 4: Multi-Target Handling by RL Algorithms
+
+To replicate multi-target search scenarios:
+
+```bash
+# Train PPO with MLP for coverage
+python train_ppo_mlp_cov.py
+
+# Test the trained algorithm
+python test_trained_cov_mlp.py --checkpoint <path/to/trained_checkpoint>
+```
+
+#### Hypothesis 5: Efficiency and Prioritization in Coverage
+
+To conduct tests related to coverage efficiency:
+
+::: tip
+Remember to modify the `person_amount` parameter in the environment setup within `train_ppo_cnn.py` to 4.
+:::
+
+```bash
+# Modify `person_amount` to 4 in the environment setup within `train_ppo_cnn.py`
+python train_ppo_cnn.py
+
+# Test the model as described in Hypothesis 1
+python test_trained_search.py --checkpoint <path/to/trained_checkpoint>
+```
+
+### Conclusion
+
+These instructions provide a comprehensive guide on how to set up and run experiments for each hypothesis. Ensure that all dependencies are installed and environment variables are set correctly before running the scripts. Happy experimenting!
 
 ## Stay Updated
 

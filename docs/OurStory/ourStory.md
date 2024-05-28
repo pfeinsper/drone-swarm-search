@@ -1,6 +1,6 @@
 # The Beginning of Our Story
 
-[Insper](https://www.insper.edu.br/), a distinguished university located in São Paulo, Brazil, offers an engineering program that includes a comprehensive final project known as "PFE" (Projeto Final de Engenharia). This project, integral to the 8th semester of the engineering course, involves students working in groups of three or four. They collaborate directly with companies to develop their projects over a semester and present their findings to a jury at the semester's end.
+[Insper](https://www.insper.edu.br/), a college located in São Paulo, Brazil, offers an engineering program that includes a final project known as "PFE" (Projeto Final de Engenharia). This project, integral to the 8th semester of the engineering course, involves students working in groups of three or four. They collaborate directly with companies to develop their projects over a semester and present their findings to a jury at the semester's end.
 
 A key partnership is between Insper and Embraer, facilitated through the Mei hub platform which connects companies like Embraer with universities to collaborate on developmental projects. Embraer, a major aerospace manufacturer, has chosen to work with Insper on the "Drone Swarm Search" project. This initiative focuses on deploying a swarm of drones to locate a target within a designated area quickly and efficiently.
 
