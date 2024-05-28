@@ -215,7 +215,7 @@ The current results suggest that for environments where standard observations ar
 - **`Result`**: We conducted experiments to evaluate the performance of the PPO algorithm in scenarios with multiple targets, specifically testing with four targets at a dispersion level of 0.1. The results, displayed in `Figure 6` and summarized in `Table 4`, suggest that while the PPO algorithm is capable of locating castaways, it tends to adhere to a suboptimal policy similar to the one used when searching for a single castaway. This indicates that although the algorithm successfully learns to find multiple targets, it does not optimize its strategy to handle multiple targets more efficiently than it handles a single target.
 
 <p align="center">
-    <img src="/pics/build.png" alt="PPO Multi-Target Performance" width="600" height="600">
+    <img src="/pics/PPO_inc01_CNN_4PIW.png" alt="PPO Multi-Target Performance" width="600" height="600">
     <br>
     <em>Figure 6: PPO Performance in Multi-Target Search</em>
 </p>
@@ -233,7 +233,7 @@ The current results suggest that for environments where standard observations ar
 - **`Further Analysis`**: It would be insightful to compare these results with scenarios involving fewer targets to assess how the increase in target number impacts the optimization strategies of PPO. Additionally, experimenting with different algorithm configurations or enhanced learning techniques such as incorporating advanced heuristics or meta-learning could potentially lead to improved outcomes.
 
 <p align="center">
-    <img src="/pics/build.png" alt="DQN vs PPO Comparison" width="600" height="600">
+    <img src="/gifs/4PIW_0.gif" alt="DQN vs PPO Comparison" width="600" height="600">
     <br>
     <em>Gif 3: Train PPO performance with 4 targets</em>
 </p>
