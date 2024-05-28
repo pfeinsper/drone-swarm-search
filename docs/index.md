@@ -112,7 +112,7 @@ members:
       link: 'https://github.com/leonardodma'
   
   - avatar: 'https://github.com/fbarth.png'
-    name: Fabrício Barth
+    name: Dr. Fabrício Barth
     title: 'Author'
     links:
     - icon: 'github'
@@ -121,7 +121,7 @@ members:
       link: 'https://www.linkedin.com/in/fbarth/'
 
   - avatar: 'https://media.licdn.com/dms/image/C4E03AQGn6DuuYwhjBw/profile-displayphoto-shrink_200_200/0/1564709106422?e=1718236800&v=beta&t=3JrDTb5QTF4k5qFZbQc3lK9sgSJbalH7Y3QD_rthXBE'
-    name: Jose Fernando Basso Brancalion
+    name: Dr. José Fernando Basso Brancalion
     title: 'Author'
     links:
     - icon: 'linkedin'
