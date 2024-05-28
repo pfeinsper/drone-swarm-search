@@ -100,8 +100,7 @@ export default defineConfig({
                     collapsed: false,
                     text: 'Our Story',
                     items: [
-                      { text: 'Our Story Coming Soon!', link: '/OurStory/ourStory#our-story-coming-soon!' },
-                      { text: 'Stay Updated', link: '/OurStory/ourStory#stay-updated' },
+                      { text: 'The Beginning of Our Story', link: '/OurStory/ourStory#the-beginning-of-our-story' },
                     ]
                 },],
           },

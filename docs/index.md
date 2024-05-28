@@ -16,7 +16,7 @@ hero:
       link: /QuickStart/quickStart#quick-start-guide
     - theme: alt
       text: Our Story
-      link: /OurStory/ourStory#our-story-coming-soon!
+      link: /OurStory/ourStory#the-beginning-of-our-story
 
 
 features:
