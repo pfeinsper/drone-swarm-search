@@ -73,22 +73,19 @@ export default defineConfig({
                     { text: 'License', link: '/Documentation/docsCoverage#license' },
                   ]
                 },
-                // {
-                //   collapsed: false,
-                //   text: 'Algorithms',
-                //   items: [
-                //     { text: 'About', link: '/Documentation/docsAlgorithms#about' },
-                //     { text: 'Quick Start', link: '/Documentation/docsAlgorithms#quick-start' },
-                //     { text: 'General Info', link: '/Documentation/docsAlgorithms#general-info' },
-                //     { text: 'Built in Functions', link: '/Documentation/docsAlgorithms#built-in-functions' },
-                //     { text: 'Probability Matrix', link: '/Documentation/docsAlgorithms#probability-matrix' },
-                //     { text: 'Reward', link: '/Documentation/docsAlgorithms#reward' },
-                //     { text: 'Termination & Truncation', link: '/Documentation/docsAlgorithms#termination-truncation' },
-                //     { text: 'Info', link: '/Documentation/docsAlgorithms#info' },
-                //     { text: 'Stay Updated', link: '/Documentation/docsAlgorithms#stay-updated' },
-                //     { text: 'License', link: '/Documentation/docsAlgorithms#license' },
-                //   ]
-                // }
+                {
+                  collapsed: false,
+                  text: 'Algorithms',
+                  items: [
+                    { text: 'About', link: '/Documentation/docsAlgorithms#about' },
+                    { text: 'Algorithms Implemented', link: '/Documentation/docsAlgorithms#algorithms-implemented' },
+                    { text: 'Hypotheses', link: '/Documentation/docsAlgorithms#hypotheses' },
+                    { text: 'Appendix A', link: '/Documentation/docsAlgorithms#appendix-a-test-configurations' },
+                    { text: 'How to run', link: '/Documentation/docsAlgorithms#how-to-run' },
+                    { text: 'Stay Updated', link: '/Documentation/docsAlgorithms#stay-updated' },
+                    { text: 'License', link: '/Documentation/docsAlgorithms#license' },
+                  ]
+                }
               ],
               "/QuickStart/": [{
                   collapsed: false,

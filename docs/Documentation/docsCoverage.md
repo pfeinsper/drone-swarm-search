@@ -10,14 +10,6 @@ The **Coverage Environment** is our second training environment, building on the
     <em>Fig 1: Representation of the environment in the Coverage Environment.</em>
 </p>
 
-
-<!-- ### Outcome -->
-
-<!-- | If target is found       | If target is not found   |
-:-------------------------:|:-------------------------:
-| ![](https://raw.githubusercontent.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/victory_render.png)     | ![](https://raw.github.com/PFE-Embraer/drone-swarm-search/main/docs/public/pics/fail_render.png) |
- -->
-
 ## Quick Start
 
 ::: warning Warning
