@@ -56,7 +56,7 @@ To achieve this objective, traditional SAR operations used path planning algorit
 
 In order to contribute to researches on the effectiveness of integrating reinforcement learning techniques into SAR path planning, the Drone Swarm Search Environment (`DSSE`), distributed as a Python package, was designed to provide a training environment using the PettingZoo [@terry2021pettingzoo] interface. Its purpose is to facilitate the training and evaluation of single or multi-agent reinforcement learning algorithms. Additionally, it has been included as a third-party environment in the official PettingZoo documentation [@Terry_PettingZoo_Gym_for].
 
-![Simulation environment showcasing the algorithm's execution.\label{fig:example}](docs/pics/dsse-example.png){ width=50% }
+![Simulation environment showcasing the algorithm's execution.\label{fig:example}](docs/public/pics/dsse-example.png){ width=50% }
 
 The environment depicted in \autoref{fig:example} comprises a grid, a probability matrix, drones, and an arbitrary number of persons-in-water (PIW). The movement of the PIW is influenced by, but not identical to, the dynamics of the probability matrix, which models the drift of sea currents impacting the PIW [@WU2023113444]. The probability matrix itself is defined using a two-dimensional Gaussian distribution, which expands over time, thus broadening the potential search area. This expansion simulates the diffusion of the PIW, approximating the zone where drones are most likely to detect them. Moreover, the environment employs a reward function that incentivizes the speed of the search, rewarding the agents for shorter successful search durations.
 
