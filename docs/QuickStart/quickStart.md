@@ -63,6 +63,21 @@ while not done:
 ```
 :::
 
+::: details About the agent policy
+The "random_policy" function is designed to abstract the concept of a model or function that chooses actions within the environment's action space. In the example below, it samples a random action from the action space and returns a dictionary mapping agents to the actions they should perform next, based on the given observations and number of agents.
+
+```python
+def random_policy(obs, agents):
+    actions = {}
+    for agent in agents:
+        actions[agent] = env.action_space(agent).sample()
+    return actions
+
+actions = random_policy(observations, env.get_agents())
+```
+Users can adapt this function by incorporating a trained model, such as one implemented with RLlib. For a demonstration, refer to the [Algorithms](../Documentation/docsAlgorithms) section, which shows how to use a model to select actions based on the received observations.
+:::
+
 ## Coverage Environment
 
 ### Install
