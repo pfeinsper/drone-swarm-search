@@ -18,23 +18,38 @@
   note         = {Accessed: 2024-04-24}
 }
 
-@manual{iamsar,
-  title        = {International Aeronautical and Maritime Search and Rescue Manual - Volume II - Mission Co-ordination},
+@inbook{iamsar,
+  title        = {Chapter 5. Search techniques and operations},
+  booktitle    = {International Aeronautical and Maritime Search and Rescue Manual},
   organization = {International Maritime Organization and International Civil Aviation Organization},
   year         = {2022},
   volume       = {II},
-  edition      = {9th},
   chapter      = {5},
+  isbn         = {9789280117356},
   url          = {https://store.icao.int/en/international-aeronautical-and-maritime-search-and-rescue-manual-volume-ii-mission-co-ordination-doc-9731-2}
 }
 
-@article{terry2021pettingzoo,
-  title   = {Pettingzoo: Gym for multi-agent reinforcement learning},
-  author  = {Terry, J and Black, Benjamin and Grammel, Nathaniel and Jayakumar, Mario and Hari, Ananth and Sullivan, Ryan and Santos, Luis S and Dieffendahl, Clemens and Horsch, Caroline and Perez-Vicente, Rodrigo and others},
-  journal = {Advances in Neural Information Processing Systems},
-  volume  = {34},
-  pages   = {15032--15043},
-  year    = {2021}
+@article{trummel1986,
+  title={The complexity of the optimal searcher path problem},
+  author={Trummel, KE and Weisinger, JR},
+  journal={Operations Research},
+  volume={34},
+  number={2},
+  pages={324--327},
+  year={1986},
+  publisher={INFORMS}
+}
+
+@inproceedings{terry2021pettingzoo,
+ author      = {Terry, J and Black, Benjamin and Grammel, Nathaniel and Jayakumar, Mario  and Hari, Ananth  and Sullivan, Ryan and Santos, Luis S and Dieffendahl, Clemens and Horsch, Caroline and Perez-Vicente, Rodrigo and Williams, Niall  and Lokesh, Yashas  and Ravi , Praveen },
+ booktitle   = {Advances in Neural Information Processing Systems},
+ editor      = {M. Ranzato and A. Beygelzimer and Y. Dauphin and P.S. Liang and J. Wortman Vaughan},
+ pages       = {15032--15043},
+ publisher   = {Curran Associates, Inc.},
+ title       = {PettingZoo: Gym for Multi-Agent Reinforcement Learning},
+ url         = {https://proceedings.neurips.cc/paper_files/paper/2021/file/7ed2d3454c5eea71148b11d0c25104ff-Paper.pdf},
+ volume      = {34},
+ year        = {2021}
 }
 
 @software{Terry_PettingZoo_Gym_for,
@@ -73,6 +88,20 @@
   abstract = {The prevalence of maritime transportation and operations is increasing, leading to a gradual increase in drowning accidents at sea. In the context of maritime search and rescue (SAR), it is essential to develop effective search plans to improve the survival probability of persons-in-water (PIWs). However, conventional SAR search plans typically use predetermined patterns to ensure complete coverage of the search area, disregarding the varying probabilities associated with the PIW distribution. To address this issue, this study has proposed a maritime SAR vessel coverage path planning framework (SARCPPF) suitable for multiple PIWs. This framework comprises three modules, namely, drift trajectory prediction, the establishment of a multilevel search area environment model, and coverage search. First, sea area-scale drift trajectory prediction models were employed using the random particle simulation method to forecast drift trajectories. A hierarchical probability environment map model was established to guide the SAR of multiple SAR units. Subsequently, we integrated deep reinforcement learning with a reward function that encompasses multiple variables to guide the navigation behavior of ship agents. We developed a coverage path planning algorithm aimed at maximizing the success rates within a limited timeframe. The experimental results have demonstrated that our model enables vessel agents to prioritize high-probability regions while avoiding repeated coverage.}
 }
 
+@article{SILVER2021103535,
+    title          = {Reward is enough},
+    journal        = {Artificial Intelligence},
+    volume         = {299},
+    pages          = {103535},
+    year           = {2021},
+    issn           = {0004-3702},
+    doi            = {https://doi.org/10.1016/j.artint.2021.103535},
+    url            = {https://www.sciencedirect.com/science/article/pii/S0004370221000862},
+    author         = {David Silver and Satinder Singh and Doina Precup and Richard S. Sutton},
+    keywords       = {Artificial intelligence, Artificial general intelligence, Reinforcement learning, Reward},
+    abstract       = {In this article we hypothesise that intelligence, and its associated abilities, can be understood as subserving the maximisation of reward. Accordingly, reward is enough to drive behaviour that exhibits abilities studied in natural and artificial intelligence, including knowledge, learning, perception, social intelligence, language, generalisation and imitation. This is in contrast to the view that specialised problem formulations are needed for each ability, based on other signals or objectives. Furthermore, we suggest that agents that learn through trial and error experience to maximise reward could learn behaviour that exhibits most if not all of these abilities, and therefore that powerful reinforcement learning agents could constitute a solution to artificial general intelligence.}
+}
+
 @article{gmd-11-1405-2018,
   author  = {Dagestad, K.-F. and R\"ohrs, J. and Breivik, {\O}. and {\AA}dlandsvik, B.},
   title   = {OpenDrift v1.0: a generic framework for trajectory modelling},
@@ -93,6 +122,13 @@
   pages        = {64--69},
   address      = {São José dos Campos, SP},
   issn         = {1983-7402}
+}
+
+@unpublished{algorithmsDSSE2024,
+  author  = {Ricardo Ribeiro Rodrigues and Jorás Custódio Campos de Oliveira and Pedro Henrique Britto Aragão Andrade and Renato Laffranchi Falcão},
+  title   = {Algorithms for Drone Swarm Search (DSSE)},
+  year    = {2024},
+  url     = {https://github.com/pfeinsper/drone-swarm-search-algorithms}
 }
 
 @article{dqn2015,
