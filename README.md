@@ -142,12 +142,12 @@ If you use this package, please consider citing it with this piece of BibTeX:
 
 ```
 @misc{castanares2023dsse,
-      title={DSSE: a drone swarm search environment}, 
-      author={Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
-      year={2024},
-      eprint={2307.06240},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      doi={https://doi.org/10.48550/arXiv.2307.06240}
+    title={DSSE: a drone swarm search environment}, 
+    author={Manuel Castanares and Luis F. S. Carrete and Enrico F. Damiani and Leonardo D. M. de Abreu and José Fernando B. Brancalion and Fabrício J. Barth},
+    year={2024},
+    eprint={2307.06240},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG},
+    doi={https://doi.org/10.48550/arXiv.2307.06240}
 }
 ```
