@@ -262,7 +262,7 @@ The findings indicate that while PPO can handle the addition of multiple targets
 #### **Conclusion**
 These findings highlight the advanced capabilities of the agents in not only understanding and adapting to the task requirements but also in optimizing their path to focus on areas of highest impact. The performance of the agents in this NP-complete environment suggests potential for applying similar strategies to other complex and computationally intensive tasks, where strategic prioritization and efficiency are critical.
 
-## Appendix A: Test Configurations
+## Test Configurations
 
 This appendix provides detailed configurations and hyperparameters used during the testing of different algorithms and environments in our experiments.
 
