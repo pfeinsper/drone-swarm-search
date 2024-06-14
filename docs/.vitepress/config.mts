@@ -80,7 +80,7 @@ export default defineConfig({
                     { text: 'About', link: '/Documentation/docsAlgorithms#about' },
                     { text: 'Algorithms Implemented', link: '/Documentation/docsAlgorithms#algorithms-implemented' },
                     { text: 'Hypotheses', link: '/Documentation/docsAlgorithms#hypotheses' },
-                    { text: 'Appendix A', link: '/Documentation/docsAlgorithms#appendix-a-test-configurations' },
+                    { text: 'Test Configurations', link: '/Documentation/docsAlgorithms#appendix-a-test-configurations' },
                     { text: 'How to run', link: '/Documentation/docsAlgorithms#how-to-run' },
                     { text: 'Stay Updated', link: '/Documentation/docsAlgorithms#stay-updated' },
                     { text: 'License', link: '/Documentation/docsAlgorithms#license' },
