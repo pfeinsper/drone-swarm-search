@@ -51,6 +51,7 @@ export default defineConfig({
                       { text: 'Reward', link: '/Documentation/docsSearch#reward' },
                       { text: 'Termination & Truncation', link: '/Documentation/docsSearch#termination-truncation' },
                       { text: 'Info', link: '/Documentation/docsSearch#info' },
+                      { text: 'Stay Updated', link: '/Documentation/docsSearch#stay-updated' },
                       { text: 'How to Cite This Work', link: '/Documentation/docsSearch#how-to-cite-this-work' },
                       { text: 'License', link: '/Documentation/docsSearch#license' },
                     ]
@@ -68,16 +69,23 @@ export default defineConfig({
                     { text: 'Reward', link: '/Documentation/docsCoverage#reward' },
                     { text: 'Termination & Truncation', link: '/Documentation/docsCoverage#termination-truncation' },
                     { text: 'Info', link: '/Documentation/docsCoverage#info' },
+                    { text: 'Stay Updated', link: '/Documentation/docsCoverage#stay-updated' },
                     { text: 'License', link: '/Documentation/docsCoverage#license' },
                   ]
                 },
-                // {
-                //   collapsed: false,
-                //   text: 'Algorithms',
-                //   items: [
-                //     { text: 'Documentation Under Construction', link: '/Documentation/docsAlgorithms#build' },
-                //   ]
-                // }
+                {
+                  collapsed: false,
+                  text: 'Algorithms',
+                  items: [
+                    { text: 'About', link: '/Documentation/docsAlgorithms#about' },
+                    { text: 'Algorithms Implemented', link: '/Documentation/docsAlgorithms#algorithms-implemented' },
+                    { text: 'Hypotheses', link: '/Documentation/docsAlgorithms#hypotheses' },
+                    { text: 'Test Configurations', link: '/Documentation/docsAlgorithms#test-configurations' },
+                    { text: 'How to run', link: '/Documentation/docsAlgorithms#how-to-run' },
+                    { text: 'Stay Updated', link: '/Documentation/docsAlgorithms#stay-updated' },
+                    { text: 'License', link: '/Documentation/docsAlgorithms#license' },
+                  ]
+                }
               ],
               "/QuickStart/": [{
                   collapsed: false,
@@ -92,8 +100,7 @@ export default defineConfig({
                     collapsed: false,
                     text: 'Our Story',
                     items: [
-                      { text: 'Our Story Coming Soon!', link: '/OurStory/ourStory#our-story-coming-soon!' },
-                      { text: 'Stay Updated', link: '/OurStory/ourStory#stay-updated' },
+                      { text: 'The Beginning of Our Story', link: '/OurStory/ourStory#the-beginning-of-our-story' },
                     ]
                 },],
           },
