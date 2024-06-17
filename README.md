@@ -132,9 +132,29 @@ while env.agents:
 print(infos["drone0"])
 ```
 
-## 🆘 Support
+## 🤝 Contributing
 
-If you encounter any issues or have questions, please file an issue on our [GitHub issues page](https://github.com/pfeinsper/drone-swarm-search/issues).
+We welcome contributions from developers to improve and expand our repository. Here are some ways you can contribute:
+
+1. **Creating Issues:** If you encounter any bugs, have suggestions for new features, or have a question, please create an issue on our GitHub repository. This helps us keep track of what needs to be addressed and prioritize improvements.
+
+2. **Submitting Pull Requests (PRs):** We encourage you to fork the repository and make your own modifications. Once you have made changes, submit a pull request for review. Ensure your PR includes a clear description of the changes and any relevant information to help us understand the modifications.
+
+### Testing Your Contributions
+
+To maintain code stability, we have a suite of tests that must be run before any code is merged. We use Pytest for testing. Before submitting your pull request, make sure to run these tests to ensure that your changes do not introduce any new issues.
+
+To run the tests, use the following command:
+
+```bash
+pytest DSSE/tests/
+```
+
+Our test suite is divided into several parts, each serving a specific purpose:
+
+- **Environment Testing:** Found in `DSSE/tests/test_env.py` and `DSSE/tests/test_env_coverage.py`, these tests ensure that both the search and coverage environments are set up correctly and function as expected. This includes validating the initialization, state updates, and interaction mechanisms for both environments.
+
+- **Matrix Testing:** Contained in `DSSE/tests/test_matrix.py`, these tests validate the correctness and functionality of the probability matrix.
 
 ## 📖 How to cite this work
 
