@@ -1,4 +1,4 @@
-numpy>=1.23.1
+numpy==1.*
 gymnasium>=0.27.1
 pygame>=2.3.0
 pettingzoo>=1.22.3
