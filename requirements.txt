@@ -1,4 +1,4 @@
-numpy>=1.23.1
+numpy~=1.23
 gymnasium>=0.27.1
 pygame>=2.3.0
 pettingzoo>=1.22.3
@@ -7,4 +7,4 @@ pytest>=8.0.0
 numba>=0.59.0
 wheel
 GDAL==3.4.1
-opendrift
+opendrift==1.10.7
