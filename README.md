@@ -162,22 +162,20 @@ Our test suite is divided into several parts, each serving a specific purpose:
 If you use this package, please consider citing it with this piece of BibTeX:
 
 ```
-@software{castanares2023dsse,
-  author       = {Ricardo Ribeiro Rodrigues and
-                  Pedro Henrique Andrade and
-                  Renato Laffranchi Falcão and
-                  Jorás Oliveira and
-                  Manuel Castanares and
-                  Luis Filipe Carrete and
-                  Leonardo Malta and
-                  Enrico Francesco Damiani and
-                  José Fernando Basso Brancalion and
-                  Fabrício Jailson Barth},
-  title        = {DSSE: a drone swarm search environment},
-  month        = jul,
-  year         = 2024,
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.12659848},
-  url          = {https://doi.org/10.5281/zenodo.12659848}
+@software{Laffranchi_Falcao_DSSE_An_environment_2024,
+    author = {
+                Laffranchi Falcão, Renato and
+                Custódio Campos de Oliveira, Jorás and
+                Britto Aragão Andrade, Pedro Henrique and
+                Ribeiro Rodrigues, Ricardo and
+                Jailson Barth, Fabrício and
+                Basso Brancalion, José Fernando
+            },
+    doi = {10.5281/zenodo.12659848},
+    title = {{DSSE: An environment for simulation of reinforcement learning-empowered drone swarm maritime search and rescue missions}},
+    url = {https://doi.org/10.5281/zenodo.12659848},
+    version = {0.2.5},
+    month = jul,
+    year = {2024}
 }
 ```
