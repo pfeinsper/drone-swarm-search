@@ -3,6 +3,7 @@
 [![PyPI Release 🚀](https://badge.fury.io/py/DSSE.svg)](https://badge.fury.io/py/DSSE)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat)](https://github.com/pfeinsper/drone-swarm-search/blob/main/LICENSE)
 [![PettingZoo version dependency](https://img.shields.io/badge/PettingZoo-v1.22.3-blue)]()
+[![DOI](https://zenodo.org/badge/599323572.svg)](https://zenodo.org/doi/10.5281/zenodo.12659847)
 ![GitHub stars](https://img.shields.io/github/stars/pfeinsper/drone-swarm-search)
 
 # <img src="https://raw.githubusercontent.com/pfeinsper/drone-swarm-search/main/docs/public/pics/drone.svg" alt="DSSE Icon" width="45" height="25"> Drone Swarm Search Environment (DSSE)
@@ -161,13 +162,20 @@ Our test suite is divided into several parts, each serving a specific purpose:
 If you use this package, please consider citing it with this piece of BibTeX:
 
 ```
-@misc{castanares2023dsse,
-    title={DSSE: a drone swarm search environment}, 
-    author={Manuel Castanares and Luis F. S. Carrete and Enrico F. Damiani and Leonardo D. M. de Abreu and José Fernando B. Brancalion and Fabrício J. Barth},
-    year={2024},
-    eprint={2307.06240},
-    archivePrefix={arXiv},
-    primaryClass={cs.LG},
-    doi={https://doi.org/10.48550/arXiv.2307.06240}
+@software{Laffranchi_Falcao_DSSE_An_environment_2024,
+    author = {
+                Laffranchi Falcão, Renato and
+                Custódio Campos de Oliveira, Jorás and
+                Britto Aragão Andrade, Pedro Henrique and
+                Ribeiro Rodrigues, Ricardo and
+                Jailson Barth, Fabrício and
+                Basso Brancalion, José Fernando
+            },
+    doi = {10.5281/zenodo.12659848},
+    title = {{DSSE: An environment for simulation of reinforcement learning-empowered drone swarm maritime search and rescue missions}},
+    url = {https://doi.org/10.5281/zenodo.12659848},
+    version = {0.2.5},
+    month = jul,
+    year = {2024}
 }
 ```
