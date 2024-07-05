@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Laffranchi Falcão"
+  given-names: "Renato"
+  orcid: "https://orcid.org/0009-0001-5943-0481"
+- family-names: "Custódio Campos de Oliveira"
+  given-names: "Jorás"
+  orcid: "https://orcid.org/0009-0005-1883-8703"
+- family-names: "Britto Aragão Andrade"
+  given-names: "Pedro Henrique"
+  orcid: "https://orcid.org/0009-0000-0056-4322"
+- family-names: "Ribeiro Rodrigues"
+  given-names: "Ricardo"
+  orcid: "https://orcid.org/0009-0008-1237-3353"
+- family-names: "Jailson Barth"
+  given-names: "Fabrício"
+  orcid: "https://orcid.org/0000-0001-6263-121X"
+- family-names: "Basso Brancalion"
+  given-names: "José Fernando"
+  orcid: "https://orcid.org/0000-0002-4387-0204"
+title: "DSSE: An environment for simulation of reinforcement learning-empowered drone swarm maritime search and rescue missions"
+version: 0.2.5
+doi: 10.5281/zenodo.12659848
+date-released: 2024-07-05
+url: "https://doi.org/10.5281/zenodo.12659848"
