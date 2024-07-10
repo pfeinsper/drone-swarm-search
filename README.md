@@ -3,6 +3,7 @@
 [![PyPI Release 🚀](https://badge.fury.io/py/DSSE.svg)](https://badge.fury.io/py/DSSE)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat)](https://github.com/pfeinsper/drone-swarm-search/blob/main/LICENSE)
 [![PettingZoo version dependency](https://img.shields.io/badge/PettingZoo-v1.22.3-blue)]()
+[![DOI](https://zenodo.org/badge/599323572.svg)](https://zenodo.org/doi/10.5281/zenodo.12659847)
 ![GitHub stars](https://img.shields.io/github/stars/pfeinsper/drone-swarm-search)
 
 # <img src="https://raw.githubusercontent.com/pfeinsper/drone-swarm-search/main/docs/public/pics/drone.svg" alt="DSSE Icon" width="45" height="25"> Drone Swarm Search Environment (DSSE)
@@ -132,22 +133,49 @@ while env.agents:
 print(infos["drone0"])
 ```
 
-## 🆘 Support
+## 🤝 Contributing
 
-If you encounter any issues or have questions, please file an issue on our [GitHub issues page](https://github.com/pfeinsper/drone-swarm-search/issues).
+We welcome contributions from developers to improve and expand our repository. Here are some ways you can contribute:
+
+1. **Creating Issues:** If you encounter any bugs, have suggestions for new features, or have a question, please create an issue on our GitHub repository. This helps us keep track of what needs to be addressed and prioritize improvements.
+
+2. **Submitting Pull Requests (PRs):** We encourage you to fork the repository and make your own modifications. Once you have made changes, submit a pull request for review. Ensure your PR includes a clear description of the changes and any relevant information to help us understand the modifications.
+
+### Testing Your Contributions
+
+To maintain code stability, we have a suite of tests that must be run before any code is merged. We use Pytest for testing. Before submitting your pull request, make sure to run these tests to ensure that your changes do not introduce any new issues.
+
+To run the tests, use the following command:
+
+```bash
+pytest DSSE/tests/
+```
+
+Our test suite is divided into several parts, each serving a specific purpose:
+
+- **Environment Testing:** Found in `DSSE/tests/test_env.py` and `DSSE/tests/test_env_coverage.py`, these tests ensure that both the search and coverage environments are set up correctly and function as expected. This includes validating the initialization, state updates, and interaction mechanisms for both environments.
+
+- **Matrix Testing:** Contained in `DSSE/tests/test_matrix.py`, these tests validate the correctness and functionality of the probability matrix.
 
 ## 📖 How to cite this work
 
 If you use this package, please consider citing it with this piece of BibTeX:
 
 ```
-@misc{castanares2023dsse,
-      title={DSSE: a drone swarm search environment}, 
-      author={Manuel Castanares, Luis F. S. Carrete, Enrico F. Damiani, Leonardo D. M. de Abreu, José Fernando B. Brancalion and Fabrício J. Barth},
-      year={2024},
-      eprint={2307.06240},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      doi={https://doi.org/10.48550/arXiv.2307.06240}
+@software{Laffranchi_Falcao_DSSE_An_environment_2024,
+    author = {
+                Laffranchi Falcão, Renato and
+                Custódio Campos de Oliveira, Jorás and
+                Britto Aragão Andrade, Pedro Henrique and
+                Ribeiro Rodrigues, Ricardo and
+                Jailson Barth, Fabrício and
+                Basso Brancalion, José Fernando
+            },
+    doi = {10.5281/zenodo.12659848},
+    title = {{DSSE: An environment for simulation of reinforcement learning-empowered drone swarm maritime search and rescue missions}},
+    url = {https://doi.org/10.5281/zenodo.12659848},
+    version = {0.2.5},
+    month = jul,
+    year = {2024}
 }
 ```
