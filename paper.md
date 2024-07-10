@@ -58,7 +58,7 @@ To achieve this objective, traditional SAR operations have utilized path plannin
 
 The two primary metrics for evaluating an efficient search are coverage rate and time to detection. Coverage rate is the proportion of the search area covered by the search units over a specific period. Higher coverage rates typically indicate more effective search strategies. Time to detection is the time taken from the start of the search operation to the successful detection of the target. Minimizing this time is often a critical objective in SAR missions.
 
-Expanding on the state-of-the-art research presented by @AI2021110098; @WU2024116403, this project introduces a unique simulation environment that has not been made available by other researchers. Additionally, this new environment enables experiments on search areas that are significantly larger than those used in existing research.
+Expanding on the state-of-the-art research presented by @AI2021110098 and @WU2024116403, this project introduces a unique simulation environment that has not been made available by other researchers. Additionally, this new environment enables experiments on search areas that are significantly larger than those used in existing research.
 
 # Functionality
 
