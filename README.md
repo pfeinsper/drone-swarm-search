@@ -4,6 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat)](https://github.com/pfeinsper/drone-swarm-search/blob/main/LICENSE)
 [![PettingZoo version dependency](https://img.shields.io/badge/PettingZoo-v1.22.3-blue)]()
 [![DOI](https://zenodo.org/badge/599323572.svg)](https://zenodo.org/doi/10.5281/zenodo.12659847)
+[![JOSS DOI](https://joss.theoj.org/papers/10.21105/joss.06746/status.svg)](https://doi.org/10.21105/joss.06746)
 ![GitHub stars](https://img.shields.io/github/stars/pfeinsper/drone-swarm-search)
 
 # <img src="https://raw.githubusercontent.com/pfeinsper/drone-swarm-search/main/docs/public/pics/drone.svg" alt="DSSE Icon" width="45" height="25"> Drone Swarm Search Environment (DSSE)
