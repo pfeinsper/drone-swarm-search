@@ -5,6 +5,3 @@ pettingzoo>=1.22.3
 matplotlib==3.8.4
 pytest>=8.0.0
 numba>=0.59.0
-wheel
-GDAL==3.4.1
-opendrift==1.10.7
