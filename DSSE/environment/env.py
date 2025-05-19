@@ -141,6 +141,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         self.pygame_renderer.render_map()
         self.pygame_renderer.render_entities(self.persons_set)
         self.pygame_renderer.render_entities(self.agents_positions)
+        self.pygame_renderer.render_entities([('recharge_base', self.recharge_base.position)])
         self.pygame_renderer.refresh_screen()
 
     def reset(
@@ -162,7 +163,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             self.raise_if_unvalid_mult(pod_multiplier)
             for person, mult in zip(self.persons_set, pod_multiplier):
                 person.set_mult(mult)
-            
 
         self.probability_matrix = ProbabilityMatrix(
             40,

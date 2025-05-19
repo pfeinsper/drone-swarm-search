@@ -10,7 +10,7 @@ class PygameInterface:
     Class for rendering the grafical interface of the simulation
     """
 
-    FPS = 5
+    FPS = 300
 
     def __init__(
         self, grid_size: int, render_gradient: bool, render_grid: bool, env_name: str
@@ -28,6 +28,7 @@ class PygameInterface:
         self.block_size = self.window_size / self.grid_size
         self.drone_img = None
         self.person_img = None
+        self.recharge_base_img = None
         self.clock = None
 
     def render_map(self):
@@ -56,6 +57,9 @@ class PygameInterface:
         self.person_img = self.load_and_scale_image(
             f"{current_directory}/imgs/person-swimming.png"
         )
+        self.recharge_base_img = self.load_and_scale_image(
+            f"{current_directory}/imgs/recharge_base.png"
+        )
 
         self.clock = pygame.time.Clock()
         self.render_on = True
@@ -71,9 +75,19 @@ class PygameInterface:
         for entity in entities:
             # Checks if the entity is a tuple (assuming that drones are represented as tuples).
             if isinstance(entity, tuple):
-                rectangle = self.get_position_rectangle(entity)
-                image = self.drone_img
-            # Otherwise, assumes it is an object with 'x' and 'y' attributes (such as a person).
+
+                # recharge_base
+                if entity[0] == 'recharge_base':
+                    position = entity[1]
+                    rectangle = self.get_position_rectangle(position)
+                    image = self.recharge_base_img  # Use recharge base image
+                # drone
+                else:
+                    position = entity
+                    rectangle = self.get_position_rectangle(position)
+                    image = self.drone_img  # Default to drone image
+
+            # person
             else:
                 rectangle = self.get_position_rectangle((entity.x, entity.y))
                 image = self.person_img
@@ -127,12 +141,12 @@ class PygameInterface:
             elif normalized_prob >= 0.25:
                 red = 255
                 green = 255
-        
+
         if self.env_name == "DroneSwarmSearchCPP":
             blue = 255 if normalized_prob > 0 else 0
         else:
             blue = 0
-        
+
         return (red, green, blue)
 
     def render_episode_end_screen(self, message: str, color: tuple):

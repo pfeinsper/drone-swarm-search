@@ -3,6 +3,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from pettingzoo import ParallelEnv
 from .entities.drone import DroneData
+from .entities.recharge_base import RechargeBase
 from .pygame_interface import PygameInterface
 from .constants import Actions
 from gymnasium.spaces import MultiDiscrete, Discrete, Tuple, Box
@@ -27,7 +28,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         self._was_reset = False
         if not isinstance(drone_amount, int):
             raise ValueError("Drone amount must be an integer")
-    
+
         self.drone = DroneData(
             amount=drone_amount,
             speed=drone_speed,
@@ -55,6 +56,9 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         for i in range(self.drone.amount):
             agent_name = "drone" + str(i)
             self.possible_agents.append(agent_name)
+
+        # Initializing RechargeBase
+        self.recharge_base = RechargeBase(self.grid_size)
 
         self.render_mode = render_mode
 
