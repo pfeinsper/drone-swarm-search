@@ -20,11 +20,13 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
 
     reward_scheme = Reward(
         default=0.0,
-        leave_grid=0,
-        exceed_timestep=0,
-        drones_collision=0,
+        leave_grid=-1,
+        exceed_timestep=-5,
+        drones_failure=-10,
         search_cell=0,
-        search_and_find=1,
+        search_and_find=5,
+        low_battery_move_towards_base=1,
+        energy_penalty=-0.1,
     )
 
     def __init__(
@@ -247,7 +249,25 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                 terminations[agent] = True
                 continue
 
+            # Check if the drone has no battery
+            battery = self.drone.get_battery(idx)
+            if battery <= 0:
+                rewards[agent] = self.reward_scheme.drones_failure
+                truncations[agent] = True
+                terminations[agent] = True
+                continue
+
             drone_x, drone_y = self.agents_positions[idx]
+            recharge_base_position = self.recharge_base.get_position()
+
+            # Check low battery logic
+            if battery <= 20:
+                # Reward for moving towards the base
+                distance_to_base = abs(drone_x - recharge_base_position[0]) + abs(drone_y - recharge_base_position[1])
+                rewards[agent] = self.reward_scheme.low_battery_move_towards_base - distance_to_base
+                if (drone_x, drone_y) == recharge_base_position:
+                    self.drone.recharge(idx)
+
             is_searching = drone_action == Actions.SEARCH.value
 
             if drone_action != Actions.SEARCH.value:
@@ -257,6 +277,11 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
                 else:
                     self.agents_positions[idx] = new_position
                     rewards[agent] = self.reward_scheme.default
+
+                # Consume energy after every move
+                self.drone.consume_energy(idx)
+                rewards[agent] += self.reward_scheme.energy_penalty
+
                 self.rewards_sum[agent] += rewards[agent]
                 continue
 
@@ -292,12 +317,9 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             self.rewards_sum[agent] += rewards[agent]
 
         self.timestep += 1
+
         # Get dummy infos
         infos = {drone: {"Found": person_found} for drone in self.agents}
-
-        # CHECK COLISION - Drone
-        # self.compute_drone_collision(terminations, rewards)
-
 
         self.render_step(any(terminations.values()), person_found)
 
@@ -306,6 +328,8 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         # If terminated, reset the agents (pettingzoo parallel env requirement)
         if any(terminations.values()) or any(truncations.values()):
             self.agents = []
+            print(f'Terminated: {self.agents}')
+
         return observations, rewards, terminations, truncations, infos
 
     def render_step(self, terminal, person_found):
