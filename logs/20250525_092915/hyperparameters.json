@@ -1,0 +1,12 @@
+{
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "epsilon": 0.2,
+    "value_coef": 0.5,
+    "entropy_coef": 0.01,
+    "batch_size": 64,
+    "n_epochs": 10,
+    "grid_size": 40,
+    "drone_amount": 4,
+    "timestep_limit": 300
+}
