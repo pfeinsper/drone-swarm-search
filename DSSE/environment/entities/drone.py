@@ -19,8 +19,13 @@ class DroneData:
     pod: float = 1
 
     def __post_init__(self):
+<<<<<<< HEAD
         if self.amount <= 0:
             raise ValueError("The number of drones must be greater than 0.")
+=======
+        if self.amount < 0:
+            raise ValueError("The number of drones cannot be negative.")
+>>>>>>> 17c652b (Finished everything)
         if self.speed <= 0:
             raise ValueError("The drone's speed must be greater than 0.")
         if self.pod < 0 or self.pod > 1:

@@ -1,7 +1,11 @@
 import math
 import numpy as np
 from datetime import datetime, timedelta
+<<<<<<< HEAD
 from typing import List, Tuple
+=======
+from typing import List
+>>>>>>> 17c652b (Finished everything)
 
 EARTH_MEAN_RADIUS = 6373.0
 
@@ -60,7 +64,11 @@ class ParticleSimulation:
         # Maintain always a copy of the original map
         self.original_map = self.probability_map.copy()
 
+<<<<<<< HEAD
     def simulate(self, duration: timedelta) -> List[Tuple[float, float]]:
+=======
+    def simulate(self, duration: timedelta) -> List[tuple[float, float]]:
+>>>>>>> 17c652b (Finished everything)
         o = self.ocean_drift(loglevel=self.loglevel)
         # Add Wind & Ocean data
         o.add_readers_from_list(
@@ -88,7 +96,11 @@ class ParticleSimulation:
 
     def lat_long_to_global_xy(
         self, lat: float, lon: float, ratio: float
+<<<<<<< HEAD
     ) -> Tuple[int, int]:
+=======
+    ) -> tuple[int, int]:
+>>>>>>> 17c652b (Finished everything)
         lat = math.radians(lat)
         lon = math.radians(lon)
 
@@ -97,8 +109,13 @@ class ParticleSimulation:
         return (x, y)
 
     def convert_lat_lon_to_xy(
+<<<<<<< HEAD
         self, coordinates: List[Tuple[float, float]]
     ) -> List[Tuple[int, int]]:
+=======
+        self, coordinates: List[tuple[float, float]]
+    ) -> List[tuple[int, int]]:
+>>>>>>> 17c652b (Finished everything)
         """
         Using equirectangular projection to convert latitudes and longitudes to Cartesian coordinates.
         """
@@ -135,8 +152,13 @@ class ParticleSimulation:
         return max(map_width, map_height)
 
     def calculate_bounding_rectangle(
+<<<<<<< HEAD
         self, coordinates: List[Tuple[float, float]]
     ) -> Tuple[float, float, float, float]:
+=======
+        self, coordinates: List[tuple[float, float]]
+    ) -> tuple[float, float, float, float]:
+>>>>>>> 17c652b (Finished everything)
         latitudes, longitudes = zip(*coordinates)
 
         min_lat, max_lat = min(latitudes), max(latitudes)
@@ -168,7 +190,11 @@ class ParticleSimulation:
         return EARTH_MEAN_RADIUS * c * 1000
 
     def create_probability_map(
+<<<<<<< HEAD
         self, cartesian_coords: List[Tuple[float, float]]
+=======
+        self, cartesian_coords: List[tuple[float, float]]
+>>>>>>> 17c652b (Finished everything)
     ) -> List[List[int]]:
         """
         Creates a probability map based on the coordinates of the particles.

@@ -2,6 +2,16 @@
 
 from .environment.env import DroneSwarmSearch
 from .environment.coverage_env import CoverageDroneSwarmSearch
+<<<<<<< HEAD
 from .environment.constants import Actions
 
 __all__ = ["DroneSwarmSearch", "CoverageDroneSwarmSearch", "Actions"]
+=======
+from .environment.constants import Actions, AdvancedActions
+from .environment.advanced_coverage_env import AdvancedCoverageDroneSwarmSearch
+from .environment.simulation.dynamic_particle_simulation import DynamicParticleSimulation
+from .environment.simulation.H5DatasetBuilder import H5DatasetBuilder
+
+__all__ = ["DroneSwarmSearch", "CoverageDroneSwarmSearch", "Actions", "AdvancedCoverageDroneSwarmSearch", 
+           "DynamicParticleSimulation", "H5DatasetBuilder", "AdvancedActions"]
+>>>>>>> 17c652b (Finished everything)
