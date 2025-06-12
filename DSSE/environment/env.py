@@ -8,11 +8,7 @@ from .env_base import DroneSwarmSearchBase
 from .simulation.dynamic_probability import ProbabilityMatrix
 
 
-<<<<<<< HEAD
-class DroneSwarmSearch(DroneSwarmSearchBase):
-=======
 class DroneSwarmSearch(DroneSwarmSearchBase):    
->>>>>>> 17c652b (Finished everything)
     """
     PettingZoo based environment for SAR missions using drones.
     """
@@ -48,10 +44,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         probability_of_detection=1.0,
         pre_render_time=0,
         grid_cell_size=130,
-<<<<<<< HEAD
-=======
         fps=5
->>>>>>> 17c652b (Finished everything)
     ):
         if person_amount <= 0:
             raise ValueError("The number of persons must be greater than 0.")
@@ -67,10 +60,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             drone_speed=drone_speed,
             probability_of_detection=probability_of_detection,
             grid_cell_size=grid_cell_size,
-<<<<<<< HEAD
-=======
             render_fps=fps
->>>>>>> 17c652b (Finished everything)
         )
 
         self.pre_render_steps = round(
@@ -307,13 +297,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         # Get dummy infos
         infos = {drone: {"Found": person_found} for drone in self.agents}
 
-<<<<<<< HEAD
-        # CHECK COLISION - Drone
-        # self.compute_drone_collision(terminations, rewards)
-
-
-=======
->>>>>>> 17c652b (Finished everything)
         self.render_step(any(terminations.values()), person_found)
 
         # Get observations

@@ -21,10 +21,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         drone_speed=10,
         probability_of_detection=1,
         grid_cell_size=130,
-<<<<<<< HEAD
-=======
         render_fps=5
->>>>>>> 17c652b (Finished everything)
     ) -> None:
         self.cell_size = grid_cell_size  # in meters
         self.grid_size = grid_size
@@ -64,11 +61,7 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
 
         # Initializing render
         self.pygame_renderer = PygameInterface(
-<<<<<<< HEAD
-            self.grid_size, render_gradient, render_grid, self.metadata["name"]
-=======
             self.grid_size, render_gradient, render_grid, self.metadata["name"], fps=render_fps
->>>>>>> 17c652b (Finished everything)
         )
 
     def calculate_simulation_time_step(

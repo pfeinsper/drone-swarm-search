@@ -36,10 +36,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         num_particle_to_filter_as_noise=1,
         start_time: datetime = None,
         grid_cell_size=130,
-<<<<<<< HEAD
-=======
         animate=False
->>>>>>> 17c652b (Finished everything)
     ) -> None:
         
         if start_time is None:
@@ -52,12 +49,8 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
             duration_hours=pre_render_time,
             particle_amount=particle_amount,
             particle_radius=particle_radius,
-<<<<<<< HEAD
-            num_particle_to_filter_as_noise=num_particle_to_filter_as_noise
-=======
             num_particle_to_filter_as_noise=num_particle_to_filter_as_noise,
             animate=animate
->>>>>>> 17c652b (Finished everything)
         )
         if prob_matrix_path is not None:
             if not isinstance(prob_matrix_path, str):

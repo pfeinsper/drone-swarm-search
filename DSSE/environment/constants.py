@@ -5,10 +5,7 @@ from collections import namedtuple
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
-<<<<<<< HEAD
-=======
 BLUE = (0, 51, 153)
->>>>>>> 17c652b (Finished everything)
 
 
 # Actions
@@ -23,8 +20,6 @@ class Actions(Enum):
     DOWN_RIGHT = 7
     SEARCH = 8
 
-<<<<<<< HEAD
-=======
 class AdvancedActions(Enum):
     LEFT = 0
     RIGHT = 1
@@ -36,7 +31,6 @@ class AdvancedActions(Enum):
     DOWN_RIGHT = 7
     STAY = 8
 
->>>>>>> 17c652b (Finished everything)
 
 Reward = namedtuple(
     "Reward",
