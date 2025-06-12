@@ -16,8 +16,7 @@ from copy import deepcopy
 class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
     """
     PettingZoo based environment for SAR missions using drones. Has more realistic simulation than normal 
-    search environement. Return is the cumulative probabillity that the victim was found. 
-    Only asumes one victim. 
+    coverage environment and includes interactions with a dynamic probability distribution. 
     """
 
     metadata = {
@@ -51,6 +50,62 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
                  render_mode="ansi",
                  render_fps=5,
                  square_matrix:bool=True):
+        """Initializes the environment. To start the environment, .reset() must be called with 
+        drone_positions.
+
+        :param dataset_pth: The path to the h5 dataset
+        :type dataset_pth: str
+        :param drone_amount: the number of drones 
+        :type drone_amount: int
+        :param drone_speed: How fast each drone is going in m/s
+        :type drone_speed: float
+        :param drone_height: The height the drone flies at. Is used in determining drone feild of view
+        :type drone_height: float
+        :param survival_time: How long the victim of the disaster is expected to survive. Is the termination requirement
+        :type survival_time: timedelta
+        :param drone_pod: the probabillity the drone finds a person if they are in the same grid cell, defaults to 0.8
+        :type drone_pod: float, optional
+        :param drone_fov: the feild of view of the drones camera when pointed towards the ground, defaults to 90
+        :type drone_fov: int, optional
+        :param grid_cell_size: The side length of the grid cell in m. This parameter and time_step are very closely related. 
+            If both are left as None, the default interpretation is that the grid cell size is determined by the area the 
+            drone can 'see' at any given time.If the grid cell size is given, it is asumed that the environment has been 
+            broken down into sectors that each drone is responsible for searching in a parallel track search. For whatever 
+            reason, if the grid cell size is not given, but the time step is the environment will let you chose the 
+            time_step but will still asumes grid cell size is determined by the area the drone can 'see' at any given time. 
+            Defaults to None
+        :type grid_cell_size: float, optional
+        :param dataset_example: The name of the dataset example in the dataset that you chose. Default is random choice.
+          Defaults to None
+        :type dataset_example: str, optional
+        :param time_step: The length of time it takes for a drone to move between cells. It is reccomended that 
+            this parameter is left unchanged.
+
+            This parameter and time_step are very closely related. 
+            If both are left as None, the default interpretation is that the grid cell size is determined by the area the 
+            drone can 'see' at any given time.If the grid cell size is given, it is asumed that the environment has been 
+            broken down into sectors that each drone is responsible for searching in a parallel track search. For whatever 
+            reason, if the grid cell size is not given, but the time step is the environment will let you chose the 
+            time_step but will still asumes grid cell size is determined by the area the drone can 'see' at any given time. 
+            Defaults to None, defaults to None
+        :type time_step: timedelta, optional
+        :param pre_render_time: The time since last recorded position that the search states, defaults to timedelta(milliseconds=0)
+        :type pre_render_time: timedelta, optional
+        :param render_gradient: whether or not to render the probability gradient, defaults to True
+        :type render_gradient: bool, optional
+        :param render_grid: reccomended to be false for large grid sizes, defaults to False
+        :type render_grid: bool, optional
+        :param render_mode: either "ansi" or "human". human means that the pygame display is rendered.
+            "ansi" is used for testing, training, and all development related things. defaults to "ansi"
+        :type render_mode: str, optional
+        :param render_fps: The goal fps for the pygame simultion. , defaults to 5
+        :type render_fps: int, optional
+        :param square_matrix: Whether or not the observations from the environment should come from a square matrix. 
+        This also affects whether the movement is confined to a rectangulaar or square matrix. If square matrix is true,
+        zero values will be used to make it square, defaults to True
+        :type square_matrix: bool, optional
+        :raises Warning: _description_
+        """
         
         self.dataset_pth=dataset_pth
         self.drone_speed=drone_speed
@@ -83,7 +138,7 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
             time_step = self.grid_cell_size ** 2 / (drone_speed * s) 
             self.time_step = timedelta(seconds=time_step)
         elif self.grid_cell_size == None and self.time_step != None:
-            # For whatever reason, the grid cell size is not given, but the time step is
+            # For whatever reason, if the grid cell size is not given, but the time step is
             # The environment will let you chose the time_step but will still asumes
             # grid cell size is determined by the area the drone can 'see' at any given time
             self.grid_cell_size = sqrt(2) * drone_height * tan(drone_fov * pi / 360)
@@ -211,7 +266,7 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
             # If the agent is searching, it will find the person with a probability of detection (POD)
             # The POD is multiplied by the probability of finding the person in the cell
             # The reward is the cumulative probability of success
-            rewards[agent] += old_prob_matrix[self.agents_positions[idx][0], self.agents_positions[idx][0]] * self.drone_pod
+            rewards[agent] += old_prob_matrix[self.agents_positions[idx][0], self.agents_positions[idx][1]] * self.drone_pod
 
         observations = self.create_observations()
 

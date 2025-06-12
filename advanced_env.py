@@ -23,7 +23,7 @@ env = AdvancedCoverageDroneSwarmSearch(
 # It is a simple heuristic that can be used to test the environment
 def greedy_policy(obs, agents):
     actions = {}
-    for agent in agents:        
+    for agent in agents:    
         # If the agents are on top of each other, it will choose a random action to avoid clumping
         if obs[agent][0] in [obs[a][0] for a in agents if a != agent]:
             actions[agent] = env.action_space(agent).sample()

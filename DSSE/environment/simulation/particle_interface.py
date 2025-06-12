@@ -104,6 +104,8 @@ class ParticleInterface:
             self.probabillity_matrix = make_array_square(self.probabillity_matrix)
         self.prob_matrix_shape = self.probabillity_matrix.shape
 
+        print(f"Grid Size: {self.prob_matrix_shape}")
+
         # First dimention = time. Then it is just a grid. Each grid contains a list of particle indices that it contains
         self.particle_matrix = [[[[] for i in range(self.probabillity_matrix.shape[1])] for j in range(self.probabillity_matrix.shape[0])] for k in range(self.x_vals.shape[1])]
         
