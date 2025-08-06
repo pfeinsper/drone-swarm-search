@@ -315,7 +315,7 @@ class H5DatasetBuilder:
     
     def clear_nc_folder(self) -> None:
         """Clears the .nc folder, deleting all .nc files in it and adding them to the dataset as examples.
-        This should only be used if there is an error in add_one_example() but the .nc file still generates. This function is not reccomended to be used.
+        This should only be used if there is an error in add_one_example() but the .nc file still generates. This function is not recommended to be used.
         The best option is always to use add_one_example() which will automatically delete the .nc file after adding it to the dataset.
         """
         if not os.path.exists(self.outfile_nc_folder):
@@ -397,7 +397,7 @@ class H5DatasetBuilder:
         with h5py.File(self.dataset_path, "r+") as f:
             try:
                 del f[example_name]
-                print(f"Successfully deleted ")
+                print(f"Successfully deleted {example_name}")
                 return True
             except KeyError:
                 return False

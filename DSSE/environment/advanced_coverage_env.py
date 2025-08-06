@@ -273,9 +273,6 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
         # Render the screen
         self.render_step(any(terminations.values()))
 
-        # # Update the timestep
-        # self.timestep += 1
-
         # If any agent has terminated or truncated, reset the agents
         # This is a requirement for the PettingZoo parallel environment
         if any(terminations.values()) or any(truncations.values()):

@@ -52,7 +52,7 @@ class ParticleInterface:
                 self.particle_probabillities_no_bayes = deepcopy(self.particle_probabillities)
                 self.particle_sim_time_delta = str(grp['time delta'][()])
 
-                if self.particle_sim_time_delta.split(' ')[1].strip("'") != "nanoseconds": # checks for the right units of timedelta
+                if self.particle_sim_time_delta.split(' ')[1].strip("'") != "nanoseconds": # checks for the correct units of timedelta
                     print("The unit for timedelta must be nanoseconds")
                     print("Found " + self.particle_sim_time_delta.split(' ')[1].strip("'"))
                     raise AssertionError
