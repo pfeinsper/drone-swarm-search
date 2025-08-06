@@ -101,7 +101,7 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
         :param render_fps: The goal fps for the pygame simultion. , defaults to 5
         :type render_fps: int, optional
         :param square_matrix: Whether or not the observations from the environment should come from a square matrix. 
-        This also affects whether the movement is confined to a rectangulaar or square matrix. If square matrix is true,
+        This also affects whether the movement is confined to a rectangular or square matrix. If square matrix is true,
         zero values will be used to make it square, defaults to True
         :type square_matrix: bool, optional
         :raises Warning: _description_
