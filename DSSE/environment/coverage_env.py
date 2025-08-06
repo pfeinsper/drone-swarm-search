@@ -34,7 +34,7 @@ class CoverageDroneSwarmSearch(DroneSwarmSearchBase):
         particle_amount=50_000,
         particle_radius=800,
         num_particle_to_filter_as_noise=1,
-        start_time: datetime = None,
+        start_time: datetime.datetime = None,
         grid_cell_size=130,
         animate=False
     ) -> None:
