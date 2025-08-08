@@ -99,15 +99,15 @@ class ParticleInterface:
 
         r = ceil(np.max(self.y_vals) / self.cell_size)
         c = ceil(np.max(self.x_vals) / self.cell_size)
-        self.probabillity_matrix = np.zeros(shape=(r, c))
+        self.probability_matrix = np.zeros(shape=(r, c))
         if self.square_matrix:
-            self.probabillity_matrix = make_array_square(self.probabillity_matrix)
-        self.prob_matrix_shape = self.probabillity_matrix.shape
+            self.probability_matrix = make_array_square(self.probability_matrix)
+        self.prob_matrix_shape = self.probability_matrix.shape
 
         print(f"Grid Size: {self.prob_matrix_shape}")
 
         # First dimention = time. Then it is just a grid. Each grid contains a list of particle indices that it contains
-        self.particle_matrix = [[[[] for i in range(self.probabillity_matrix.shape[1])] for j in range(self.probabillity_matrix.shape[0])] for k in range(self.x_vals.shape[1])]
+        self.particle_matrix = [[[[] for i in range(self.probability_matrix.shape[1])] for j in range(self.probability_matrix.shape[0])] for k in range(self.x_vals.shape[1])]
         
         self.y_len = np.max(self.y_vals)
         self.x_len = np.max(self.x_vals)
@@ -136,7 +136,7 @@ class ParticleInterface:
         # Does the same for the y values
         y_vals_interpol = self.y_vals[:,self.particle_sim_time_steps] * (1 - proportion) + self.y_vals[:,self.particle_sim_time_steps + 1] * proportion
         # Creates a new matrix with the interpolated values
-        new_particle_matrix = [[[] for _ in range(self.probabillity_matrix.shape[1])] for _ in range(self.probabillity_matrix.shape[0])]
+        new_particle_matrix = [[[] for _ in range(self.probability_matrix.shape[1])] for _ in range(self.probability_matrix.shape[0])]
         r = ceil(np.max(self.y_vals) / self.cell_size)
         c = ceil(np.max(self.x_vals) / self.cell_size)
         for particle_num in range(self.x_vals.shape[0]):
@@ -166,7 +166,7 @@ class ParticleInterface:
                 p = 0
                 for particle_id in self.cur_particle_matrix[row][col]:
                     p += self.particle_probabillities[particle_id]
-                self.probabillity_matrix[row][col] = p
+                self.probability_matrix[row][col] = p
     
     def step(self, indices=[], pod=0.75) -> tuple[np.ndarray, float, bool]:
         """
@@ -201,7 +201,7 @@ class ParticleInterface:
 
         self.update_probabillity_matrix_from_particle_matrix()
 
-        return self.probabillity_matrix, self.cumm_p_success, sim_over
+        return self.probability_matrix, self.cumm_p_success, sim_over
     
     def get_elapsed_time(self) -> timedelta:
         """Returns the elapsed time since the start of the simulation, including the pre-render time
@@ -212,7 +212,7 @@ class ParticleInterface:
         return self.elapsed_time
     
     def get_raw_matrix(self):
-        return self.probabillity_matrix
+        return self.probability_matrix
     
     def get_matrix(self) -> np.ndarray:
         """Returns square probabillity matrix where extra zeros are added to make it square
@@ -221,7 +221,7 @@ class ParticleInterface:
         :return: square probabillity matrix
         :rtype: np.ndarray
         """
-        return make_array_square(self.probabillity_matrix)
+        return make_array_square(self.probability_matrix)
 
     def get_cummulative_p_success(self):
         return self.cumm_p_success
@@ -230,7 +230,7 @@ class ParticleInterface:
         print(f"Total Probabillity: {sum(self.particle_probabillities)}")
 
         fig, ax = plt.subplots()
-        heatmap = ax.imshow(self.probabillity_matrix, cmap='viridis', interpolation='nearest')
+        heatmap = ax.imshow(self.probability_matrix, cmap='viridis', interpolation='nearest')
         col_bar = plt.colorbar(heatmap, ax=ax, label='Probability')
         ax.set_title("Press Space to Rerender")
         plt.xlabel('X-axis')
@@ -247,11 +247,11 @@ class ParticleInterface:
                     selected_search_cells += [cells]
                 
                 if search_greedy > 0:
-                    selected_search_cells += top_n_indices(self.probabillity_matrix, search_greedy)
+                    selected_search_cells += top_n_indices(self.probability_matrix, search_greedy)
 
                 self.step(indices=selected_search_cells, pod=pod)
 
-                ax.imshow(self.probabillity_matrix, cmap='viridis', interpolation='nearest')
+                ax.imshow(self.probability_matrix, cmap='viridis', interpolation='nearest')
 
                 plt.draw()
             
