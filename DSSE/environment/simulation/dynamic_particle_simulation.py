@@ -5,7 +5,6 @@ from typing import List
 import os
 import dotenv
 from datetime import datetime, timedelta
-import cf_xarray
 import copernicusmarine
 from opendrift.models.leeway import Leeway
 from opendrift.readers.reader_netCDF_CF_generic import Reader
