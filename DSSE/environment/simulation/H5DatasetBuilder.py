@@ -14,7 +14,9 @@ class H5DatasetBuilder:
                  password:str=None, 
                  use_env:str=True):
         """Creates a dataset builder that can create .h5 datasets from the Copernicus Marine Service data.
-        This class is used to create datasets for the DSSE environment.
+        This class is used to create datasets for the DSSE environment. An important thing to note is that you need to register to the 
+        Copernicus Marine Service in order to run your own particle simulations. Registration is free and can be done at 
+        https://data.marine.copernicus.eu/register.
 
         :param dataset_path: The path to the dataset file, which is a .h5 file. Ex: "DSSE/environment/TrajectoryDatasets/my_dataset.h5"
         :type dataset_path: str

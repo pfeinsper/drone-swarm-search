@@ -48,7 +48,7 @@ for i, (name, lat, long, event_time) in enumerate(events):
         disaster_lat=lat,
         disaster_long=long,
         start_time=event_time,
-        duration_hours=15, # The simulation will run for 24 hours from the event time
+        duration_hours=15, # The simulation will run for 15 hours from the event time
         loglevel=0, # Set log level to 0 for no logging. Higher levels will produce more logs.
         particle_amount=17000, # Number of particles to simulate per object. So if there are 3 object types, this will create 51000 particles.
         particle_radius=1000, # The area in which a particle can be placed around the disaster location. This is kinda of like variance in a a gaussian distribution.
