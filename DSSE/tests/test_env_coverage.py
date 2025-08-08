@@ -17,7 +17,7 @@ def init_Coverage_drone_swarm_search(
     drone_speed=10,
     drone_probability_of_detection=1,
 ):
-    
+
     return CoverageDroneSwarmSearch(
         render_mode=render_mode,
         render_grid=render_grid,
@@ -45,6 +45,7 @@ def test_wrong_drone_number(drone_amount):
     with pytest.raises(ValueError):
         init_Coverage_drone_swarm_search(drone_amount=drone_amount)
 
+
 @pytest.mark.parametrize(
     "drone_amount, drones_positions, timestep_limit",
     [
@@ -52,7 +53,9 @@ def test_wrong_drone_number(drone_amount):
     ],
 )
 def test_leave_grid_get_negative_reward(drone_amount, drones_positions, timestep_limit):
-    env = init_Coverage_drone_swarm_search(drone_amount=drone_amount, timestep_limit=timestep_limit)
+    env = init_Coverage_drone_swarm_search(
+        drone_amount=drone_amount, timestep_limit=timestep_limit
+    )
     opt = {"drones_positions": drones_positions}
     _ = env.reset(options=opt)
 
@@ -75,6 +78,7 @@ def test_leave_grid_get_negative_reward(drone_amount, drones_positions, timestep
     assert not any(
         terminations.values()
     ), "There not should be at least one termination condition met."
+
 
 @pytest.mark.parametrize(
     "drone_amount",
@@ -172,9 +176,12 @@ def test_with_the_observation_size_is_correct_for_all_drones(drone_amount):
     for drone in range(1, drone_amount):
         drone_id = f"drone{drone}"
         observation_matriz = observations[drone_id][1]
-        
+
         # Verifica se o tamanho da observação é igual ao da primeira observação
-        assert np.array_equal(observation_matriz.shape, first_observation_shape), f"Observation size mismatch for drone {drone_id}. Expected size: {first_observation_shape}, actual size: {observation_matriz.shape}"
+        assert np.array_equal(
+            observation_matriz.shape, first_observation_shape
+        ), f"Observation size mismatch for drone {drone_id}. Expected size: {first_observation_shape}, actual size: {observation_matriz.shape}"
+
 
 @pytest.mark.parametrize(
     "timestep_limit",
@@ -197,9 +204,11 @@ def test_if_the_timestep_limit_is_correct(timestep_limit):
         steps += 1
         actions = {agent: env.action_space(agent).sample() for agent in env.agents}
         _, _, _, _, _ = env.step(actions)
-    
-    assert steps == timestep_limit, f"Number of steps does not match timestep limit. Expected: {timestep_limit}, Actual: {steps}"
-    
+
+    assert (
+        steps == timestep_limit
+    ), f"Number of steps does not match timestep limit. Expected: {timestep_limit}, Actual: {steps}"
+
 
 def test_petting_zoo_interface_works():
     env = init_Coverage_drone_swarm_search()

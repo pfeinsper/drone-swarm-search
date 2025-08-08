@@ -13,10 +13,11 @@ from .simulation.particle_interface import ParticleInterface
 from math import sqrt, tan, pi
 from copy import deepcopy
 
+
 class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
     """
-    PettingZoo based environment for SAR missions using drones. Has more realistic simulation than normal 
-    coverage environment and includes interactions with a dynamic probability distribution. 
+    PettingZoo based environment for SAR missions using drones. Has more realistic simulation than normal
+    coverage environment and includes interactions with a dynamic probability distribution.
     """
 
     metadata = {
@@ -31,31 +32,34 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
         exceed_timestep=0,
         drones_collision=0,
         search_cell=0,
-        search_and_find=0
+        search_and_find=0,
     )
 
-    def __init__(self, dataset_pth:str,
-                 drone_amount:int, 
-                 drone_speed: float, 
-                 drone_height:float, 
-                 survival_time:timedelta,
-                 drone_pod:float=0.8,
-                 drone_fov=90,
-                 grid_cell_size:float=None, 
-                 dataset_example:str=None, 
-                 time_step:timedelta=None,
-                 pre_render_time:timedelta=timedelta(milliseconds=0),
-                 render_gradient:bool=True,
-                 render_grid=False,
-                 render_mode="ansi",
-                 render_fps=5,
-                 square_matrix:bool=True):
-        """Initializes the environment. To start the environment, .reset() must be called with 
+    def __init__(
+        self,
+        dataset_pth: str,
+        drone_amount: int,
+        drone_speed: float,
+        drone_height: float,
+        survival_time: timedelta,
+        drone_pod: float = 0.8,
+        drone_fov=90,
+        grid_cell_size: float = None,
+        dataset_example: str = None,
+        time_step: timedelta = None,
+        pre_render_time: timedelta = timedelta(milliseconds=0),
+        render_gradient: bool = True,
+        render_grid=False,
+        render_mode="ansi",
+        render_fps=5,
+        square_matrix: bool = True,
+    ):
+        """Initializes the environment. To start the environment, .reset() must be called with
         drone_positions.
 
         :param dataset_pth: The path to the h5 dataset
         :type dataset_pth: str
-        :param drone_amount: the number of drones 
+        :param drone_amount: the number of drones
         :type drone_amount: int
         :param drone_speed: How fast each drone is going in m/s
         :type drone_speed: float
@@ -67,26 +71,26 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
         :type drone_pod: float, optional
         :param drone_fov: the feild of view of the drones camera when pointed towards the ground, defaults to 90
         :type drone_fov: int, optional
-        :param grid_cell_size: The side length of the grid cell in m. This parameter and time_step are very closely related. 
-            If both are left as None, the default interpretation is that the grid cell size is determined by the area the 
-            drone can 'see' at any given time.If the grid cell size is given, it is asumed that the environment has been 
-            broken down into sectors that each drone is responsible for searching in a parallel track search. For whatever 
-            reason, if the grid cell size is not given, but the time step is the environment will let you chose the 
-            time_step but will still asumes grid cell size is determined by the area the drone can 'see' at any given time. 
+        :param grid_cell_size: The side length of the grid cell in m. This parameter and time_step are very closely related.
+            If both are left as None, the default interpretation is that the grid cell size is determined by the area the
+            drone can 'see' at any given time.If the grid cell size is given, it is asumed that the environment has been
+            broken down into sectors that each drone is responsible for searching in a parallel track search. For whatever
+            reason, if the grid cell size is not given, but the time step is the environment will let you chose the
+            time_step but will still asumes grid cell size is determined by the area the drone can 'see' at any given time.
             Defaults to None
         :type grid_cell_size: float, optional
         :param dataset_example: The name of the dataset example in the dataset that you chose. Default is random choice.
           Defaults to None
         :type dataset_example: str, optional
-        :param time_step: The length of time it takes for a drone to move between cells. It is reccomended that 
+        :param time_step: The length of time it takes for a drone to move between cells. It is reccomended that
             this parameter is left unchanged.
 
-            This parameter and time_step are very closely related. 
-            If both are left as None, the default interpretation is that the grid cell size is determined by the area the 
-            drone can 'see' at any given time.If the grid cell size is given, it is asumed that the environment has been 
-            broken down into sectors that each drone is responsible for searching in a parallel track search. For whatever 
-            reason, if the grid cell size is not given, but the time step is the environment will let you chose the 
-            time_step but will still asumes grid cell size is determined by the area the drone can 'see' at any given time. 
+            This parameter and time_step are very closely related.
+            If both are left as None, the default interpretation is that the grid cell size is determined by the area the
+            drone can 'see' at any given time.If the grid cell size is given, it is asumed that the environment has been
+            broken down into sectors that each drone is responsible for searching in a parallel track search. For whatever
+            reason, if the grid cell size is not given, but the time step is the environment will let you chose the
+            time_step but will still asumes grid cell size is determined by the area the drone can 'see' at any given time.
             Defaults to None, defaults to None
         :type time_step: timedelta, optional
         :param pre_render_time: The time since last recorded position that the search states, defaults to timedelta(milliseconds=0)
@@ -100,20 +104,20 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
         :type render_mode: str, optional
         :param render_fps: The goal fps for the pygame simultion. , defaults to 5
         :type render_fps: int, optional
-        :param square_matrix: Whether or not the observations from the environment should come from a square matrix. 
+        :param square_matrix: Whether or not the observations from the environment should come from a square matrix.
         This also affects whether the movement is confined to a rectangular or square matrix. If square matrix is true,
         zero values will be used to make it square, defaults to True
         :type square_matrix: bool, optional
         :raises Warning: _description_
         """
-        
-        self.dataset_pth=dataset_pth
-        self.drone_speed=drone_speed
-        self.drone_height=drone_height
-        self.grid_cell_size=grid_cell_size
+
+        self.dataset_pth = dataset_pth
+        self.drone_speed = drone_speed
+        self.drone_height = drone_height
+        self.grid_cell_size = grid_cell_size
         self.survival_time = survival_time
         self.pre_render_time = pre_render_time
-        self.render_grid=render_grid
+        self.render_grid = render_grid
         self.time_step = time_step
         self.drone_pod = drone_pod
         self.square_matrix = square_matrix
@@ -122,12 +126,14 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
         if dataset_example == None:
             with h5py.File(self.dataset_pth, "r") as ds:
                 print(np.array(ds.keys()))
-                self.dataset_example = np.random.choice([i for i in ds.keys() if i.startswith("example")])
+                self.dataset_example = np.random.choice(
+                    [i for i in ds.keys() if i.startswith("example")]
+                )
                 print(f"Dataset Example: {self.dataset_example}")
 
         assert drone_fov < 180
         if self.grid_cell_size == None and self.time_step == None:
-            # If both are left as None, the default interpretation is that the grid cell size is determined 
+            # If both are left as None, the default interpretation is that the grid cell size is determined
             # by the area the drone can 'see' at any given time
             self.grid_cell_size = sqrt(2) * drone_height * tan(drone_fov * pi / 360)
             self.time_step = timedelta(seconds=self.grid_cell_size / self.drone_speed)
@@ -135,29 +141,41 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
             # If the grid cell size is given, it is asumed that the environment has been broken down
             # into sectors that each drone is responsible for searching in a parallel track search
             s = sqrt(2) * drone_height * tan(drone_fov * pi / 360)
-            time_step = self.grid_cell_size ** 2 / (drone_speed * s) 
+            time_step = self.grid_cell_size**2 / (drone_speed * s)
             self.time_step = timedelta(seconds=time_step)
         elif self.grid_cell_size == None and self.time_step != None:
             # For whatever reason, if the grid cell size is not given, but the time step is
             # The environment will let you chose the time_step but will still asumes
             # grid cell size is determined by the area the drone can 'see' at any given time
             self.grid_cell_size = sqrt(2) * drone_height * tan(drone_fov * pi / 360)
-            raise Warning("Grid cell size is not given, but time step is. The grid cell size will be determined by the area the drone can 'see' at any given time.")
+            raise Warning(
+                "Grid cell size is not given, but time step is. The grid cell size will be determined by the area the drone can 'see' at any given time."
+            )
 
-        # The following four variables are all connected to self.particle_interface and need to be updated evertime 
+        # The following four variables are all connected to self.particle_interface and need to be updated evertime
         # self.particle_interface.step() is called
-        self.particle_interface = ParticleInterface(self.dataset_pth, self.dataset_example, self.time_step, 
-            cell_size=self.grid_cell_size, pre_render_time=self.pre_render_time, square_matrix=self.square_matrix)
-        
-        self.probability_matrix = self.particle_interface # This is just for the super class
+        self.particle_interface = ParticleInterface(
+            self.dataset_pth,
+            self.dataset_example,
+            self.time_step,
+            cell_size=self.grid_cell_size,
+            pre_render_time=self.pre_render_time,
+            square_matrix=self.square_matrix,
+        )
+
+        self.probability_matrix = (
+            self.particle_interface
+        )  # This is just for the super class
 
         # This matrix tracks how many times each cell is visited
         # It doesn't matter if the matrix is square or not, since any additional cells will be zero, and this is used for counting non-zero cells
-        self.coverage_info_matrix = np.zeros_like(self.particle_interface.get_raw_matrix()) 
+        self.coverage_info_matrix = np.zeros_like(
+            self.particle_interface.get_raw_matrix()
+        )
 
         # This is the cumulative probability of success
         self.cumm_p_success = self.particle_interface.get_cummulative_p_success()
-        
+
         super().__init__(
             grid_size=max(self.particle_interface.prob_matrix_shape),
             render_mode=render_mode,
@@ -167,8 +185,8 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
             drone_amount=drone_amount,
             drone_speed=drone_speed,
             probability_of_detection=drone_pod,
-            grid_cell_size=self.grid_cell_size, # in m
-            render_fps=render_fps
+            grid_cell_size=self.grid_cell_size,  # in m
+            render_fps=render_fps,
         )
 
         # After init, there is a connection to the dataset file (created with the particle interface), the number of
@@ -212,21 +230,25 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
             obs[agent] = observation
         return obs
 
-    def step(self, actions: dict[str, int]) -> tuple[dict[str, tuple[tuple[int, int], np.ndarray]], 
-                                                    dict[str, float], 
-                                                    dict[str, bool], 
-                                                    dict[str, bool], 
-                                                    dict[str, dict]]:
+    def step(self, actions: dict[str, int]) -> tuple[
+        dict[str, tuple[tuple[int, int], np.ndarray]],
+        dict[str, float],
+        dict[str, bool],
+        dict[str, bool],
+        dict[str, dict],
+    ]:
         """
         Returns a tuple with (observations, rewards, terminations, truncations, infos)
         """
         if not self._was_reset:
             raise ValueError("Please reset the env before interacting with it")
-        
+
         # Search the grid, step the particle interface, and update coverage info matrix
         # When tranisitioning to the next step, the agents search the grid they were in
         old_prob_matrix = deepcopy(self.particle_interface.get_raw_matrix())
-        _, self.cumm_p_success, sim_ended = self.particle_interface.step(self.agents_positions, self.drone_pod)
+        _, self.cumm_p_success, sim_ended = self.particle_interface.step(
+            self.agents_positions, self.drone_pod
+        )
         self.coverage_info_matrix[tuple(zip(*self.agents_positions))] += 1
 
         terminations = {a: False for a in self.agents}
@@ -254,7 +276,7 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
                 terminations[agent] = True
                 rewards[agent] = self.reward_scheme.exceed_timestep
                 continue
-            
+
             drone_r, drone_c = self.agents_positions[idx]
 
             new_position = self.move_drone((drone_r, drone_c), drone_action)
@@ -266,7 +288,12 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
             # If the agent is searching, it will find the person with a probability of detection (POD)
             # The POD is multiplied by the probability of finding the person in the cell
             # The reward is the cumulative probability of success
-            rewards[agent] += old_prob_matrix[self.agents_positions[idx][0], self.agents_positions[idx][1]] * self.drone_pod
+            rewards[agent] += (
+                old_prob_matrix[
+                    self.agents_positions[idx][0], self.agents_positions[idx][1]
+                ]
+                * self.drone_pod
+            )
 
         observations = self.create_observations()
 
@@ -278,38 +305,59 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
         if any(terminations.values()) or any(truncations.values()):
             self.agents = []
 
-        return observations, rewards, terminations, truncations, self.compute_infos(any(terminations.values()))
-    
+        return (
+            observations,
+            rewards,
+            terminations,
+            truncations,
+            self.compute_infos(any(terminations.values())),
+        )
+
     def is_valid_position(self, position: tuple[int, int]) -> bool:
-        valid_r = position[0] >= 0 and position[0] < self.particle_interface.prob_matrix_shape[0]
-        valid_c = position[1] >= 0 and position[1] < self.particle_interface.prob_matrix_shape[1]
+        valid_r = (
+            position[0] >= 0
+            and position[0] < self.particle_interface.prob_matrix_shape[0]
+        )
+        valid_c = (
+            position[1] >= 0
+            and position[1] < self.particle_interface.prob_matrix_shape[1]
+        )
         return valid_r and valid_c
-    
+
     def render_step(self, terminal):
         if self.render_mode == "human":
             if terminal:
                 self.pygame_renderer.render_episode_end_screen(
-                    f"The Probabillity of Finding the Lost Person in {self.particle_interface.get_elapsed_time()} is {round(self.cumm_p_success, 3)}", BLUE
+                    f"The Probabillity of Finding the Lost Person in {self.particle_interface.get_elapsed_time()} is {round(self.cumm_p_success, 3)}",
+                    BLUE,
                 )
             else:
                 self.render()
-        
+
     def compute_infos(self, is_completed: bool) -> dict[str, dict]:
         # This is the percent of non-zero cells that have been visited
-        non_zero_cells = self.particle_interface.get_raw_matrix() > 0 # All non-zero cells
+        non_zero_cells = (
+            self.particle_interface.get_raw_matrix() > 0
+        )  # All non-zero cells
         covered_cells = self.coverage_info_matrix > 0
         covered_and_non_zero_cells = np.logical_and(covered_cells, non_zero_cells)
-        coverage_rate = np.sum(covered_and_non_zero_cells) / np.sum(non_zero_cells) if np.sum(non_zero_cells) > 0 else 0
+        coverage_rate = (
+            np.sum(covered_and_non_zero_cells) / np.sum(non_zero_cells)
+            if np.sum(non_zero_cells) > 0
+            else 0
+        )
 
         infos = {
             "is_completed": is_completed,
-            "coverage_rate": coverage_rate, # This is the percent of non-zero cells that have been visited
+            "coverage_rate": coverage_rate,  # This is the percent of non-zero cells that have been visited
             "repeated_cells": np.sum(self.coverage_info_matrix > 1),
-            "visited_cells": np.sum(self.coverage_info_matrix > 0), # This is the number of cells that have been visited
+            "visited_cells": np.sum(
+                self.coverage_info_matrix > 0
+            ),  # This is the number of cells that have been visited
             "accumulated_pos": self.cumm_p_success,
         }
         return {drone: infos for drone in self.agents}
-    
+
     def move_drone(self, position, action):
         """
         Returns a new position in (row, column) format based on the action taken.
@@ -336,10 +384,12 @@ class AdvancedCoverageDroneSwarmSearch(DroneSwarmSearchBase):
                 new_position = position
 
         return new_position
-    
+
     def render(self):
         # Need to edit this method because the agen positions are in (row, column) format
         # and the pygame renderer expects them in (x, y) format
         self.pygame_renderer.render_map()
-        self.pygame_renderer.render_entities([tuple(reversed(i)) for i in self.agents_positions])
+        self.pygame_renderer.render_entities(
+            [tuple(reversed(i)) for i in self.agents_positions]
+        )
         self.pygame_renderer.refresh_screen()

@@ -21,14 +21,14 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
         drone_speed=10,
         probability_of_detection=1,
         grid_cell_size=130,
-        render_fps=5
+        render_fps=5,
     ) -> None:
         self.cell_size = grid_cell_size  # in meters
         self.grid_size = grid_size
         self._was_reset = False
         if not isinstance(drone_amount, int):
             raise ValueError("Drone amount must be an integer")
-    
+
         self.drone = DroneData(
             amount=drone_amount,
             speed=drone_speed,
@@ -61,7 +61,11 @@ class DroneSwarmSearchBase(ABC, ParallelEnv):
 
         # Initializing render
         self.pygame_renderer = PygameInterface(
-            self.grid_size, render_gradient, render_grid, self.metadata["name"], fps=render_fps
+            self.grid_size,
+            render_gradient,
+            render_grid,
+            self.metadata["name"],
+            fps=render_fps,
         )
 
     def calculate_simulation_time_step(

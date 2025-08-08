@@ -7,23 +7,25 @@ import numpy as np
 # We use the H5 dataset that we created in example_creating_dataset.py
 env = AdvancedCoverageDroneSwarmSearch(
     dataset_pth="DSSE/environment/TrajectoryDatasets/sample_dataset.h5",
-    drone_amount=5, 
-    drone_speed=10, 
-    drone_height=70, 
+    drone_amount=5,
+    drone_speed=10,
+    drone_height=70,
     survival_time=timedelta(hours=24),
     drone_fov=90,
-    grid_cell_size=1000, 
+    grid_cell_size=1000,
     pre_render_time=timedelta(milliseconds=0),
     render_gradient=True,
     render_grid=False,
     render_mode="human",
-    render_fps=3)
+    render_fps=3,
+)
+
 
 # This policy is a greedy policy that chooses the action that gets the agent closer to the cell with the highest probability
 # It is a simple heuristic that can be used to test the environment
 def greedy_policy(obs, agents):
     actions = {}
-    for agent in agents:    
+    for agent in agents:
         # If the agents are on top of each other, it will choose a random action to avoid clumping
         if obs[agent][0] in [obs[a][0] for a in agents if a != agent]:
             actions[agent] = env.action_space(agent).sample()
@@ -61,9 +63,7 @@ def greedy_policy(obs, agents):
     return actions
 
 
-opt = {
-    "drones_positions": [(10,10), (9,9), (8, 8), (12, 11), (13, 13)]
-}
+opt = {"drones_positions": [(10, 10), (9, 9), (8, 8), (12, 11), (13, 13)]}
 observations, info = env.reset(options=opt)
 
 clock = pg.time.Clock()

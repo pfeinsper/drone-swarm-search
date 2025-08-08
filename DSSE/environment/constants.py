@@ -20,6 +20,7 @@ class Actions(Enum):
     DOWN_RIGHT = 7
     SEARCH = 8
 
+
 class AdvancedActions(Enum):
     LEFT = 0
     RIGHT = 1

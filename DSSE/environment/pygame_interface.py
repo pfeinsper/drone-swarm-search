@@ -13,7 +13,12 @@ class PygameInterface:
     FPS = 5
 
     def __init__(
-        self, grid_size: int, render_gradient: bool, render_grid: bool, env_name: str, fps: int = 5
+        self,
+        grid_size: int,
+        render_gradient: bool,
+        render_grid: bool,
+        env_name: str,
+        fps: int = 5,
     ) -> None:
         pygame.init()
         self.grid_size = grid_size
@@ -129,17 +134,24 @@ class PygameInterface:
             elif normalized_prob >= 0.25:
                 red = 255
                 green = 255
-        
+
         if self.env_name == "DroneSwarmSearchCPP":
             blue = 255 if normalized_prob > 0 else 0
         else:
             blue = 0
-        
+
         return (red, green, blue)
 
-    def render_episode_end_screen(self, message: str, color: tuple, wait_time: float = 5):
+    def render_episode_end_screen(
+        self, message: str, color: tuple, wait_time: float = 5
+    ):
         self.screen.fill(color)
-        self.blit_text(self.screen, message, (10, self.window_size // 2), pygame.font.SysFont(None, 50))
+        self.blit_text(
+            self.screen,
+            message,
+            (10, self.window_size // 2),
+            pygame.font.SysFont(None, 50),
+        )
         pygame.display.flip()
         time.sleep(wait_time)
 
@@ -148,11 +160,13 @@ class PygameInterface:
             pygame.event.pump()
             pygame.display.quit()
             self.render_on = False
-    
+
     @staticmethod
-    def blit_text(surface, text, pos, font, color=pygame.Color('black')):
-        words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
-        space = font.size(' ')[0]  # The width of a space.
+    def blit_text(surface, text, pos, font, color=pygame.Color("black")):
+        words = [
+            word.split(" ") for word in text.splitlines()
+        ]  # 2D array where each row is a list of words.
+        space = font.size(" ")[0]  # The width of a space.
         max_width, max_height = surface.get_size()
         x, y = pos
         for line in words:
