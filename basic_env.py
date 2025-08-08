@@ -1,23 +1,20 @@
 from DSSE import DroneSwarmSearch
-import pygame as pg
 
 env = DroneSwarmSearch(
-    grid_size=20,
+    grid_size=40,
     render_mode="human",
-    render_grid=False,
-    render_gradient=False,
+    render_grid=True,
+    render_gradient=True,
     vector=(1, 1),
     timestep_limit=300,
     person_amount=4,
     dispersion_inc=0.05,
-    person_initial_position=(1, 1),
-    drone_amount=4,
+    person_initial_position=(15, 15),
+    drone_amount=2,
     drone_speed=10,
-    probability_of_detection=1,
+    probability_of_detection=0.9,
     pre_render_time=0,
-    fps=5
 )
-
 
 def random_policy(obs, agents):
     actions = {}
