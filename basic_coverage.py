@@ -4,13 +4,11 @@ env = CoverageDroneSwarmSearch(
     drone_amount=3,
     render_mode="human",
     disaster_position=(-24.04, -46.17),  # (lat, long)
-    pre_render_time=5, # hours to simulate
-    animate=False,
-    particle_amount=100
+    pre_render_time=10, # hours to simulate
 )
 
 opt = {
-    "drones_positions": [(0, 0), (0, 1), (0, 2)],
+    "drones_positions": [(0, 10), (10, 10), (20, 10)],
 }
 obs, info = env.reset(options=opt)
 
