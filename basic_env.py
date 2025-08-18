@@ -16,6 +16,7 @@ env = DroneSwarmSearch(
     pre_render_time=0,
 )
 
+
 def random_policy(obs, agents):
     actions = {}
     for agent in agents:
@@ -24,17 +25,15 @@ def random_policy(obs, agents):
 
 
 opt = {
-    "vector": (0.1, 0.5),
+    "drones_positions": [(10, 5), (10, 10)],
+    "person_pod_multipliers": [0.1, 0.4, 0.5, 1.2],
+    "vector": (0.3, 0.3),
 }
 observations, info = env.reset(options=opt)
-
-clock = pg.time.Clock()
 
 rewards = 0
 done = False
 while not done:
-    clock.tick()
     actions = random_policy(observations, env.get_agents())
     observations, rewards, terminations, truncations, infos = env.step(actions)
     done = any(terminations.values()) or any(truncations.values())
-    print(round(clock.get_fps()), end="\r")
