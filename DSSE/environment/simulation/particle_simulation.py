@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from datetime import datetime, timedelta
-from typing import List, Tuple
+from typing import List
 
 EARTH_MEAN_RADIUS = 6373.0
 
@@ -60,7 +60,7 @@ class ParticleSimulation:
         # Maintain always a copy of the original map
         self.original_map = self.probability_map.copy()
 
-    def simulate(self, duration: timedelta) -> List[Tuple[float, float]]:
+    def simulate(self, duration: timedelta) -> List[tuple[float, float]]:
         o = self.ocean_drift(loglevel=self.loglevel)
         # Add Wind & Ocean data
         o.add_readers_from_list(
@@ -88,7 +88,7 @@ class ParticleSimulation:
 
     def lat_long_to_global_xy(
         self, lat: float, lon: float, ratio: float
-    ) -> Tuple[int, int]:
+    ) -> tuple[int, int]:
         lat = math.radians(lat)
         lon = math.radians(lon)
 
@@ -97,8 +97,8 @@ class ParticleSimulation:
         return (x, y)
 
     def convert_lat_lon_to_xy(
-        self, coordinates: List[Tuple[float, float]]
-    ) -> List[Tuple[int, int]]:
+        self, coordinates: List[tuple[float, float]]
+    ) -> List[tuple[int, int]]:
         """
         Using equirectangular projection to convert latitudes and longitudes to Cartesian coordinates.
         """
@@ -135,8 +135,8 @@ class ParticleSimulation:
         return max(map_width, map_height)
 
     def calculate_bounding_rectangle(
-        self, coordinates: List[Tuple[float, float]]
-    ) -> Tuple[float, float, float, float]:
+        self, coordinates: List[tuple[float, float]]
+    ) -> tuple[float, float, float, float]:
         latitudes, longitudes = zip(*coordinates)
 
         min_lat, max_lat = min(latitudes), max(latitudes)
@@ -168,7 +168,7 @@ class ParticleSimulation:
         return EARTH_MEAN_RADIUS * c * 1000
 
     def create_probability_map(
-        self, cartesian_coords: List[Tuple[float, float]]
+        self, cartesian_coords: List[tuple[float, float]]
     ) -> List[List[int]]:
         """
         Creates a probability map based on the coordinates of the particles.

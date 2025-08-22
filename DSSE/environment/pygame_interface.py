@@ -13,7 +13,12 @@ class PygameInterface:
     FPS = 5
 
     def __init__(
-        self, grid_size: int, render_gradient: bool, render_grid: bool, env_name: str
+        self,
+        grid_size: int,
+        render_gradient: bool,
+        render_grid: bool,
+        env_name: str,
+        fps: int = 5,
     ) -> None:
         pygame.init()
         self.grid_size = grid_size
@@ -29,6 +34,8 @@ class PygameInterface:
         self.drone_img = None
         self.person_img = None
         self.clock = None
+
+        PygameInterface.FPS = fps
 
     def render_map(self):
         self.draw()
@@ -127,25 +134,49 @@ class PygameInterface:
             elif normalized_prob >= 0.25:
                 red = 255
                 green = 255
-        
+
         if self.env_name == "DroneSwarmSearchCPP":
             blue = 255 if normalized_prob > 0 else 0
         else:
             blue = 0
-        
+
         return (red, green, blue)
 
-    def render_episode_end_screen(self, message: str, color: tuple):
-        font = pygame.font.SysFont(None, 50)
-        text = font.render(message, True, BLACK)
-        text_rect = text.get_rect(center=(self.window_size // 2, self.window_size // 2))
+    def render_episode_end_screen(
+        self, message: str, color: tuple, wait_time: float = 5
+    ):
         self.screen.fill(color)
-        self.screen.blit(text, text_rect)
+        self.blit_text(
+            self.screen,
+            message,
+            (10, self.window_size // 2),
+            pygame.font.SysFont(None, 50),
+        )
         pygame.display.flip()
-        time.sleep(1)
+        time.sleep(wait_time)
 
     def close(self):
         if self.render_on:
             pygame.event.pump()
             pygame.display.quit()
             self.render_on = False
+
+    @staticmethod
+    def blit_text(surface, text, pos, font, color=pygame.Color("black")):
+        words = [
+            word.split(" ") for word in text.splitlines()
+        ]  # 2D array where each row is a list of words.
+        space = font.size(" ")[0]  # The width of a space.
+        max_width, max_height = surface.get_size()
+        x, y = pos
+        for line in words:
+            for word in line:
+                word_surface = font.render(word, 0, color)
+                word_width, word_height = word_surface.get_size()
+                if x + word_width >= max_width:
+                    x = pos[0]  # Reset the x.
+                    y += word_height  # Start on new row.
+                surface.blit(word_surface, (x, y))
+                x += word_width + space
+            x = pos[0]  # Reset the x.
+            y += word_height  # Start on new row.

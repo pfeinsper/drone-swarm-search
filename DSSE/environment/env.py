@@ -44,6 +44,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         probability_of_detection=1.0,
         pre_render_time=0,
         grid_cell_size=130,
+        fps=5,
     ):
         if person_amount <= 0:
             raise ValueError("The number of persons must be greater than 0.")
@@ -59,6 +60,7 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             drone_speed=drone_speed,
             probability_of_detection=probability_of_detection,
             grid_cell_size=grid_cell_size,
+            render_fps=fps,
         )
 
         self.pre_render_steps = round(
@@ -162,7 +164,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
             self.raise_if_unvalid_mult(pod_multiplier)
             for person, mult in zip(self.persons_set, pod_multiplier):
                 person.set_mult(mult)
-            
 
         self.probability_matrix = ProbabilityMatrix(
             40,
@@ -294,10 +295,6 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         self.timestep += 1
         # Get dummy infos
         infos = {drone: {"Found": person_found} for drone in self.agents}
-
-        # CHECK COLISION - Drone
-        # self.compute_drone_collision(terminations, rewards)
-
 
         self.render_step(any(terminations.values()), person_found)
 

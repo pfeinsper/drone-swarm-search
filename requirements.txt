@@ -8,3 +8,7 @@ numba>=0.59.0
 wheel
 GDAL==3.4.1
 opendrift==1.10.7
+h5py
+xarray
+copernicusmarine>=2.1.0
+python-dotenv

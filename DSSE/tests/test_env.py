@@ -128,7 +128,10 @@ def test_timeout_termination(timestep_limit):
 )
 def test_leave_grid_dont_finish(grid_size, person_initial_position, timestep_limit):
     env = init_drone_swarm_search(
-        render_mode="ansi", grid_size=grid_size, person_initial_position=person_initial_position, timestep_limit=timestep_limit
+        render_mode="ansi",
+        grid_size=grid_size,
+        person_initial_position=person_initial_position,
+        timestep_limit=timestep_limit,
     )
     opt = {"drones_positions": [(0, 0)]}
     _ = env.reset(options=opt)
@@ -417,6 +420,8 @@ def test_get_wrong_if_number_of_mults_is_not_equal_to_person_amount(
         env = init_drone_swarm_search(person_amount=person_amount)
         opt = {"person_pod_multipliers": mult}
         _ = env.reset(options=opt)
+
+
 @pytest.mark.parametrize(
     "drone_amount, drones_positions",
     [
