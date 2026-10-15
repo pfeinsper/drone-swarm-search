@@ -47,10 +47,18 @@ all = [
     "numba>=0.59.0",
     "GDAL==3.4.1",
     "opendrift",
+    "h5py",
+    "xarray",
+    "copernicusmarine>=2.1.0",
+    "python-dotenv",
 ]
 coverage = [
     "GDAL==3.4.1",
     "opendrift",
+    "h5py",
+    "xarray",
+    "copernicusmarine>=2.1.0",
+    "python-dotenv",
 ]
 
 [project.urls]
