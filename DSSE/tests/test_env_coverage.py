@@ -1,4 +1,8 @@
 import pytest
+
+# The coverage environment simulates drift with OpenDrift (the `coverage` extra)
+pytest.importorskip("opendrift")
+
 from DSSE import CoverageDroneSwarmSearch
 from DSSE.environment.constants import Actions
 from pettingzoo.test import parallel_api_test
