@@ -5,13 +5,13 @@ from pathlib import Path
 
 import pytest
 
-COVERAGE_MODULES = ["h5py", "xarray", "copernicusmarine", "dotenv", "opendrift"]
+from DSSE.tests.coverage_extras import COVERAGE_MODULES, require_coverage_extras
 
 # Runs in a fresh interpreter with the coverage dependencies blocked,
 # as after a plain `pip install DSSE`.
 CORE_ONLY_SCRIPT = textwrap.dedent(f"""
     import sys
-    for name in {COVERAGE_MODULES!r}:
+    for name in {list(COVERAGE_MODULES)!r}:
         sys.modules[name] = None
 
     from DSSE import Actions, CoverageDroneSwarmSearch, DroneSwarmSearch
@@ -50,11 +50,7 @@ def test_unknown_attribute_raises_attribute_error():
 
 
 def test_coverage_exports_load_when_installed():
-    pytest.importorskip("h5py")
-    pytest.importorskip("opendrift")
-    pytest.importorskip("xarray")
-    pytest.importorskip("copernicusmarine")
-    pytest.importorskip("dotenv")
+    require_coverage_extras()
 
     from DSSE import (
         AdvancedCoverageDroneSwarmSearch,
@@ -67,3 +63,25 @@ def test_coverage_exports_load_when_installed():
     )
     assert DynamicParticleSimulation.__name__ == "DynamicParticleSimulation"
     assert H5DatasetBuilder.__name__ == "H5DatasetBuilder"
+
+
+def test_star_import_without_coverage_extras():
+    script = textwrap.dedent(f"""
+        import sys
+        for name in {list(COVERAGE_MODULES)!r}:
+            sys.modules[name] = None
+
+        namespace = {{}}
+        exec("from DSSE import *", namespace)
+        assert "DroneSwarmSearch" in namespace
+        assert "AdvancedCoverageDroneSwarmSearch" not in namespace
+        print("ok")
+        """)
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        capture_output=True,
+        text=True,
+        cwd=Path(__file__).resolve().parents[2],
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip().endswith("ok")

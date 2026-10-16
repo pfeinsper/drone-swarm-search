@@ -1,7 +1,9 @@
 import pytest
 
+from DSSE.tests.coverage_extras import require_coverage_extras
+
 # The coverage environment simulates drift with OpenDrift (the `coverage` extra)
-pytest.importorskip("opendrift")
+require_coverage_extras()
 
 from DSSE import CoverageDroneSwarmSearch
 from DSSE.environment.constants import Actions

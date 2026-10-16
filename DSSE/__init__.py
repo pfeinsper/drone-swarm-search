@@ -1,14 +1,27 @@
 """DSSE: A Multi-Agent Reinforcement Learning Environment for SAR missions using drone swarms."""
 
 import importlib
+import importlib.util
+from typing import TYPE_CHECKING
 
 from .environment.env import DroneSwarmSearch
 from .environment.coverage_env import CoverageDroneSwarmSearch
 from .environment.constants import Actions, AdvancedActions
 
-# These need the coverage extras (h5py, opendrift, xarray, copernicusmarine,
-# python-dotenv), so they are imported on first use. This keeps
-# `from DSSE import DroneSwarmSearch` working with a plain `pip install DSSE`.
+# The coverage exports need the coverage extras (h5py, opendrift, xarray,
+# copernicusmarine, python-dotenv), so they are imported on first use by
+# __getattr__ below. This keeps `from DSSE import DroneSwarmSearch` working with
+# a plain `pip install DSSE`. Type checkers and IDEs do not run __getattr__, so
+# the imports are repeated here for them only.
+if TYPE_CHECKING:
+    from .environment.advanced_coverage_env import AdvancedCoverageDroneSwarmSearch
+    from .environment.simulation.dynamic_particle_simulation import (
+        DynamicParticleSimulation,
+    )
+    from .environment.simulation.H5DatasetBuilder import H5DatasetBuilder
+
+_COVERAGE_DEPENDENCIES = ("h5py", "xarray", "copernicusmarine", "dotenv", "opendrift")
+
 _COVERAGE_EXPORTS = {
     "AdvancedCoverageDroneSwarmSearch": ".environment.advanced_coverage_env",
     "DynamicParticleSimulation": ".environment.simulation.dynamic_particle_simulation",
@@ -38,12 +51,20 @@ def __dir__():
     return sorted(set(globals()) | set(_COVERAGE_EXPORTS))
 
 
+def _coverage_installed():
+    return all(
+        importlib.util.find_spec(module) is not None
+        for module in _COVERAGE_DEPENDENCIES
+    )
+
+
 __all__ = [
     "DroneSwarmSearch",
     "CoverageDroneSwarmSearch",
     "Actions",
-    "AdvancedCoverageDroneSwarmSearch",
-    "DynamicParticleSimulation",
-    "H5DatasetBuilder",
     "AdvancedActions",
 ]
+# Only advertise the coverage exports to `from DSSE import *` when they can be
+# imported, so a star import works with a plain `pip install DSSE`.
+if _coverage_installed():
+    __all__ += list(_COVERAGE_EXPORTS)
