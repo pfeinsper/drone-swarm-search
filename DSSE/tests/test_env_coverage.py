@@ -1,4 +1,10 @@
 import pytest
+
+from DSSE.tests.coverage_extras import require_coverage_extras
+
+# The coverage environment simulates drift with OpenDrift (the `coverage` extra)
+require_coverage_extras()
+
 from DSSE import CoverageDroneSwarmSearch
 from DSSE.environment.constants import Actions
 from pettingzoo.test import parallel_api_test
