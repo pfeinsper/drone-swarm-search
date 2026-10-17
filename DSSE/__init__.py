@@ -48,7 +48,7 @@ def __getattr__(name):
 
 
 def __dir__():
-    return sorted(set(globals()) | set(_COVERAGE_EXPORTS))
+    return sorted(set(globals()) | set(__all__))
 
 
 def _coverage_installed():
