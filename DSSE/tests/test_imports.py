@@ -70,7 +70,11 @@ def test_star_import_without_coverage_extras():
         import sys
         for name in {list(COVERAGE_MODULES)!r}:
             sys.modules[name] = None
-
+            
+        import inspect
+        import DSSE
+        inspect.getmembers(DSSE)  # pydoc and IDEs call getattr on every name in dir()
+        
         namespace = {{}}
         exec("from DSSE import *", namespace)
         assert "DroneSwarmSearch" in namespace
